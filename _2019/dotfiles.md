@@ -2,6 +2,8 @@
 layout: lecture
 title: "Dotfiles"
 presenter: Anish
+date: 2019-01-24
+order: 1
 video:
   aspect: 62.5
   id: YSZBWWJw3mI
@@ -136,10 +138,10 @@ fi
   [Anish](https://github.com/anishathalye/dotfiles),
   [Jon](https://github.com/jonhoo/configs),
   [Jose](https://github.com/jjgo/dotfiles)
-- [GitHub does dotfiles](http://dotfiles.github.io/): dotfile frameworks,
+- [GitHub does dotfiles](https://dotfiles.github.io/): dotfile frameworks,
 utilities, examples, and tutorials
 - [Shell startup
-  scripts](https://blog.flowblok.id.au/2013-02/shell-startup-scripts.html): an
+  scripts](https://web.archive.org/web/20260329133158/https://blog.flowblok.id.au/2013-02/shell-startup-scripts.html): an
   explanation of the different configuration files used for your shell
 
 # Exercises
@@ -154,7 +156,7 @@ utilities, examples, and tutorials
 1. Set up a method to install your dotfiles quickly (and without manual effort)
    on a new machine. This can be as simple as a shell script that calls `ln -s`
    for each file, or you could use a [specialized
-   utility](http://dotfiles.github.io/utilities/).
+   utility](https://dotfiles.github.io/utilities/).
 
 1. Test your installation script on a fresh virtual machine.
 

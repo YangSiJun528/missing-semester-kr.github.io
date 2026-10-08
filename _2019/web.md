@@ -2,12 +2,15 @@
 layout: lecture
 title: "Web and Browsers"
 presenter: Jose
+date: 2019-01-31
+order: 1
 video:
   aspect: 62.5
   id: XpZO3S8odec
+special: true
 ---
 
-Apart from the terminal, the web browser is a tool you will find yourself spending significant amounts of time into. Thus it is worth learning how to use it efficiently and
+Apart from the terminal, the web browser is a tool you will find yourself spending significant amounts of time into. Thus it is worth learning how to use it efficiently and productively.
 
 ## Shortcuts
 
@@ -50,11 +53,11 @@ Nowadays surfing the web can get quite annoying due to ads and invasive due to t
 
 - **uBlock origin** ([Chrome](https://chrome.google.com/webstore/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm), [Firefox](https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/)): block ads and trackers based on predefined rules. You should also consider taking a look at the enabled blacklists in settings since you can enable more based on your region or browsing habits. You can even install filters from [around the web](https://github.com/gorhill/uBlock/wiki/Filter-lists-from-around-the-web)
 
-- **[Privacy Badger](https://www.eff.org/privacybadger)**: detects and blocks trackers automatically. For example when you go from website to website ad companies track which sites you visit and build a profile of you
+- **[Privacy Badger](https://privacybadger.org/)**: detects and blocks trackers automatically. For example when you go from website to website ad companies track which sites you visit and build a profile of you
 
 - **[HTTPS everywhere](https://www.eff.org/https-everywhere)** is a wonderful extension that redirects to HTTPS version of a website automatically, if available.
 
-You can find about more addons of this kind [here](https://www.privacytools.io/browsers/#addons)
+You can find about more addons of this kind [here](https://www.privacytools.io/privacy-browser-addons/)
 
 ## Style customization
 
@@ -83,7 +86,7 @@ a:link {
 }
 ```
 
-Moreover, Stylus can find styles written by other users and published in [userstyles.org](https://userstyles.org). Most common websites have one or several dark theme stylesheets for instance. FYI, you should not use Stylish since it was shown to leak user data, more [here](https://arstechnica.com/information-technology/2018/07/stylish-extension-with-2m-downloads-banished-for-tracking-every-site-visit/)
+Moreover, Stylus can find styles written by other users and published in [userstyles.org](https://userstyles.org/). Most common websites have one or several dark theme stylesheets for instance. FYI, you should not use Stylish since it was shown to leak user data, more [here](https://arstechnica.com/information-technology/2018/07/stylish-extension-with-2m-downloads-banished-for-tracking-every-site-visit/)
 
 
 ## Functionality Customization
@@ -146,10 +149,9 @@ function c() {
 
 ## Web Automation
 
-Sometimes web APIs are not enough. If only reading is needed you can use a html parser like `pup` or use a library, for example python has BeautifulSoup. However if interactivity or javascript execution is required those solutions fall short. WebDriver
+Sometimes web APIs are not enough. If only reading is needed you can use a html parser like `pup` or use a library, for example python has BeautifulSoup. However if interactivity or javascript execution is required those solutions fall short. 
 
-
-For example, the following script will save the specified url using the wayback machine simulating the interaction of typing the website.
+- **WebDriver**. For example, the following script will save the specified url using the wayback machine simulating the interaction of typing the website.
 
 ```python
 from selenium.webdriver import Firefox
@@ -178,6 +180,6 @@ snapshot_wayback(driver, url)
 1. Install the mentioned extensions. Look into how uBlock Origin/Privacy Badger can be disabled for a website. What differences do you see? Try doing it in a website with plenty of ads like YouTube.
 1. Install Stylus and write a custom style for the class website using the CSS provided. Here are some common programming characters `=   ==   ===   >=   =>   ++   /=   ~=`. What happens to them when changing the font to Fira Code? If you want to know more search for programming font ligatures.
 1. Find a web api to get the weather in your city/area.
-1. Use a WebDriver software like [Selenium](https://docs.seleniumhq.org/) to automate some repetitive manual task that you perform often with your browser.
+1. Use a WebDriver software like [Selenium](https://www.selenium.dev/documentation/) to automate some repetitive manual task that you perform often with your browser.
 
 

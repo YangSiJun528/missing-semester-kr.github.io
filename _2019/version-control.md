@@ -2,6 +2,8 @@
 layout: lecture
 title: "Version Control"
 presenter: Jon
+date: 2019-01-22
+order: 2
 video:
   aspect: 56.25
   id: 3fig2Vz8QXs
@@ -315,7 +317,7 @@ if your push is rejected, what do you do?
    - `git pull --rebase` will start this process for you
    - whether you should merge or rebase is a hot topic! some good reads:
      - [this](https://www.atlassian.com/git/tutorials/merging-vs-rebasing)
-     - [this](https://derekgourlay.com/blog/git-when-to-merge-vs-when-to-rebase/)
+     - [this](https://web.archive.org/web/20210106220723/https://derekgourlay.com/blog/git-when-to-merge-vs-when-to-rebase/)
      - [this](https://stackoverflow.com/questions/804115/when-do-you-use-git-rebase-instead-of-git-merge)
 
 # Further reading
@@ -325,7 +327,7 @@ if your push is rejected, what do you do?
  - [Learn git branching](https://learngitbranching.js.org/)
  - [How to explain git in simple words](https://smusamashah.github.io/blog/2017/10/14/explain-git-in-simple-words)
  - [Git from the bottom up](https://jwiegley.github.io/git-from-the-bottom-up/)
- - [Git for computer scientists](http://eagain.net/articles/git-for-computer-scientists/)
+ - [Git for computer scientists](https://eagain.net/articles/git-for-computer-scientists/)
  - [Oh shit, git!](https://ohshitgit.com/)
  - [The Pro Git book](https://git-scm.com/book/en/v2)
 

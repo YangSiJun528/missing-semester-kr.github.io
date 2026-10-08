@@ -2,9 +2,12 @@
 layout: lecture
 title: "Security and Privacy"
 presenter: Jon
+date: 2019-01-31
+order: 2
 video:
   aspect: 56.25
   id: OBx_c-i-M8s
+special: true
 ---
 
 The world is a scary place, and everyone's out to get you.
@@ -15,8 +18,7 @@ for attackers. Find out what your threat model is, and then design your
 security mechanisms around that! If the threat model is the NSA or
 Mossad, you're _probably_ going to have a bad time.
 
-There are _many_ ways to make your techn
-ical persona more secure. We'll
+There are _many_ ways to make your technical persona more secure. We'll
 touch on a lot of high-level things here, but this is a process, and
 educating yourself is one of the best things you can do. So:
 
@@ -40,13 +42,13 @@ for more suggestions.
 ## General Security Advice
 
 Tech Solidarity has a pretty great list of [do's and don'ts for
-journalists](https://techsolidarity.org/resources/basic_security.htm)
-that has a lot of sane advice, and is decently up-to-date. @thegrugq
+journalists](https://web.archive.org/web/20221123204419/https://techsolidarity.org/resources/basic_security.htm)
+that has a lot of sane advice, and is decently up-to-date. [@thegrugq](https://medium.com/@thegrugq)
 also has a good blog post on [travel security
 advice](https://medium.com/@thegrugq/stop-fabricating-travel-security-advice-35259bf0e869)
 that's worth reading. We'll repeat much of the advice from those sources
 here, plus some more. Also, get a [USB data
-blocker](https://amzn.com/B00QRRZ2QM), because [USB is
+blocker](https://www.amazon.com/dp/B00QRRZ2QM/), because [USB is
 scary](https://www.bleepingcomputer.com/news/security/heres-a-list-of-29-different-types-of-usb-attacks/).
 
 ## Authentication
@@ -57,7 +59,7 @@ a password manager. Some good ones are:
  - [1password](https://1password.com/)
  - [KeePass](https://keepass.info/)
  - [BitWarden](https://bitwarden.com/)
- - [`pass`](https://www.passwordstore.org/)
+ - [`pass`](https://git.zx2c4.com/password-store/about/)
 
 If you're particularly paranoid, use one that encrypts the passwords
 locally on your computer, as opposed to storing them in plain-text at
@@ -117,7 +119,7 @@ trying to secure against?
    really wants your secrets.
  - Online attacks (someone has your laptop and it's on): use file
    encryption. There are two primary mechanisms for doing so
-    - Encrypted filesystems: stacked filesystem encryption software encrypts files individually rather than having encrypted block devices. You can "mount" these filesystems by providing the decryption key, and then browse the files inside it freely. When you unmount it, those files are all unavailable.  Modern solutions include [gocryptfs](https://github.com/rfjakob/gocryptfs) and [eCryptFS](http://ecryptfs.org/). More detailed comparisons can be found [here](https://nuetzlich.net/gocryptfs/comparison/) and [here](https://wiki.archlinux.org/index.php/disk_encryption#Comparison_table)
+    - Encrypted filesystems: stacked filesystem encryption software encrypts files individually rather than having encrypted block devices. You can "mount" these filesystems by providing the decryption key, and then browse the files inside it freely. When you unmount it, those files are all unavailable.  Modern solutions include [gocryptfs](https://github.com/rfjakob/gocryptfs) and [eCryptFS](https://www.ecryptfs.org/). More detailed comparisons can be found [here](https://nuetzlich.net/gocryptfs/comparison/) and [here](https://wiki.archlinux.org/index.php/disk_encryption#Comparison_table)
     - Encrypted files: encrypt individual files with symmetric
       encryption (see `gpg -c`) and a secret key. Or, like `pass`, also
       encrypt the key with your public key so only you can read it back
@@ -151,15 +153,12 @@ but keep in mind that you're trusting the VPN provider _a lot_. Do you
 really trust them more than your ISP? If you truly want a VPN, use a
 provider you're sure you trust, and you should probably pay for it. Or
 set up [WireGuard](https://www.wireguard.com/) for yourself -- it's
-[excellent](https://latacora.micro.blog/there-will-be/)!
+[excellent](https://web.archive.org/web/20210526211307/https://latacora.micro.blog/there-will-be/)!
 
-{% comment %}
-https://raymii.org/s/blog/Cancellation_notice_for_cipherlist_ssldecoder_and_certificatemonitor.html
-cipherli.st and ssldecoder.org are cancelled
-{% endcomment %}
-
-If you're particularly privacy-oriented,
-[privacytools.io](https://privacytools.io) is also a good resource.
+There are also secure configuration settings for a lot of internet-enabled
+applications at [cipherlist.eu](https://cipherlist.eu/). If you're particularly
+privacy-oriented, [privacytools.io](https://privacytools.io) is also a good
+resource.
 
 Some of you may wonder about [Tor](https://www.torproject.org/). Keep in
 mind that Tor is _not_ particularly resistant to powerful global
@@ -207,9 +206,7 @@ data from the others. In Google Chrome, you can use [Chrome
 Profiles](https://support.google.com/chrome/answer/2364824) to achieve
 similar results.
 
-Exercises
-
-TODO
+## Exercises
 
 1. Encrypt a file using PGP
 1. Use veracrypt to create a simple encrypted volume

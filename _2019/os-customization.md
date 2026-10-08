@@ -2,9 +2,12 @@
 layout: lecture
 title: "OS Customization"
 presenter: Anish
+date: 2019-01-29
+order: 3
 video:
   aspect: 62.5
   id: epSRVqQzeDo
+special: true
 ---
 
 There is a lot you can do to customize your operating system beyond what is
@@ -52,7 +55,7 @@ specific customizations online, such as Mathias Bynens'
 
 [Tiling window management](https://en.wikipedia.org/wiki/Tiling_window_manager)
 is one approach to window management, where you organize windows into
-non-overlapping frames. If you're using a Unix-based operating system, you can
+non-overlapping frames. If you're using a Linux-based operating system, you can
 install a tiling window manager; if you're using something like Windows or
 macOS, you can install applications that let you approximate this behavior.
 
@@ -70,8 +73,8 @@ layout trivial.
 # Resources
 
 - [Hammerspoon](https://www.hammerspoon.org/) - macOS desktop automation
-- [Spectacle](https://www.spectacleapp.com/) - macOS window manager
-- [Karabiner](https://pqrs.org/osx/karabiner/) - sophisticated macOS keyboard remapping
+- [Rectangle](https://rectangleapp.com/) - macOS window manager
+- [Karabiner](https://karabiner-elements.pqrs.org/) - sophisticated macOS keyboard remapping
 - [r/unixporn](https://www.reddit.com/r/unixporn/) - screenshots and
 documentation of people's fancy configurations
 
