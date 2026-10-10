@@ -1,6 +1,7 @@
 ---
 layout: lecture
-title: "Version Control"
+title: "버전 관리"
+lang: ko
 presenter: Jon
 date: 2019-01-22
 order: 2
@@ -9,50 +10,29 @@ video:
   id: 3fig2Vz8QXs
 ---
 
-Whenever you are working on something that changes over time, it's
-useful to be able to _track_ those changes. This can be for a number of
-reasons: it gives you a record of what changed, how to undo it, who
-changed it, and possibly even why. Version control systems (VCS) give
-you that ability. They let you _commit_ changes to a set of files, along
-with a message describing the change, as well as look at and undo
-changes you've made in the past.
+시간이 지나면서 바뀌는 무언가를 다룰 때는 변경을 *추적*할 수 있으면 유용합니다. 무엇이 바뀌었고, 어떻게 되돌릴 수 있으며, 누가 바꿨고, 가능하다면 왜 바꿨는지도 알 수 있기 때문입니다. 버전 관리 시스템(VCS)은 이런 기능을 제공합니다. 파일의 변경 사항을 설명과 함께 *커밋*하고, 과거의 변경을 살펴보거나 되돌릴 수 있습니다.
 
-Most VCS support sharing the commit history between multiple users. This
-allows for convenient collaboration: you can see the changes I've made,
-and I can see the changes you've made. And since the VCS tracks
-_changes_, it can often (though not always) figure out how to combine
-our changes as long as they touch relatively disjoint things.
+대부분의 VCS는 여러 사용자 사이에 커밋 이력을 공유할 수 있습니다. 서로의 변경을 확인하며 편리하게 협업할 수 있습니다. VCS는 *변경*을 추적하므로, 수정한 부분이 겹치지 않는다면 서로의 작업을 자동으로 합칠 수 있는 경우가 많습니다. 항상 가능한 것은 아닙니다.
 
-There [_a
-lot_](https://en.wikipedia.org/wiki/Comparison_of_version-control_software)
-of VCSes out there that differ a lot in what they support, how they
-function, and how you interact with them. Here, we'll focus on
-[git](https://git-scm.com/), one of the more commonly used ones, but I
-recommend you also take a look at
-[Mercurial](https://www.mercurial-scm.org/).
+VCS의 [종류는 매우 많고](https://en.wikipedia.org/wiki/Comparison_of_version-control_software), 지원 기능과 동작 방식, 사용법도 다릅니다. 여기서는 널리 쓰이는 [Git](https://git-scm.com/)에 집중하지만, [Mercurial](https://www.mercurial-scm.org/)도 살펴보길 권합니다.
 
-With that all said -- to the cliffnotes!
+이제 핵심 내용을 정리해 보겠습니다.
 
-## Is git dark magic?
+## Git은 이해할 수 없는 마법일까요?
+{: id="is-git-dark-magic"}
 
-not quite.. you need to understand the data model.
-we're going to skip over some of the details, but roughly speaking,
-the _core_ "thing" in git is a commit.
+그렇지는 않습니다. 데이터 모델을 이해해야 합니다. 세부 사항 일부는 생략하겠지만, Git의 핵심 단위는 커밋입니다.
 
- - every commit has a unique name, "revision hash"
-   a long hash like `998622294a6c520db718867354bf98348ae3c7e2`
-   often shortened to a short (unique-ish) prefix: `9986222`
- - commit has author + commit message
- - also has the hash of any _ancestor commits_
-   usually just the hash of the previous commit
- - commit also represents a _diff_, a representation of how you get from
-   the commit's ancestors to the commit (e.g., remove this line in this
-   file, add these lines to this file, rename that file, etc.)
-   - in reality, git stores the full before and after state
-   - probably don't want to store big files that change!
+- 모든 커밋에는 "리비전 해시"라는 고유한 이름이 있습니다.
+  - `998622294a6c520db718867354bf98348ae3c7e2`처럼 긴 해시입니다.
+  - 다른 커밋과 구별할 수 있는 `9986222` 같은 짧은 접두사로 줄여 쓰기도 합니다.
+- 커밋에는 작성자와 커밋 메시지가 있습니다.
+- *부모 커밋*의 해시도 들어 있습니다. 보통은 직전 커밋 하나입니다.
+- 커밋과 부모를 비교하면 *diff*, 즉 변경 사항을 얻습니다. 특정 줄 삭제, 새 줄 추가, 파일 이름 변경 등을 나타냅니다.
+  - 실제로 Git은 변경 목록만 저장하는 것이 아니라 각 커밋의 파일 상태, 즉 스냅숏을 표현합니다.
+  - 자주 바뀌는 큰 파일은 일반적인 Git 저장소에 넣지 않는 편이 좋습니다.
 
-initially, the _repository_ (roughly: the folder that git manages) has
-no content, and no commits. let's set that up:
+처음에는 *저장소*, 즉 대략 Git이 관리하는 디렉터리에 내용도 커밋도 없습니다. 저장소를 만들어 봅시다.
 
 ```console
 $ git init hackers
@@ -60,300 +40,231 @@ $ cd hackers
 $ git status
 ```
 
-the output here actually gives us a good starting point. let's dig in
-and make sure we understand it all.
+이 출력은 좋은 출발점입니다. 각 항목의 뜻을 살펴봅시다.
 
-first, "On branch master".
+먼저 `On branch master`입니다.
 
- - don't want to use hashes all the time.
- - branches are names that point to hashes.
- - master is traditionally the name for the "latest" commit.
-   every time a new commit is made, the master name will be made to
-   point to the new commit's hash.
- - special name `HEAD` refers to "current" name
- - you can also make your own names with `git branch` (or `git tag`)
-   we'll get back to that
+- 매번 해시를 쓰고 싶지는 않을 것입니다.
+- 브랜치는 커밋 해시를 가리키는 이름입니다.
+- `master`는 전통적으로 기본 브랜치에 사용하던 이름입니다. 그 브랜치에서 새 커밋을 만들면 `master`가 새 커밋을 가리킵니다.
+- 특별한 이름 `HEAD`는 현재 체크아웃한 위치를 나타내며, 보통 현재 브랜치를 가리킵니다.
+- `git branch`나 `git tag`로 다른 이름을 만들 수도 있습니다. 뒤에서 살펴보겠습니다.
 
-let's skip over "No commits yet" because that's all there is to it.
+`No commits yet`는 아직 커밋이 없다는 뜻 그대로이므로 넘어가겠습니다.
 
-then, "nothing to commit".
+다음은 `nothing to commit`입니다.
 
- - every commit contains a diff with all the changes you made.
-   but how is that diff constructed in the first place?
- - _could_ just always commit _all_ changes you've made since the last
-   commit
-   - sometimes you want to only commit some of them (e.g., not `TODO`s)
-   - sometimes you want to break up a change into multiple commits to
-     give a separate commit message for each one
- - git lets you _stage_ changes to construct a commit
-   - add changes to a file or files to the staged changes with `git add`
-     - add only some changes in a file with `git add -p`
-     - without argument `git add` operates on "all known files"
-   - remove a file and stage its removal with `git rm`
-   - empty the set of staged changes `git reset`
-     - note that this does *not* change any of your files!
-       it *only* means that no changes will be included in a commit
-     - to remove only some staged changes:
-       `git reset FILE` or `git reset -p`
-   - check staged changes with `git diff --staged`
-   - see remaining changes with `git diff`
-   - when you're happy with the stage, make a commit with `git commit`
-     - if you just want to commit *all* changes: `git commit -a`
-     - `git help add` has a bunch more helpful info
+- 커밋 간 차이에는 변경 사항이 들어갑니다. 그렇다면 어떤 변경을 커밋에 넣을지는 어떻게 정할까요?
+- 마지막 커밋 이후의 변경을 항상 *전부* 넣을 수도 있습니다.
+  - 하지만 일부만 커밋하고 싶을 수 있습니다. 예를 들어 임시 `TODO`는 빼고 싶을 수 있습니다.
+  - 하나의 작업을 여러 커밋으로 나누고 각각 메시지를 작성하고 싶을 수도 있습니다.
+- Git에서는 변경을 *스테이징*해 다음 커밋을 구성합니다.
+  - `git add`에 파일 경로를 전달해 해당 변경을 스테이징합니다.
+    - `git add -p`는 파일 안의 변경 일부만 선택합니다.
+    - 인자 없이 실행한 `git add`는 "알려진 모든 파일"에 적용됩니다.
+  - `git rm`은 파일을 지우고 삭제를 스테이징합니다.
+  - `git reset`은 스테이징을 취소합니다.
+    - 작업 중인 파일의 내용은 바뀌지 않습니다. 다음 커밋에 포함할 변경만 비웁니다.
+    - 일부만 취소하려면 `git reset FILE`이나 `git reset -p`를 사용합니다.
+  - `git diff --staged`로 스테이징한 변경을 확인합니다.
+  - `git diff`로 아직 스테이징하지 않은 변경을 확인합니다.
+  - 준비가 됐다면 `git commit`으로 커밋합니다.
+    - 모든 변경을 커밋하려면 `git commit -a`를 사용합니다.
+    - `git help add`에 더 많은 설명이 있습니다.
 
-while you're playing with the above, try to run `git status` to see what
-git thinks you're doing -- it's surprisingly helpful!
+위 명령을 사용하면서 `git status`를 자주 실행해 보세요. Git이 현재 상태를 어떻게 보고 있는지 알려 주므로 유용합니다.
 
-## A commit you say...
+## 커밋을 만들었습니다. 그다음은요?
+{: id="a-commit-you-say"}
 
-okay, we have a commit, now what?
+커밋을 만들었다면 무엇을 할 수 있을까요?
 
- - we can look at recent changes: `git log` (or `git log --oneline`)
- - we can look at the full changes: `git log -p`
- - we can show a particular commit: `git show master`
-   - or with `-p` for full diff/patch
- - we can go back to the state at a commit using `git checkout NAME`
-   - if `NAME` is a commit hash, git says we're "detached". this just
-     means there's no `NAME` that refers to this commit, so if we make
-     commits, no-one will know about them.
- - we can revert a change with `git revert NAME`
-   - applies the diff in the commit at `NAME` in reverse.
- - we can compare an older version to this one using `git diff NAME..`
-   - `a..b` is a commit _range_. if either is left out, it means `HEAD`.
- - we can show all the commits between using `git log NAME..`
-   - `-p` works here too
- - we can change `master` to point to a particular commit (effectively
-   undoing everything since) with `git reset NAME`:
-   - huh, why? wasn't `reset` to change staged changes?
-     reset has a "second" form (see `git help reset`) which sets `HEAD`
-     to the commit pointed to by the given name.
-   - notice that this didn't change any files -- `git diff` now
-     effectively shows `git diff NAME..`.
+- `git log`나 `git log --oneline`으로 최근 이력을 봅니다.
+- `git log -p`로 각 커밋의 변경 내용까지 봅니다.
+- `git show master`로 특정 커밋을 확인합니다.
+  - `-p`로 패치 출력도 지정할 수 있습니다.
+- `git checkout NAME`으로 해당 커밋의 상태를 가져옵니다.
+  - `NAME`에 커밋 해시를 지정하면 Git은 "detached" 상태라고 알려 줍니다. 이 커밋을 가리키는 이름이 없다는 뜻이므로, 여기서 새 커밋을 만들면 아무도 그 커밋을 알지 못합니다.
+- `git revert NAME`은 해당 커밋의 변경을 반대로 적용하는 새 커밋을 만듭니다.
+- `git diff NAME..`으로 해당 버전과 현재 커밋을 비교합니다.
+  - `a..b`는 커밋의 *범위*입니다. 한쪽을 생략하면 `HEAD`를 뜻합니다.
+- `git log NAME..`으로 그 사이의 모든 커밋을 봅니다.
+  - 여기에도 `-p`를 쓸 수 있습니다.
+- `git reset NAME`으로 현재 브랜치, 예를 들어 `master`가 특정 커밋을 가리키도록 바꿀 수 있습니다.
+  - `reset`은 스테이징한 변경을 바꾸는 명령이 아니었나요? 지정한 이름이 가리키는 커밋으로 `HEAD`를 옮기는 두 번째 형식도 있습니다. `git help reset`을 참고하세요.
+  - 파일은 바뀌지 않았습니다. 이제 `git diff`는 사실상 `git diff NAME..`의 결과를 보여 줍니다.
 
-## What's in a name?
+## 이름에 담긴 의미
+{: id="whats-in-a-name"}
 
-clearly, names are important in git. and they're the key to
-understanding *a lot* of what goes on in git. so far, we've talked about
-commit hashes, master, and `HEAD`. but there's more!
+Git에서 이름은 중요합니다. Git의 여러 동작을 이해하는 열쇠이기도 합니다. 지금까지 커밋 해시, `master`, `HEAD`를 봤지만 더 있습니다.
 
- - you can make your own branches (like master) with `git branch b`
-   - creates a new name, `b`, which points to the commit at `HEAD`
-   - you're still "on" master though, so if you make a new commit,
-     master will point to that new commit, `b` will not.
-   - switch to a branch with `git checkout b`
-     - any commits you make will now update the `b` name
-     - switch back to master with `git checkout master`
-       - all your changes in `b` are hidden away
-     - a very handy way to be able to easily test out changes
- - tags are other names that never change, and that have their own
-   message. often used to mark releases + changelogs.
- - `NAME^` means "the commit before `NAME`
-   - can apply recursively: `NAME^^^`
-   - you _most likely_ mean `~` when you use `~`
-     - `~` is "temporal", whereas `^` goes by ancestors
-     - `~~` is the same as `^^`
-     - with `~` you can also write `X~3` for "3 commits older than `X`
-     - you don't want `^3`
-   - `git diff HEAD^`
- - `-` means "the previous name"
- - most commands operate on `HEAD` unless you give another argument
+- `git branch b`로 `master` 같은 새 브랜치를 만듭니다.
+  - `HEAD`의 커밋을 가리키는 이름 `b`를 만듭니다.
+  - 아직 현재 브랜치는 `master`입니다. 이 상태에서 새 커밋을 만들면 `master`만 이동하고 `b`는 그대로입니다.
+  - `git checkout b`로 브랜치를 전환합니다.
+    - 이제 새 커밋을 만들면 `b`가 이동합니다.
+    - `git checkout master`로 돌아가면 `b`에 커밋한 변경은 현재 작업 트리에서 보이지 않습니다.
+    - 변경을 별도로 시험하기에 편리한 방법입니다.
+- 태그도 이름의 한 종류로, 변하지 않으며 자체 메시지를 갖습니다. 릴리스와 변경 내역을 표시할 때 자주 씁니다.
+- `NAME^`는 "`NAME` 이전의 커밋"을 뜻합니다.
+  - `NAME^^^`처럼 반복할 수 있습니다.
+  - 몇 세대 이전 커밋을 뜻하고 싶다면 `~`가 편리합니다.
+    - `~`는 시간 순서를 따르고, `^`는 조상을 따라갑니다.
+    - `~~`와 `^^`는 같습니다.
+    - `X~3`은 "`X`보다 세 커밋 이전"을 뜻합니다.
+    - 이때 `^3`을 쓰면 안 됩니다.
+  - `git diff HEAD^`로 이전 커밋과 작업 상태를 비교할 수 있습니다.
+- 브랜치를 전환할 때 `-`는 직전에 체크아웃한 위치를 뜻합니다.
+- 많은 명령은 별도 대상을 지정하지 않으면 `HEAD`를 기준으로 동작합니다.
 
-## Clean up your mess
+## 커밋 이력 정리하기
+{: id="clean-up-your-mess"}
 
-your commit history will _very_ often end up as:
+커밋 이력이 다음처럼 쌓이기 쉽습니다.
 
- - `add feature x` -- maybe even with a commit message about `x`!
- - `forgot to add file`
- - `fix bug`
- - `typo`
- - `typo2`
- - `actually fix`
- - `actually actually fix`
- - `tests pass`
- - `fix example code`
- - `typo`
- - `x`
- - `x`
- - `x`
- - `x`
+- `기능 x 추가` — 메시지에 기능 설명까지 적었을 수도 있습니다.
+- `빠뜨린 파일 추가`
+- `버그 수정`
+- `오타`
+- `오타2`
+- `이번에는 진짜 수정`
+- `이번에는 정말로 수정`
+- `테스트 통과`
+- `예제 코드 수정`
+- `오타`
+- `x`
+- `x`
+- `x`
+- `x`
 
-that's _fine_ as far as git is concerned, but is not very helpful to
-your future self, or to other people who are curious about what has
-changed. git lets you clean up these things:
+Git 입장에서는 문제없지만, 미래의 자신이나 변경 이유를 알고 싶은 사람에게는 별로 도움이 되지 않습니다. Git으로 이런 이력을 정리할 수 있습니다.
 
- - `git commit --amend`: fold staged changes into previous commit
-   - note that this _changes_ the previous commit, giving it a new hash!
- - `git rebase -i HEAD~13` is _magical_.
-   for each commit from past 13, choose what to do:
-   - default is `pick`; do nothing
-   - `r`: change commit message
-   - `e`: change commit (add or remove files)
-   - `s`: combine commit with previous and edit commit message
-   - `f`: "fixup" -- combine commit with previous; discard commit msg
-   - at the end, `HEAD` is made to point to what is now the last commit
-   - often referred to as _squashing_ commits
-   - what it really does: rewind `HEAD` to rebase start point, then
-     re-apply the commits in order as directed.
- - `git reset --hard NAME`: reset the state of all files to that of
-   `NAME` (or `HEAD` if no name is given). handy for undoing changes.
+- `git commit --amend`: 스테이징한 변경을 이전 커밋에 합칩니다.
+  - 이전 커밋을 바꾸므로 새로운 해시가 생깁니다.
+- `git rebase -i HEAD~13`: 최근 13개 커밋을 어떻게 처리할지 지정합니다.
+  - 기본값 `pick`: 커밋을 그대로 적용합니다.
+  - `r`: 커밋 메시지를 바꿉니다.
+  - `e`: 멈춰서 파일 추가·삭제 등 커밋 내용을 수정합니다.
+  - `s`: 앞 커밋과 합치고 메시지를 편집합니다.
+  - `f`: fixup. 앞 커밋과 합치고 이 커밋의 메시지는 버립니다.
+  - 끝나면 `HEAD`는 정리된 마지막 커밋을 가리킵니다.
+  - 커밋을 합치는 작업은 흔히 *스쿼시(squash)*라고 부릅니다.
+  - 실제로는 시작 지점으로 돌아간 뒤, 지정한 방식에 따라 커밋을 차례로 다시 적용합니다.
+- `git reset --hard NAME`: 모든 파일의 상태를 `NAME` 상태로 되돌립니다. 이름을 생략하면 `HEAD`가 기준입니다. 변경을 취소할 때 편리합니다.
 
-## Playing with others
+## 다른 사람과 저장소 공유하기
+{: id="playing-with-others"}
 
-a common use-case for version control is to allow multiple people to
-make changes to a set of files without stepping on each other's toes.
-or rather, to make sure that _if_ they step on each other's toes, they
-won't just silently overwrite each other's changes.
+버전 관리는 여러 사람이 같은 파일들을 수정하면서 서로의 작업을 방해하지 않도록 돕습니다. 수정이 겹치더라도 조용히 덮어쓰지 않고 확인할 수 있게 합니다.
 
-git is a _distributed_ VCS: everyone has a local copy of the entire
-repository (well, of everything others have chosen to publish). some
-VCSes are _centralized_ (e.g., subversion): a server has all the
-commits, clients only have the files they have "checked out". basically,
-they only have the _current_ files, and need to ask the server if they
-want anything else.
+Git은 *분산형* VCS입니다. 각자 저장소의 사본과 공유된 이력을 로컬에 보관합니다. 반면 Subversion 같은 *중앙 집중형* VCS에서는 서버가 커밋 이력을 보관하고 클라이언트는 주로 체크아웃한 파일을 갖습니다. 다른 과거 상태가 필요하면 서버에 요청합니다.
 
-every copy of a git repository can be listed as a "remote". you can copy
-an existing git repository using `git clone ADDRESS` (instead of `git
-init`). this creates a remote called _origin_ that points to `ADDRESS`.
-you can fetch names and the commits they point to from a remote with
-`git fetch REMOTE`. all names at a remote are available to you as
-`REMOTE/NAME`, and you can use them just like local names.
+Git 저장소의 다른 사본은 "원격 저장소(remote)"로 등록할 수 있습니다. `git init` 대신 `git clone ADDRESS`로 기존 저장소를 복제하면, `ADDRESS`를 가리키는 *origin* 원격 저장소가 생깁니다. `git fetch REMOTE`로 원격 브랜치 정보와 커밋을 가져옵니다. 원격 추적 브랜치는 `REMOTE/NAME`처럼 참조하며 로컬 이름과 비슷하게 사용할 수 있습니다.
 
-if you have write access to a remote, you can change names at the remote
-to point to commits you've made using `git push`. for example, let's
-make the master name (branch) at the remote `origin` point to the commit
-that our master branch currently points to:
+원격 저장소에 쓰기 권한이 있다면 `git push`로 원격 브랜치가 자신이 만든 커밋을 가리키게 할 수 있습니다. 예를 들어 `origin`의 `master`를 로컬 `master`와 같게 만듭니다.
 
-   - `git push origin master:master`
-   - for convenience, you can set `origin/master` as the default target
-     for when you `git push` from the current branch with `-u`
-   - consider: what does this do? `git push origin master:HEAD^`
+- `git push origin master:master`
+- `-u`를 붙이면 `origin/master`를 현재 브랜치의 업스트림으로 설정할 수 있습니다. 이후 기본 푸시 대상을 정하는 데 사용됩니다.
+- `git push origin master:HEAD^`는 무엇을 하는 명령일까요? 생각해 보세요.
 
-often you'll use GitHub, GitLab, BitBucket, or something else as your
-remote. there's nothing "special" about that as far as git is concerned.
-it's all just names and commits. if someone makes a change to master and
-updates `github/master` to point to their commit (we'll get back to
-that in a second), then when you `git fetch github`, you'll be able to
-see their changes with `git log github/master`.
+원격 저장소로 GitHub, GitLab, Bitbucket 등을 쓰는 경우가 많습니다. Git의 관점에서는 특별할 것이 없습니다. 이름과 커밋을 주고받는 것입니다. 누군가 `master`를 수정해 원격 브랜치를 갱신했다면, `github`이라는 이름으로 등록한 원격 저장소에서 `git fetch github`을 실행하고 `git log github/master`로 변경을 볼 수 있습니다.
 
-## Working with others
+## 함께 작업하기
+{: id="working-with-others"}
 
-so far, branches seem pretty useless: you can create them, do work on
-them, but then what? eventually, you'll just make master point to them
-anyway, right?
+지금까지만 보면 브랜치가 별로 쓸모없어 보일 수 있습니다. 브랜치에서 작업한 뒤 결국 `master`가 그 커밋을 가리키게 하면 끝 아닌가요?
 
- - what if you had to fix something while working on a big feature?
- - what if someone else made a change to master in the meantime?
+- 큰 기능을 개발하는 도중 급한 수정이 필요하면 어떨까요?
+- 그사이에 다른 사람이 `master`를 수정했다면요?
 
-inevitably, you will have to _merge_ changes in one branch with changes
-in another, whether those changes are made by you or someone else. git
-lets you do this with, unsurprisingly, `git merge NAME`. `merge` will:
+자신이 만든 변경이든 다른 사람이 만든 변경이든, 언젠가는 브랜치 사이의 변경을 *병합*해야 합니다. `git merge NAME`을 사용합니다. 다음 과정으로 병합합니다.
 
- - look for the latest point where `HEAD` and `NAME` shared a commit
-   ancestor (i.e., where they diverged)
- - (try to) apply all those changes to the current `HEAD`
- - produce a commit that contains all those changes, and lists both
-   `HEAD` and `NAME` as its ancestors
- - set `HEAD` to that commit's hash
+- `HEAD`와 `NAME`의 공통 조상, 즉 갈라진 지점을 찾습니다.
+- 양쪽의 변경을 현재 상태에 합치려고 시도합니다.
+- 변경을 합친 커밋을 만듭니다. 두 브랜치의 끝 커밋을 부모로 기록합니다.
+- 현재 브랜치와 `HEAD`가 병합 결과를 가리키게 합니다.
 
-once your big feature has been finished, you can merge its branch into
-master, and git will ensure that you don't lose any changes from either
-branch!
+큰 기능이 완성되면 그 브랜치를 `master`에 병합할 수 있습니다. Git은 어느 브랜치의 변경도 잃지 않도록 해 줍니다.
 
-if you've used git in the past, you may recognize `merge` by a different
-name: `pull`. when you do `git pull REMOTE BRANCH`, that is:
+Git을 써 봤다면 `merge`를 다른 이름인 `pull`로 알고 있을 수도 있습니다. `git pull REMOTE BRANCH`는 다음 과정에 해당합니다.
 
- - `git fetch REMOTE`
- - `git merge REMOTE/BRANCH`
- - where, like `push`, `REMOTE` and `BRANCH` are often omitted and use
-   the "tracking" remote branch (remember `-u`?)
+- `git fetch REMOTE`
+- `git merge REMOTE/BRANCH`
+- `push`처럼 `REMOTE`와 `BRANCH`를 생략하고 추적 중인 원격 브랜치를 사용할 수 있습니다. 앞서 나온 `-u`를 기억하세요.
 
-this usually works _great_. as long as the changes to the branches being
-merged are disjoint. if they are not, you get a _merge conflict_. sounds
-scary...
+서로 다른 부분을 수정했다면 보통 잘 동작합니다. 같은 부분을 수정했다면 *병합 충돌*이 날 수 있습니다. 이름만 보면 무섭지만, 의미는 단순합니다.
 
- - a merge conflict is just git telling you that it doesn't know what
-   the final diff should look like
- - git pauses and asks you to finish staging the "merge commit"
- - open the conflicted file in your editor and look for lots of angle
-   brackets (`<<<<<<<`). the stuff above `=======` is the change made in
-   the `HEAD` since the shared ancestor commit. the stuff below is the
-   change made in the `NAME` since the shared commit.
- - `git mergetool` is pretty handy -- opens a diff editor
- - once you've _resolved_ the conflict by figuring out what the file
-   should now look like, stage those changes with `git add`.
- - when all the conflicts are resolved, finish with `git commit`
-   - you can give up with `git merge --abort`
+- Git이 최종 결과를 스스로 결정할 수 없다는 뜻입니다.
+- 병합을 멈추고 사용자가 결과를 정리해 스테이징하기를 기다립니다.
+- 충돌한 파일을 열고 `<<<<<<<` 같은 표시를 찾으세요. `=======` 위는 현재 `HEAD` 쪽 내용이고, 아래는 병합하려는 `NAME` 쪽 내용입니다.
+- `git mergetool`은 차이를 비교하는 편집기를 열어 줍니다.
+- 최종 파일 내용을 결정해 충돌을 *해결*한 다음 `git add`로 스테이징합니다.
+- 모든 충돌을 해결했다면 `git commit`으로 마칩니다.
+  - 포기하려면 `git merge --abort`를 사용합니다.
 
-you've just resolved your first git merge conflict! \o/
-now you can publish your finished changes with `git push`
+이렇게 병합 충돌을 해결할 수 있습니다. 완성된 변경을 공유하려면 `git push`를 사용합니다.
 
-## When worlds collide
+## 원격 변경과 내 변경이 엇갈릴 때
+{: id="when-worlds-collide"}
 
-when you `push`, git checks that no-one else's work is lost if you
-update the remote name you're pushing too. it does this by checking
-that the current commit of the remote name is an ancestor of the commit
-you are pushing. if it is, git can safely just update the name; this is
-called _fast-forwarding_. if it is not, git will refuse to update the
-remote name, and tell you there have been changes.
+`push`할 때 Git은 원격 브랜치를 바꿔도 다른 사람의 작업을 잃지 않는지 확인합니다. 원격 브랜치의 현재 커밋이 푸시할 커밋의 조상인지 검사합니다. 그렇다면 이름이 가리키는 위치만 앞으로 옮길 수 있습니다. 이를 *빨리 감기(fast-forward)*라고 합니다. 그렇지 않다면 원격 브랜치 갱신을 거부하고 다른 변경이 있음을 알립니다.
 
-if your push is rejected, what do you do?
+푸시가 거부되면 어떻게 할까요?
 
- - merge remote changes with `git pull` (i.e., `fetch` + `merge`)
- - force the push with `--force`: this will lose other people's changes!
-   - there's also `--force-with-lease`, which will only force the change
-     if the remote name hasn't changed since the last time you fetched
-     from that remote. much safer!
-   - if you've rebased local commits that you've previously pushed
-     ("history rewriting"; probably don't do this), you'll have to force
-     push. think about why!
- - try to re-apply your changes "on top of" the changes made remotely
-   - this is a `rebase`!
-     - rewind all local commits since shared ancestor
-     - fast-forward `HEAD` to commit at remote name
-     - apply local commits in-order
-       - may have conflicts you have to manually resolve
-       - `git rebase --continue` or `--abort`
-     - lots more [here](https://git-scm.com/book/en/v2/Git-Branching-Rebasing)
-   - `git pull --rebase` will start this process for you
-   - whether you should merge or rebase is a hot topic! some good reads:
-     - [this](https://www.atlassian.com/git/tutorials/merging-vs-rebasing)
-     - [this](https://web.archive.org/web/20210106220723/https://derekgourlay.com/blog/git-when-to-merge-vs-when-to-rebase/)
-     - [this](https://stackoverflow.com/questions/804115/when-do-you-use-git-rebase-instead-of-git-merge)
+- `git pull`로 원격 변경을 병합합니다. 즉, `fetch`와 `merge`를 수행합니다.
+- `--force`로 강제 푸시할 수도 있지만, 원격 브랜치에서 다른 사람의 변경을 사라지게 할 수 있습니다.
+  - `--force-with-lease`는 마지막으로 가져온 뒤 원격 이름이 바뀌지 않았을 때만 강제로 갱신합니다. 훨씬 안전합니다.
+  - 이미 푸시한 커밋을 리베이스해 이력을 바꿨다면 강제 푸시가 필요할 수 있습니다. 공유한 이력을 바꾸기 전에 영향을 고려하세요. 왜 일반 푸시로는 안 되는지도 생각해 보세요.
+- 원격 변경 위에 자신의 변경을 다시 적용할 수 있습니다.
+  - 바로 *리베이스(rebase)*입니다.
+    - 공통 조상 이후의 로컬 커밋을 잠시 걷어냅니다.
+    - 원격 브랜치의 커밋을 새 시작점으로 삼습니다.
+    - 로컬 커밋을 순서대로 다시 적용합니다.
+      - 충돌이 나면 직접 해결해야 합니다.
+      - `git rebase --continue`로 계속하거나 `--abort`로 취소합니다.
+    - [리베이스 설명](https://git-scm.com/book/en/v2/Git-Branching-Rebasing)을 참고하세요.
+  - `git pull --rebase`로 이 과정을 시작할 수 있습니다.
+  - 병합과 리베이스 중 무엇을 쓸지는 자주 논의되는 주제입니다. 다음 글을 읽어 보세요.
+    - [병합과 리베이스 비교](https://www.atlassian.com/git/tutorials/merging-vs-rebasing)
+    - [언제 병합하고 언제 리베이스할까](https://web.archive.org/web/20210106220723/https://derekgourlay.com/blog/git-when-to-merge-vs-when-to-rebase/)
+    - [git merge 대신 git rebase를 쓰는 경우](https://stackoverflow.com/questions/804115/when-do-you-use-git-rebase-instead-of-git-merge)
 
-# Further reading
+# 더 읽을거리
+{: id="further-reading"}
 
-[![XKCD on git](https://imgs.xkcd.com/comics/git.png)](https://xkcd.com/1597/)
+[![Git에 관한 XKCD 만화](https://imgs.xkcd.com/comics/git.png)](https://xkcd.com/1597/)
 
- - [Learn git branching](https://learngitbranching.js.org/)
- - [How to explain git in simple words](https://smusamashah.github.io/blog/2017/10/14/explain-git-in-simple-words)
- - [Git from the bottom up](https://jwiegley.github.io/git-from-the-bottom-up/)
- - [Git for computer scientists](https://eagain.net/articles/git-for-computer-scientists/)
- - [Oh shit, git!](https://ohshitgit.com/)
- - [The Pro Git book](https://git-scm.com/book/en/v2)
+- [브랜치 연습: Learn Git Branching](https://learngitbranching.js.org/)
+- [쉬운 말로 Git 설명하기](https://smusamashah.github.io/blog/2017/10/14/explain-git-in-simple-words)
+- [밑바닥부터 이해하는 Git](https://jwiegley.github.io/git-from-the-bottom-up/)
+- [컴퓨터 과학자를 위한 Git](https://eagain.net/articles/git-for-computer-scientists/)
+- [Oh shit, git!](https://ohshitgit.com/)
+- [Pro Git 책](https://git-scm.com/book/en/v2)
 
-# Exercises
+# 연습 문제
+{: id="exercises"}
 
-1. On a repo try modifying an existing file. What happens when you do `git stash`? What do you see when running `git log --all --oneline`? Run `git stash pop` to undo what you did with `git stash`. In what scenario might this be useful?
+1. 저장소의 기존 파일을 수정하고 `git stash`를 실행해 보세요. 어떤 일이 생기나요? `git log --all --oneline`에는 무엇이 보이나요? `git stash pop`으로 저장해 둔 변경을 다시 적용하세요. 어떤 상황에 유용할까요?
 
-1. One common mistake when learning git is to commit large files that should not be managed by git or adding sensitive information. Try adding a file to a repository, making some commits and then deleting that file from history (you may want to look at [this](https://help.github.com/articles/removing-sensitive-data-from-a-repository/)). Also if you do want git to manage large  files for you, look into [Git-LFS](https://git-lfs.github.com/)
+1. Git을 배울 때 흔한 실수로, 관리하면 안 되는 큰 파일이나 민감한 정보를 커밋하는 일이 있습니다. 실습 저장소에 파일을 추가하고 몇 번 커밋한 뒤, 해당 파일을 이력에서 지워 보세요. [민감한 데이터 제거 안내](https://help.github.com/articles/removing-sensitive-data-from-a-repository/)를 참고할 수 있습니다. 큰 파일을 Git과 함께 관리하고 싶다면 [Git LFS](https://git-lfs.github.com/)도 살펴보세요.
 
-1. Git is really convenient for undoing changes but one has to be familiar even with the most unlikely changes
-   1. If a file is mistakenly modified in some commit it can be reverted with `git revert`. However if a commit involves several changes `revert` might not be the best option. How can we use `git checkout` to recover a file version from a specific commit?
-   1. Create a branch, make a commit in said branch and then delete it. Can you still recover said commit? Try looking into `git reflog`. (Note: Recover dangling things quickly, git will periodically automatically clean up commits that nothing points to.)
-   1. If one is too trigger happy with `git reset --hard` instead of `git reset` changes can be easily lost. However since the changes were staged, we can recover them. (look into `git fsck --lost-found` and `.git/lost-found`)
+1. Git은 변경을 되돌릴 때 편리하지만 여러 복구 방법을 알아둬야 합니다.
+    1. 잘못 수정한 커밋은 `git revert`로 되돌릴 수 있습니다. 하지만 커밋에 여러 변경이 섞여 있다면 최선의 방법이 아닐 수 있습니다. `git checkout`으로 특정 커밋의 파일 하나만 복구하려면 어떻게 할까요?
+    1. 브랜치를 만들고 커밋한 다음 브랜치를 지워 보세요. 커밋을 복구할 수 있나요? `git reflog`를 살펴보세요. 아무 참조도 없는 커밋은 나중에 자동 정리될 수 있으므로 복구는 빨리 해야 합니다.
+    1. `git reset` 대신 `git reset --hard`를 무심코 쓰면 변경을 잃을 수 있습니다. 스테이징했던 내용은 복구할 여지가 있습니다. `git fsck --lost-found`와 `.git/lost-found`를 살펴보세요.
 
-1. In any git repo look under the folder `.git/hooks` you will find a bunch of scripts that end with `.sample`. If you rename them without the `.sample` they will run based on their name. For instance `pre-commit` will execute before doing a commit. Experiment with them
+1. 저장소의 `.git/hooks`에는 `.sample`로 끝나는 스크립트가 있습니다. 실행 권한을 확인하고 이름에서 `.sample`을 지우면 해당 시점에 실행할 수 있습니다. 예를 들어 `pre-commit`은 커밋 전에 실행됩니다. 직접 시험해 보세요.
 
-1. Like many command line tools `git` provides a configuration file (or dotfile) called `~/.gitconfig` . Create and alias using `~/.gitconfig` so that when you run `git graph` you get the output of `git log --oneline --decorate --all --graph` (this is a good command to quickly visualize the commit graph)
+1. 다른 명령줄 도구처럼 Git에도 `~/.gitconfig`라는 설정 파일이 있습니다. `git graph`를 실행하면 `git log --oneline --decorate --all --graph`가 실행되도록 별칭을 만드세요. 커밋 그래프를 빠르게 확인할 때 유용합니다.
 
-1. Git also lets you define global ignore patterns under `~/.gitignore_global`, this is useful to prevent common errors like adding RSA keys. Create a `~/.gitignore_global` file and add the pattern `*rsa`, then test that it works in a repo.
+1. Git에서는 `~/.gitignore_global`에 전역 파일 제외 패턴을 정의할 수 있습니다. RSA 키를 실수로 추가하는 등의 흔한 오류를 방지하는 데 유용합니다. `~/.gitignore_global` 파일을 만들고 `*rsa` 패턴을 추가한 뒤, 저장소에서 동작하는지 확인하세요.
 
-1. Once you start to get more familiar with `git`, you will find yourself running into common tasks, such as editing your `.gitignore`. [git extras](https://github.com/tj/git-extras/blob/master/Commands.md) provides a bunch of little utilities that integrate with `git`. For example `git ignore PATTERN` will add the specified pattern to the `.gitignore` file in your repo and `git ignore-io LANGUAGE` will fetch the common ignore patterns for that language from [gitignore.io](https://www.gitignore.io). Install `git extras` and try using some tools like `git alias` or `git ignore`.
+1. Git에 익숙해지면 `.gitignore` 편집 같은 작업을 반복하게 됩니다. [git extras](https://github.com/tj/git-extras/blob/master/Commands.md)는 Git과 함께 쓰는 작은 도구 모음입니다. 예를 들어 `git ignore PATTERN`은 저장소의 `.gitignore`에 패턴을 추가하고, `git ignore-io LANGUAGE`는 [gitignore.io](https://www.gitignore.io)에서 해당 언어의 제외 패턴을 가져옵니다. `git extras`를 설치하고 `git alias`, `git ignore` 등을 써 보세요.
 
-1. Git GUI programs can be a great resource sometimes. Try running [gitk](https://git-scm.com/docs/gitk) in a git repo an explore the different parts of the interface. Then run `gitk --all` what are the differences?
+1. GUI 도구도 유용할 때가 있습니다. 저장소에서 [gitk](https://git-scm.com/docs/gitk)를 실행하고 화면의 각 부분을 살펴보세요. `gitk --all`로 실행하면 무엇이 달라지나요?
 
-1. Once you get used to command line applications GUI tools can feel cumbersome/bloated. A nice compromise between the two are ncurses based tools which can be navigated from the command line and still provide an interactive interface. Git has [tig](https://github.com/jonas/tig), try installing it and running it in a repo. You can find some usage examples [here](https://www.atlassian.com/blog/git/git-tig).
-
+1. 명령줄에 익숙해지면 GUI 도구가 번거롭고 무겁게 느껴질 수 있습니다. ncurses 기반 도구는 터미널에서 조작하면서도 대화형 화면을 제공하는 절충안입니다. Git에는 [tig](https://github.com/jonas/tig)가 있습니다. 설치해 저장소에서 실행하고, [사용 예](https://www.atlassian.com/blog/git/git-tig)를 참고하세요.
 
 {% comment %}
 

@@ -1,6 +1,7 @@
 ---
 layout: lecture
-title: "Dotfiles"
+title: "설정 파일 관리"
+lang: ko
 presenter: Anish
 date: 2019-01-24
 order: 1
@@ -9,56 +10,39 @@ video:
   id: YSZBWWJw3mI
 ---
 
-Many programs are configured using plain-text files known as "dotfiles"
-(because the file names begin with a `.`, e.g. `~/.gitconfig`, so that they are
-hidden in the directory listing `ls` by default).
+많은 프로그램은 "dotfile"이라고 부르는 일반 텍스트 파일로 설정합니다. `~/.gitconfig`처럼 파일 이름이 `.`으로 시작해서 붙은 이름입니다. 이런 파일은 기본 `ls` 출력에서 보이지 않습니다.
 
-A lot of the tools you use probably have a lot of settings that can be tuned
-pretty finely. Often times, tools are customized with specialized languages,
-e.g. Vimscript for Vim or the shell's own language for a shell.
+평소 사용하는 도구에도 세밀하게 조정할 수 있는 설정이 많을 것입니다. Vim은 Vimscript를, 셸은 해당 셸의 언어를 사용하는 것처럼 전용 언어로 설정하는 경우도 많습니다.
 
-Customizing and adapting your tools to your preferred workflow will make you
-more productive. We advise you to invest time in customizing your tool yourself
-rather than cloning someone else's dotfiles from GitHub.
+도구를 자신의 작업 방식에 맞게 바꾸면 생산성을 높일 수 있습니다. 다른 사람의 dotfile을 GitHub에서 통째로 복제하기보다는 직접 설정하는 데 시간을 들이길 권합니다.
 
-You probably have some dotfiles set up already. Some places to look:
+이미 설정한 dotfile이 있을 수도 있습니다. 다음 위치를 살펴보세요.
 
 - `~/.bashrc`
 - `~/.emacs`
 - `~/.vim`
 - `~/.gitconfig`
 
-Some programs don't put the files under your home folder directly and instead they put them in a folder under `~/.config`.
+프로그램에 따라 홈 디렉터리 바로 아래가 아니라 `~/.config`의 하위 디렉터리에 설정 파일을 저장하기도 합니다.
 
-Dotfiles are not exclusive to command line applications, for instance the [MPV](https://mpv.io/) video player can be configured editing files under `~/.config/mpv`
+Dotfile은 명령줄 프로그램만 사용하는 것이 아닙니다. 예를 들어 [MPV](https://mpv.io/) 동영상 플레이어는 `~/.config/mpv` 안의 파일을 편집해 설정할 수 있습니다.
 
-# Learning to customize tools
+# 도구 설정법 배우기
+{: id="learning-to-customize-tools"}
 
-You can learn about your tool's settings by reading online documentation or
-[man pages](https://en.wikipedia.org/wiki/Man_page). Another great way is to
-search the internet for blog posts about specific programs, where authors will
-tell you about their preferred customizations. Yet another way to learn about
-customizations is to look through other people's dotfiles: you can find tons of
-[dotfiles
-repositories](https://github.com/search?o=desc&q=dotfiles&s=stars&type=Repositories)
-on GitHub --- see the most popular one
-[here](https://github.com/mathiasbynens/dotfiles) (we advise you not to blindly
-copy configurations though).
+온라인 문서나 [매뉴얼 페이지](https://en.wikipedia.org/wiki/Man_page)에서 도구의 설정을 배울 수 있습니다. 특정 프로그램에 관한 블로그 글을 찾아보는 것도 좋습니다. 작성자가 선호하는 설정과 그 이유를 설명하는 경우가 많습니다. 다른 사람의 dotfile을 살펴보는 방법도 있습니다. GitHub에는 [dotfile 저장소](https://github.com/search?o=desc&q=dotfiles&s=stars&type=Repositories)가 많습니다. 가장 인기 있는 [이 저장소](https://github.com/mathiasbynens/dotfiles)도 참고하세요. 다만 이해하지 못한 설정을 무작정 복사하지는 마세요.
 
-# Organization
+# 파일 구성
+{: id="organization"}
 
-How should you organize your dotfiles? They should be in their own folder,
-under version control, and **symlinked** into place using a script. This has
-the benefits of:
+Dotfile은 어떻게 관리하면 좋을까요? 별도 디렉터리에 모아 버전 관리하고, 스크립트로 필요한 위치에 **심볼릭 링크**를 만드세요. 다음과 같은 이점이 있습니다.
 
-- **Easy installation**: if you log in to a new machine, applying your
-customizations will only take a minute
-- **Portability**: your tools will work the same way everywhere
-- **Synchronization**: you can update your dotfiles anywhere and keep them all
-in sync
-- **Change tracking**: you're probably going to be maintaining your dotfiles
-for your entire programming career, and version history is nice to have for
-long-lived projects
+- **간편한 설치**: 새 컴퓨터에 로그인해도 짧은 시간 안에 자신의 설정을 적용할 수 있습니다.
+- **이식성**: 어디서나 도구를 같은 방식으로 사용할 수 있습니다.
+- **동기화**: 어느 컴퓨터에서든 설정을 수정하고 다른 컴퓨터에도 반영할 수 있습니다.
+- **변경 추적**: 프로그래머로 일하는 동안 계속 관리할 파일입니다. 오래 유지하는 프로젝트에는 변경 이력이 유용합니다.
+
+다음 예는 설정 파일과 설치 스크립트를 만들고 Git에 저장합니다. 설치 스크립트에서는 저장소의 `bashrc`를 `~/.bashrc`에 심볼릭 링크로 연결합니다.
 
 ```shell
 cd ~/src
@@ -80,24 +64,23 @@ git add bashrc install
 git commit -m 'Initial commit'
 ```
 
-# Advanced topics
+# 고급 주제
+{: id="advanced-topics"}
 
-## Machine-specific customizations
+## 컴퓨터별 설정
+{: id="machine-specific-customizations"}
 
-Most of the time, you'll want the same configuration across machines, but
-sometimes, you'll want a small delta on a particular machine. Here are a couple
-ways you can handle this situation:
+대부분은 모든 컴퓨터에서 같은 설정을 쓰고 싶겠지만, 특정 컴퓨터에서만 조금 다르게 설정해야 할 때도 있습니다. 다음과 같은 방법이 있습니다.
 
-### Branch per machine
+### 컴퓨터마다 브랜치 만들기
+{: id="branch-per-machine"}
 
-Use version control to maintain a branch per machine. This approach is
-logically straightforward but can be pretty heavyweight.
+버전 관리 시스템에서 컴퓨터별 브랜치를 유지합니다. 개념은 단순하지만 관리가 번거로워질 수 있습니다.
 
-### If statements
+### 조건문
+{: id="if-statements"}
 
-If the configuration file supports it, use the equivalent of if-statements to
-apply machine specific customizations. For example, your shell could have something
-like:
+설정 파일이 조건문을 지원한다면 컴퓨터에 따라 다른 설정을 적용할 수 있습니다. 예를 들어 셸에서는 `uname`으로 운영체제를 구분하고, `hostname`으로 특정 컴퓨터인지 확인할 수 있습니다. 다음 예의 `{do_something}` 같은 부분은 실제 실행할 명령으로 바꿔야 합니다.
 
 ```shell
 if [[ "$(uname)" == "Linux" ]]; then {do_something else}; fi
@@ -109,21 +92,19 @@ if [[ "$(uname)" == "Darwin" ]]; then {do_something}; fi
 if [[ "$(hostname)" == "myServer" ]]; then {do_something}; fi
 ```
 
-### Includes
+### 다른 설정 파일 포함하기
+{: id="includes"}
 
-If the configuration file supports it, make use of includes. For example,
-a `~/.gitconfig` can have a setting:
+설정 파일이 다른 파일을 포함하는 기능을 지원한다면 이를 활용하세요. 예를 들어 `~/.gitconfig`에 다음 설정을 넣을 수 있습니다.
 
 ```
 [include]
     path = ~/.gitconfig_local
 ```
 
-And then on each machine, `~/.gitconfig_local` can contain machine-specific
-settings. You could even track these in a separate repository for
-machine-specific settings.
+각 컴퓨터의 `~/.gitconfig_local`에는 해당 컴퓨터에서만 사용할 설정을 넣습니다. 컴퓨터별 설정을 별도 저장소에서 관리할 수도 있습니다.
 
-This idea is also useful if you want different programs to share some configurations. For instance if you want both `bash` and `zsh` to share the same set of aliases you can write them under `.aliases` and have the following block in both.
+이 방법은 여러 프로그램이 설정 일부를 공유할 때도 유용합니다. 예를 들어 `bash`와 `zsh`에서 같은 별칭을 쓰려면 `.aliases`에 별칭을 작성하고 두 셸의 설정 파일에 다음 코드를 넣으면 됩니다. 파일이 있는지 확인한 다음 불러옵니다.
 
 ```bash
 # Test if ~/.aliases exists and source it
@@ -132,34 +113,19 @@ if [ -f ~/.aliases ]; then
 fi
 ```
 
-# Resources
+# 참고 자료
+{: id="resources"}
 
-- Your instructors' dotfiles:
-  [Anish](https://github.com/anishathalye/dotfiles),
-  [Jon](https://github.com/jonhoo/configs),
-  [Jose](https://github.com/jjgo/dotfiles)
-- [GitHub does dotfiles](https://dotfiles.github.io/): dotfile frameworks,
-utilities, examples, and tutorials
-- [Shell startup
-  scripts](https://web.archive.org/web/20260329133158/https://blog.flowblok.id.au/2013-02/shell-startup-scripts.html): an
-  explanation of the different configuration files used for your shell
+- 강사진의 dotfile: [Anish](https://github.com/anishathalye/dotfiles), [Jon](https://github.com/jonhoo/configs), [Jose](https://github.com/jjgo/dotfiles)
+- [GitHub does dotfiles](https://dotfiles.github.io/): dotfile 프레임워크, 도구, 예제, 튜토리얼
+- [셸 시작 스크립트](https://web.archive.org/web/20260329133158/https://blog.flowblok.id.au/2013-02/shell-startup-scripts.html): 셸이 사용하는 여러 설정 파일에 관한 설명
 
-# Exercises
+# 연습 문제
+{: id="exercises"}
 
-1. Create a folder for your dotfiles and set up [version
-   control](/2019/version-control/).
-
-1. Add a configuration for at least one program, e.g. your shell, with some
-   customization (to start off, it can be something as simple as customizing
-   your shell prompt by setting `$PS1`).
-
-1. Set up a method to install your dotfiles quickly (and without manual effort)
-   on a new machine. This can be as simple as a shell script that calls `ln -s`
-   for each file, or you could use a [specialized
-   utility](https://dotfiles.github.io/utilities/).
-
-1. Test your installation script on a fresh virtual machine.
-
-1. Migrate all of your current tool configurations to your dotfiles repository.
-
-1. Publish your dotfiles on GitHub.
+1. Dotfile을 모을 디렉터리를 만들고 [버전 관리](/2019/version-control/)를 설정하세요.
+1. 셸처럼 자주 쓰는 프로그램의 설정을 적어도 하나 추가하세요. 처음에는 `$PS1`로 셸 프롬프트를 바꾸는 정도여도 됩니다.
+1. 새 컴퓨터에서 dotfile을 빠르게 자동 설치할 방법을 마련하세요. 파일마다 `ln -s`를 실행하는 간단한 셸 스크립트도 좋고, [전용 도구](https://dotfiles.github.io/utilities/)를 써도 됩니다.
+1. 새 가상 머신에서 설치 스크립트를 시험하세요.
+1. 현재 사용하는 도구의 설정을 모두 dotfile 저장소로 옮기세요.
+1. Dotfile을 GitHub에 공개하세요.

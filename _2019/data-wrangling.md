@@ -1,6 +1,7 @@
 ---
 layout: lecture
-title: "Data Wrangling"
+title: "데이터 가공"
+lang: ko
 presenter: Jon
 date: 2019-01-17
 order: 2
@@ -9,49 +10,36 @@ video:
   id: VW2jn9Okjhw
 ---
 
-Have you ever had a bunch of text and wanted to do something with it?
-Good. That's what data wrangling is all about!
-Specifically, adapting data from one format to another, until you end up
-with exactly what you wanted.
+텍스트가 잔뜩 있는데 이를 가공하고 싶었던 적이 있나요? 바로 그런 작업이 데이터 가공(data wrangling)입니다. 원하는 결과를 얻을 때까지 데이터를 한 형식에서 다른 형식으로 바꾸는 과정입니다.
 
-We've already seen basic data wrangling: `journalctl | grep -i intel`.
- - find all system log entries that mention Intel (case insensitive)
- - really, most of data wrangling is about knowing what tools you have,
-   and how to combine them.
+이미 간단한 예를 봤습니다. `journalctl | grep -i intel`입니다.
 
-Let's start from the beginning: we need a data source, and something to
-do with it. Logs often make for a good use-case, because you often want
-to investigate things about them, and reading the whole thing isn't
-feasible. Let's figure out who's trying to log into my server by looking
-at my server's log:
+- 대소문자를 구분하지 않고 Intel을 언급한 시스템 로그를 모두 찾습니다.
+- 데이터 가공의 상당 부분은 어떤 도구가 있는지 알고, 이를 어떻게 조합할지 이해하는 데 달려 있습니다.
+
+처음부터 시작해 봅시다. 데이터의 출처와 할 일이 필요합니다. 로그는 좋은 예입니다. 조사할 일이 많지만 전체를 읽기는 어렵기 때문입니다. 제 서버에 누가 로그인하려 하는지 로그로 알아보겠습니다.
 
 ```bash
 ssh myserver journalctl
 ```
 
-That's far too much stuff. Let's limit it to ssh stuff:
+출력이 너무 많습니다. SSH 관련 내용만 남겨 봅시다.
 
 ```bash
 ssh myserver journalctl | grep sshd
 ```
 
-Notice that we're using a pipe to stream a _remote_ file through `grep`
-on our local computer! `ssh` is magical. This is still way more stuff
-than we wanted though. And pretty hard to read. Let's do better:
+파이프로 *원격* 데이터를 로컬 컴퓨터의 `grep`에 보내고 있습니다! SSH로 이런 일도 할 수 있습니다. 그래도 여전히 출력이 많고 읽기 어렵습니다. 더 좁혀 봅시다.
 
 ```bash
 ssh myserver journalctl | grep sshd | grep "Disconnected from"
 ```
 
-There's still a lot of noise here. There are _a lot_ of ways to get rid
-of that, but let's look at one of the most powerful tools in your
-toolkit: `sed`.
+불필요한 내용이 아직 많습니다. 이를 없애는 방법은 여러 가지지만, 강력한 도구 중 하나인 `sed`를 살펴보겠습니다.
 
-`sed` is a "stream editor" that builds on top of the old `ed` editor. In
-it, you basically give short commands for how to modify the file, rather
-than manipulate its contents directly (although you can do that too).
-There are tons of commands, but one of the most common ones is `s`:
-substitution. For example, we can write:
+`sed`는 오래된 편집기 `ed`를 바탕으로 한 "스트림 편집기"입니다. 내용을 직접 편집하기보다는 어떻게 수정할지 짧은 명령으로 지정합니다. 명령은 많지만 가장 흔히 쓰는 것 중 하나가 치환 명령 `s`입니다.
+
+아래 예제들은 파이프의 단계를 보기 쉽도록 여러 줄로 나눠 표시했습니다. 셸에서 실행할 때는 한 줄로 이어 쓰거나, 줄 끝에 `\`를 붙여 다음 줄로 이어야 합니다.
 
 ```bash
 ssh myserver journalctl
@@ -60,119 +48,67 @@ ssh myserver journalctl
  | sed 's/.*Disconnected from //'
 ```
 
-What we just wrote was a simple _regular expression_; a powerful
-construct that lets you match text against patterns. The `s` command is
-written on the form: `s/REGEX/SUBSTITUTION/`, where `REGEX` is the
-regular expression you want to search for, and `SUBSTITUTION` is the
-text you want to substitute matching text with.
+여기서 사용한 것은 간단한 *정규 표현식*입니다. 텍스트가 특정 패턴과 일치하는지 찾는 강력한 표현 방법입니다. `s` 명령은 `s/REGEX/SUBSTITUTION/` 형태입니다. `REGEX`는 찾을 정규 표현식이고, `SUBSTITUTION`은 일치한 부분을 바꿀 텍스트입니다.
 
-## Regular expressions
+## 정규 표현식
+{: id="regular-expressions"}
 
-Regular expressions are common and useful enough that it's worthwhile to
-take some time to understand how they work. Let's start by looking at
-the one we used above: `/.*Disconnected from /`. Regular expressions are
-usually (though not always) surrounded by `/`. Most ASCII characters
-just carry their normal meaning, but some characters have "special"
-matching behavior. Exactly which characters do what vary somewhat
-between different implementations of regular expressions, which is a
-source of great frustration. Very common patterns are:
+정규 표현식은 자주 쓰이고 유용하므로 시간을 들여 원리를 알아둘 만합니다. 앞서 사용한 `/.*Disconnected from /`을 살펴봅시다. 정규 표현식은 흔히 `/`로 감싸지만 항상 그런 것은 아닙니다. 대부분의 ASCII 문자는 그대로 그 문자와 일치합니다. 일부 문자는 특별한 의미가 있습니다. 구현마다 세부 문법이 달라 혼란스럽기도 합니다. 흔히 사용하는 패턴은 다음과 같습니다.
 
- - `.` means "any single character" except newline
- - `*` zero or more of the preceding match
- - `+` one or more of the preceding match
- - `[abc]` any one character of `a`, `b`, and `c`
- - `(RX1|RX2)` either something that matches `RX1` or `RX2`
- - `^` the start of the line
- - `$` the end of the line
+- `.`: 줄바꿈을 제외한 임의의 한 문자
+- `*`: 바로 앞 패턴을 0번 이상 반복
+- `+`: 바로 앞 패턴을 1번 이상 반복
+- `[abc]`: `a`, `b`, `c` 중 한 문자
+- `(RX1|RX2)`: `RX1` 또는 `RX2`와 일치하는 부분
+- `^`: 줄 시작
+- `$`: 줄 끝
 
-`sed`'s regular expressions are somewhat weird, and will require you to
-put a `\` before most of these to give them their special meaning. Or
-you can pass `-E`.
+`sed`의 기본 정규 표현식에서는 괄호 같은 일부 기호 앞에 `\`를 붙여야 특별한 의미가 생깁니다. `-E` 옵션으로 확장 정규 표현식을 사용할 수도 있습니다.
 
-So, looking back at `/.*Disconnected from /`, we see that it matches
-any text that starts with any number of characters, followed by the
-literal string "Disconnected from ". Which is what we wanted. But
-beware, regular expressions are tricky. What if someone tried to log in
-with the username "Disconnected from"? We'd have:
+`/.*Disconnected from /`으로 돌아가 봅시다. 임의의 문자가 0개 이상 나온 뒤 문자 그대로 `Disconnected from `이 이어지는 부분과 일치합니다. 원하는 동작처럼 보입니다. 하지만 정규 표현식은 주의해서 써야 합니다. 누군가 사용자 이름을 "Disconnected from"으로 지정해 로그인을 시도하면 어떨까요?
 
 ```
 Jan 17 03:13:00 thesquareplanet.com sshd[2631]: Disconnected from invalid user Disconnected from 46.97.239.16 port 55920 [preauth]
 ```
 
-What would we end up with? Well, `*` and `+` are, by default, "greedy".
-They will match as much text as they can. So, in the above, we'd end up
-with just
+어떤 결과가 나올까요? `*`와 `+`는 기본적으로 "탐욕적"입니다. 가능한 한 많은 문자와 일치하려고 합니다. 따라서 결과는 다음만 남습니다.
 
 ```
 46.97.239.16 port 55920 [preauth]
 ```
 
-Which may not be what we wanted. In some regular expression
-implementations, you can just suffix `*` or `+` with a `?` to make them
-non-greedy, but sadly `sed` doesn't support that. We _could_ switch to
-perl's command-line mode though, which _does_ support that construct:
+원했던 결과가 아닐 수 있습니다. 일부 정규 표현식 구현에서는 `*`나 `+` 뒤에 `?`를 붙여 비탐욕적으로 만들 수 있지만, `sed`는 이를 지원하지 않습니다. 이를 지원하는 Perl의 명령줄 모드를 쓸 수는 있습니다.
 
 ```bash
 perl -pe 's/.*?Disconnected from //'
 ```
 
-We'll stick to `sed` for the rest of this though, because it's by far
-the more common tool for these kinds of jobs. `sed` can also do other
-handy things like print lines following a given match, do multiple
-substitutions per invocation, search for things, etc. But we won't cover
-that too much here. `sed` is basically an entire topic in and of itself,
-but there are often better tools.
+그래도 나머지 설명에서는 이런 작업에 널리 쓰이는 `sed`를 계속 사용하겠습니다. `sed`는 특정 패턴 다음 줄을 출력하거나, 한 번에 여러 치환을 수행하거나, 텍스트를 찾는 등 여러 기능을 제공합니다. 자세히 다루지는 않겠습니다. `sed`만으로도 강의 하나가 될 만큼 내용이 많고, 작업에 따라 더 나은 도구도 있습니다.
 
-Okay, so we also have a suffix we'd like to get rid of. How might we do
-that? It's a little tricky to match just the text that follows the
-username, especially if the username can have spaces and such! What we
-need to do is match the _whole_ line:
+줄 뒤쪽에서 지우고 싶은 부분도 있습니다. 어떻게 할까요? 사용자 이름에 공백 등이 들어갈 수 있다면 그 뒤의 텍스트만 찾기가 까다롭습니다. 이럴 때는 줄 *전체*와 일치하는 패턴을 만들면 됩니다.
 
 ```bash
  | sed -E 's/.*Disconnected from (invalid |authenticating )?user .* [^ ]+ port [0-9]+( \[preauth\])?$//'
 ```
 
-Let's look at what's going on with a [regex
-debugger](https://regex101.com/r/qqbZqh/2). Okay, so the start is still
-as before. Then, we're matching any of the "user" variants (there are
-two prefixes in the logs). Then we're matching on any string of
-characters where the username is. Then we're matching on any single word
-(`[^ ]+`; any non-empty sequence of non-space characters). Then the word
-"port" followed by a sequence of digits. Then possibly the suffix
-` [preauth]`, and then the end of the line.
+[정규 표현식 디버거](https://regex101.com/r/qqbZqh/2)로 동작을 살펴봅시다. 앞부분은 이전과 같습니다. 다음은 `user` 앞에 올 수 있는 두 가지 접두사를 처리합니다. 사용자 이름 자리에는 임의의 문자열을 허용합니다. 그 뒤에는 공백이 아닌 문자가 하나 이상인 `[^ ]+`, 즉 단어 하나가 옵니다. 이어서 `port`와 숫자들이 나오고, 선택적으로 ` [preauth]`가 붙은 다음 줄이 끝납니다.
 
-Notice that with this technique, as username of "Disconnected from"
-won't confuse us any more. Can you see why?
+이제 사용자 이름이 "Disconnected from"이어도 혼동하지 않습니다. 왜 그런지 알겠나요?
 
-There is one problem with this though, and that is that the entire log
-becomes empty. We want to _keep_ the username after all. For this, we
-can use "capture groups". Any text matched by a regex surrounded by
-parentheses is stored in a numbered capture group. These are available
-in the substitution (and in some engines, even in the pattern itself!)
-as `\1`, `\2`, `\3`, etc. So:
+하지만 문제가 있습니다. 일치하는 로그 줄 전체가 빈 문자열로 바뀝니다. 사용자 이름은 *남겨야* 합니다. 이때 "캡처 그룹"을 사용합니다. 괄호로 감싼 정규 표현식과 일치한 텍스트는 번호가 붙은 그룹에 저장됩니다. 치환할 문자열에서 `\1`, `\2`, `\3` 등으로 참조할 수 있습니다. 일부 정규 표현식 엔진은 검색 패턴 안에서도 참조할 수 있습니다.
 
 ```bash
  | sed -E 's/.*Disconnected from (invalid |authenticating )?user (.*) [^ ]+ port [0-9]+( \[preauth\])?$/\2/'
 ```
 
-As you can probably imagine, you can come up with _really_ complicated
-regular expressions. For example, here's an article on how you might
-match an [e-mail
-address](https://www.regular-expressions.info/email.html). It's [not
-easy](https://web.archive.org/web/20221223174323/http://emailregex.com/). And there's [lots of
-discussion](https://stackoverflow.com/questions/201323/how-to-validate-an-email-address-using-a-regular-expression/1917982).
-And people have [written
-tests](https://fightingforalostcause.net/content/misc/2006/compare-email-regex.php).
-And [test matrices](https://mathiasbynens.be/demo/url-regex). You can
-even write a regex for determining if a given number [is a prime
-number](https://www.noulakaz.net/2007/03/18/a-regular-expression-to-check-for-prime-numbers/).
+상상할 수 있듯 정규 표현식은 *매우* 복잡해질 수 있습니다. [이메일 주소와 일치하는 패턴](https://www.regular-expressions.info/email.html)을 만드는 글을 보세요. [쉽지 않은 문제](https://web.archive.org/web/20221223174323/http://emailregex.com/)입니다. [관련 논의](https://stackoverflow.com/questions/201323/how-to-validate-an-email-address-using-a-regular-expression/1917982)도 많고, [테스트](https://fightingforalostcause.net/content/misc/2006/compare-email-regex.php)와 [테스트 비교표](https://mathiasbynens.be/demo/url-regex)도 있습니다. 어떤 수가 [소수인지 확인하는 정규 표현식](https://www.noulakaz.net/2007/03/18/a-regular-expression-to-check-for-prime-numbers/)까지 만들 수 있습니다.
 
-Regular expressions are notoriously hard to get right, but they are also
-very handy to have in your toolbox!
+정규 표현식은 정확하게 작성하기 어렵기로 유명하지만, 알아두면 무척 유용한 도구입니다.
 
-## Back to data wrangling
+## 다시 데이터 가공으로
+{: id="back-to-data-wrangling"}
 
-Okay, so we now have
+지금까지 만든 명령은 다음과 같습니다.
 
 ```bash
 ssh myserver journalctl
@@ -181,7 +117,7 @@ ssh myserver journalctl
  | sed -E 's/.*Disconnected from (invalid |authenticating )?user (.*) [^ ]+ port [0-9]+( \[preauth\])?$/\2/'
 ```
 
-We could do it just with `sed`, but why would we? For fun is why.
+`sed`만으로도 할 수 있습니다. 왜 굳이 그렇게 할까요? 재미로 해 봅시다.
 
 ```bash
 ssh myserver journalctl
@@ -190,13 +126,9 @@ ssh myserver journalctl
    -e 's/.*Disconnected from (invalid |authenticating )?user (.*) [^ ]+ port [0-9]+( \[preauth\])?$/\2/'
 ```
 
-This shows off some of `sed`'s capabilities. `sed` can also inject text
-(with the `i` command), explicitly print lines (with the `p` command),
-select lines by index, and lots of other things. Check `man sed`!
+`sed`의 몇 가지 기능을 보여 주는 예입니다. `i`로 텍스트를 삽입하거나, `p`로 줄을 명시적으로 출력하거나, 줄 번호로 대상을 선택하는 등 여러 작업을 할 수 있습니다. `man sed`를 살펴보세요.
 
-Anyway. What we have now gives us a list of all the usernames that have
-attempted to log in. But this is pretty unhelpful. Let's look for common
-ones:
+지금은 로그인을 시도한 모든 사용자 이름을 얻었습니다. 하지만 이 목록만으로는 그다지 유용하지 않습니다. 자주 등장하는 이름을 찾아봅시다.
 
 ```bash
 ssh myserver journalctl
@@ -206,10 +138,7 @@ ssh myserver journalctl
  | sort | uniq -c
 ```
 
-`sort` will, well, sort its input. `uniq -c` will collapse consecutive
-lines that are the same into a single line, prefixed with a count of the
-number of occurrences. We probably want to sort that too and only keep
-the most common logins:
+`sort`는 입력을 정렬합니다. `uniq -c`는 연속해서 반복되는 같은 줄을 하나로 합치고 앞에 등장 횟수를 붙입니다. 이 결과도 정렬해 가장 자주 등장하는 이름만 남겨 봅시다.
 
 ```bash
 ssh myserver journalctl
@@ -220,17 +149,11 @@ ssh myserver journalctl
  | sort -nk1,1 | tail -n10
 ```
 
-`sort -n` will sort in numeric (instead of lexicographic) order. `-k1,1`
-means "sort by only the first whitespace-separated column". The `,n`
-part says "sort until the `n`th field, where the default is the end of
-the line. In this _particular_ example, sorting by the whole line
-wouldn't matter, but we're here to learn!
+`sort -n`은 사전순 대신 숫자 크기로 정렬합니다. `-k1,1`은 공백으로 구분한 첫 번째 필드만 정렬 기준으로 삼는다는 뜻입니다. 쉼표 뒤의 번호는 정렬 키가 끝나는 필드를 지정하며, 생략하면 줄 끝까지 사용합니다. 이 예에서는 줄 전체를 기준으로 해도 결과에 큰 차이가 없지만, 옵션을 배워 두면 좋습니다.
 
-If we wanted the _least_ common ones, we could use `head` instead of
-`tail`. There's also `sort -r`, which sorts in reverse order.
+가장 드문 이름을 보려면 `tail` 대신 `head`를 사용하면 됩니다. 역순으로 정렬하는 `sort -r`도 있습니다.
 
-Okay, so that's pretty cool, but we'd sort of like to only give the
-usernames, and maybe not one per line?
+사용자 이름만 출력하고, 한 줄에 하나씩 대신 다른 형식으로 표시하고 싶다면 어떻게 할까요?
 
 ```bash
 ssh myserver journalctl
@@ -242,40 +165,24 @@ ssh myserver journalctl
  | awk '{print $2}' | paste -sd,
 ```
 
-Let's start with `paste`: it lets you combine lines (`-s`) by a given
-single-character delimiter (`-d`). But what's this `awk` business?
+먼저 `paste`는 지정한 한 글자 구분자(`-d`)로 여러 줄을 하나로 이어 붙입니다(`-s`). 그러면 `awk`는 무엇일까요?
 
-## awk -- another editor
+## awk — 또 다른 편집 도구
+{: id="awk--another-editor"}
 
-`awk` is a programming language that just happens to be really good at
-processing text streams. There is _a lot_ to say about `awk` if you were
-to learn it properly, but as with many other things here, we'll just go
-through the basics.
+`awk`는 텍스트 스트림 처리에 특히 강한 프로그래밍 언어입니다. 제대로 배우려면 내용이 많지만, 여기서는 기본만 살펴보겠습니다.
 
-First, what does `{print $2}` do? Well, `awk` programs take the form of
-an optional pattern plus a block saying what to do if the pattern
-matches a given line. The default pattern (which we used above) matches
-all lines. Inside the block, `$0` is set to the entire line's contents,
-and `$1` through `$n` are set to the `n`th _field_ of that line, when
-separated by the `awk` field separator (whitespace by default, change
-with `-F`). In this case, we're saying that, for every line, print the
-contents of the second field, which happens to be the username!
+`{print $2}`는 무엇을 할까요? `awk` 프로그램은 선택적인 패턴과, 줄이 패턴에 일치할 때 실행할 코드 블록으로 구성됩니다. 위처럼 패턴을 생략하면 모든 줄에 적용됩니다. 블록 안에서 `$0`은 줄 전체이고, `$1`부터 `$n`까지는 각 *필드*입니다. 기본 필드 구분자는 공백 문자이며 `-F`로 바꿀 수 있습니다. 여기서는 줄마다 두 번째 필드인 사용자 이름을 출력합니다.
 
-Let's see if we can do something fancier. Let's compute the number of
-single-use usernames that start with `c` and end with `e`:
+조금 더 복잡한 작업을 해 봅시다. 단 한 번 등장하며 `c`로 시작하고 `e`로 끝나는 사용자 이름의 개수를 세겠습니다.
 
 ```bash
  | awk '$1 == 1 && $2 ~ /^c[^ ]*e$/ { print $2 }' | wc -l
 ```
 
-There's a lot to unpack here. First, notice that we now have a pattern
-(the stuff that goes before `{...}`). The pattern says that the first
-field of the line should be equal to 1 (that's the count from `uniq
--c`), and that the second field should match the given regular
-expression. And the block just says to print the username. We then count
-the number of lines in the output with `wc -l`.
+이번에는 `{...}` 앞에 패턴이 있습니다. 첫 번째 필드, 즉 `uniq -c`로 센 횟수가 1이고, 두 번째 필드가 주어진 정규 표현식과 일치해야 합니다. 코드 블록은 사용자 이름을 출력합니다. 마지막으로 `wc -l`이 출력 줄 수를 셉니다.
 
-However, `awk` is a programming language, remember?
+하지만 `awk` 자체가 프로그래밍 언어라는 점을 기억하세요.
 
 ```awk
 BEGIN { rows = 0 }
@@ -283,17 +190,12 @@ $1 == 1 && $2 ~ /^c[^ ]*e$/ { rows += $1 }
 END { print rows }
 ```
 
-`BEGIN` is a pattern that matches the start of the input (and `END`
-matches the end). Now, the per-line block just adds the count from the
-first field (although it'll always be 1 in this case), and then we print
-it out at the end. In fact, we _could_ get rid of `grep` and `sed`
-entirely, because `awk` [can do it
-all](https://web.archive.org/web/20251210045942/https://backreference.org/2010/02/10/idiomatic-awk/), but we'll
-leave that as an exercise to the reader.
+`BEGIN` 블록은 입력을 읽기 전에, `END` 블록은 입력을 모두 읽은 뒤 실행됩니다. 각 줄에서는 첫 번째 필드의 횟수를 더하고, 마지막에 합계를 출력합니다. 이 예에서는 더하는 값이 항상 1입니다. 사실 `awk`로 [이 모든 작업](https://web.archive.org/web/20251210045942/https://backreference.org/2010/02/10/idiomatic-awk/)을 할 수 있어서 `grep`과 `sed`를 없앨 수도 있습니다. 직접 연습해 보세요.
 
-## Analyzing data
+## 데이터 분석
+{: id="analyzing-data"}
 
-You can do math!
+계산도 할 수 있습니다.
 
 ```bash
  | paste -sd+ | bc -l
@@ -303,9 +205,7 @@ You can do math!
 echo "2*($(data | paste -sd+))" | bc -l
 ```
 
-You can get stats in a variety of ways.
-[`st`](https://github.com/nferraz/st) is pretty neat, but if you already
-have R:
+통계를 구하는 방법도 다양합니다. [`st`](https://github.com/nferraz/st)도 유용하지만, 이미 R이 있다면 다음처럼 사용할 수 있습니다.
 
 ```bash
 ssh myserver journalctl
@@ -316,13 +216,9 @@ ssh myserver journalctl
  | awk '{print $1}' | R --slave -e 'x <- scan(file="stdin", quiet=TRUE); summary(x)'
 ```
 
-R is another (weird) programming language that's great at data analysis
-and [plotting](https://ggplot2.tidyverse.org/). We won't go into too
-much detail, but suffice to say that `summary` prints summary statistics
-about a matrix, and we computed a matrix from the input stream of
-numbers, so R gives us the statistics we wanted!
+R은 데이터 분석과 [그래프 그리기](https://ggplot2.tidyverse.org/)에 적합한 또 다른 프로그래밍 언어입니다. 자세히 다루지는 않겠습니다. 여기서는 입력 스트림을 숫자 벡터로 읽은 뒤 `summary`로 요약 통계를 출력합니다. 이렇게 원하는 통계를 얻을 수 있습니다.
 
-If you just want some simple plotting, `gnuplot` is your friend:
+간단한 그래프만 필요하다면 `gnuplot`을 사용해 보세요.
 
 ```bash
 ssh myserver journalctl
@@ -334,55 +230,35 @@ ssh myserver journalctl
  | gnuplot -p -e 'set boxwidth 0.5; plot "-" using 1:xtic(2) with boxes'
 ```
 
-## Data wrangling to make arguments
+## 데이터를 가공해 명령 인자 만들기
+{: id="data-wrangling-to-make-arguments"}
 
-Sometimes you want to do data wrangling to find things to install or
-remove based on some longer list. The data wrangling we've talked about
-so far + `xargs` can be a powerful combo:
+긴 목록을 가공해 설치하거나 제거할 항목을 고르고 싶을 때도 있습니다. 앞서 배운 데이터 가공에 `xargs`를 조합하면 강력한 작업을 할 수 있습니다.
 
 ```bash
 rustup toolchain list | grep nightly | grep -vE "nightly-x86|01-17" | sed 's/-x86.*//' | xargs rustup toolchain uninstall
 ```
 
-# Exercises
+# 연습 문제
+{: id="exercises"}
 
-1. If you are not familiar with Regular Expressions
-   [here](https://regexone.com/) is a short interactive tutorial that
-   covers most of the basics
-1. How is `sed s/REGEX/SUBSTITUTION/g` different from the regular sed?
-   What about `/I` or `/m`?
-1. To do in-place substitution it is quite tempting to do something like
-   `sed s/REGEX/SUBSTITUTION/ input.txt > input.txt`. However this is a
-   bad idea, why? Is this particular to `sed`?
-1. Implement a simple grep equivalent tool in a language you are familiar with using regex. If you want the output to be color highlighted like grep is, search for ANSI color escape sequences.
-1. Sometimes some operations like renaming files can be tricky with raw commands like `mv` . `rename` is a nifty tool to achieve this and has a sed-like syntax. Try creating a bunch of files with spaces in their names and use `rename` to replace them with underscores.
-1. Look for boot messages that are _not_ shared between your past three
-   reboots (see `journalctl`'s `-b` flag). You may want to just mash all
-   the boot logs together in a single file, as that may make things
-   easier.
-1. Produce some statistics of your system boot time over the last ten
-   boots using the log timestamp of the messages
+1. 정규 표현식에 익숙하지 않다면 기본적인 내용을 다루는 [대화형 튜토리얼](https://regexone.com/)을 풀어 보세요.
+1. `sed s/REGEX/SUBSTITUTION/g`는 `g`가 없을 때와 어떻게 다른가요? `/I`나 `/m`은 어떤가요?
+1. 파일 자체를 수정하려고 `sed s/REGEX/SUBSTITUTION/ input.txt > input.txt`를 쓰고 싶을 수 있습니다. 하지만 잘못된 방법입니다. 이유는 무엇인가요? `sed`에만 해당하는 문제인가요?
+1. 익숙한 언어에서 정규 표현식을 사용해 간단한 `grep`을 구현하세요. 출력에 색을 넣고 싶다면 ANSI 색상 이스케이프 시퀀스를 찾아보세요.
+1. 여러 파일의 이름을 바꾸는 작업은 `mv`만으로 처리하기 번거로울 수 있습니다. `sed`와 비슷한 문법을 사용하는 `rename` 구현을 써 보세요. 이름에 공백이 있는 파일을 여러 개 만들고 `rename`으로 공백을 밑줄로 바꾸세요.
+1. 최근 세 번의 부팅에서 *공통으로 나타나지 않는* 메시지를 찾으세요. `journalctl`의 `-b` 옵션을 참고하세요. 부팅 로그를 파일 하나에 모으면 편할 수 있습니다.
+1. 다음 로그 메시지들의 타임스탬프를 이용해 최근 10번의 시스템 부팅 시간에 대한 통계를 구하세요.
+
    ```
    Logs begin at ...
    ```
-   and
+
+    그리고 다음 메시지를 사용하세요.
+
    ```
    systemd[577]: Startup finished in ...
    ```
-1. Find the number of words (in `/usr/share/dict/words`) that contain at
-   least three `a`s and don't have a `'s` ending. What are the three
-   most common last two letters of those words? `sed`'s `y` command, or
-   the `tr` program, may help you with case insensitivity. How many
-   of those two-letter combinations are there? And for a challenge:
-   which combinations do not occur?
-1. Find an online data set like [this
-   one](https://commons.wikimedia.org/wiki/Data:Wikipedia_statistics/data.tab) or [this
-   one](https://ucr.fbi.gov/crime-in-the-u.s/2016/crime-in-the-u.s.-2016/topic-pages/tables/table-1).
-   Maybe another one [from
-   here](https://www.springboard.com/blog/data-science/free-public-data-sets-data-science-project/).
-   Fetch it using `curl` and extract out just two columns of numerical
-   data. If you're fetching HTML data,
-   [`pup`](https://github.com/EricChiang/pup) might be helpful. For JSON
-   data, try [`jq`](https://stedolan.github.io/jq/). Find the min and
-   max of one column in a single command, and the sum of the difference
-   between the two columns in another.
+
+1. `/usr/share/dict/words`에서 `a`가 적어도 세 번 나오고 `'s`로 끝나지 않는 단어의 개수를 구하세요. 해당 단어들의 마지막 두 글자 조합 중 가장 흔한 세 가지는 무엇인가요? 대소문자를 구분하지 않으려면 `sed`의 `y` 명령이나 `tr`이 도움이 될 수 있습니다. 두 글자 조합은 모두 몇 가지인가요? 더 어려운 문제로, 한 번도 나오지 않은 조합도 찾아보세요.
+1. [위키백과 통계](https://commons.wikimedia.org/wiki/Data:Wikipedia_statistics/data.tab)나 [범죄 통계](https://ucr.fbi.gov/crime-in-the-u.s/2016/crime-in-the-u.s.-2016/topic-pages/tables/table-1) 같은 온라인 데이터셋을 찾으세요. [공개 데이터셋 목록](https://www.springboard.com/blog/data-science/free-public-data-sets-data-science-project/)에서 찾아도 됩니다. `curl`로 내려받고 숫자 열 두 개만 추출하세요. HTML에는 [`pup`](https://github.com/EricChiang/pup), JSON에는 [`jq`](https://stedolan.github.io/jq/)가 도움이 될 수 있습니다. 한 명령으로 한 열의 최솟값과 최댓값을 구하고, 다른 명령으로 두 열의 차이를 합산하세요.

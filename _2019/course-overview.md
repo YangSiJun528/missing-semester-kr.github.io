@@ -1,6 +1,7 @@
 ---
 layout: lecture
-title: "Course Overview"
+title: "수업 개요"
+lang: ko
 presenter: Anish
 date: 2019-01-15
 order: 1
@@ -9,30 +10,20 @@ video:
   id: qw2c6ffSVOM
 ---
 
-# Motivation
+# 이 수업을 만든 이유
+{: id="motivation"}
 
-This class is about [hacker](https://en.wikipedia.org/wiki/Hacker_culture)
-tools, not [hacker](https://en.wikipedia.org/wiki/Security_hacker) tools.
+이 수업에서 다루는 것은 [해커 문화의 해커](https://en.wikipedia.org/wiki/Hacker_culture)가 쓰는 도구입니다. [보안 해커](https://en.wikipedia.org/wiki/Security_hacker)의 도구를 다루는 수업은 아닙니다.
 
-MIT classes do not cover any of this content in detail. It's hugely beneficial
-to be proficient with your tools: it'll save you a lot of time (and the payoff
-time is very short).
+MIT 수업에서는 이런 내용을 자세히 다루지 않습니다. 하지만 도구를 능숙하게 쓰면 큰 도움이 됩니다. 많은 시간을 절약할 수 있고, 배우는 데 들인 시간도 금방 회수할 수 있습니다.
 
-We want to teach you about new tools, how to make the most of your tools, how
-to customize your tools, and how to extend your tools.
+이 수업에서는 새로운 도구를 소개하고, 도구의 기능을 충분히 활용하는 법, 자신에게 맞게 설정하는 법, 기능을 확장하는 법을 가르치고자 합니다.
 
-# Class structure
+# 수업 구성
+{: id="class-structure"}
 
-We have 6 lectures covering a [variety of topics](/2019/). We have lecture
-notes online, but there will be a lot of content covered in class (e.g. in the
-form of demos) that may not be in the notes. We will be recording lectures.
+총 6번의 수업에서 [여러 주제](/2019/)를 다룹니다. 강의 노트는 온라인으로 제공하지만, 시연처럼 노트에 없는 내용도 수업에서 많이 다룰 예정입니다. 강의는 녹화합니다.
 
-Each class is split into two 50-minute lectures with a 10-minute break in
-between. Lectures are mostly live demonstrations followed by hands-on
-exercises. We might have a short amount of time at the end of each class to get
-started on the exercises in an office-hours-style setting.
+각 수업은 50분 강의 두 번으로 구성되며, 중간에 10분 동안 쉽니다. 주로 직접 시연한 뒤 실습을 진행합니다. 수업 끝에 시간이 조금 남으면 강사에게 질문하며 연습 문제를 시작할 수 있습니다.
 
-To make the most of the class, you should go through all the exercises on your
-own. We'll inspire you to learn more about your tools, and we'll show you
-what's possible and cover some of the basics in detail, but we can't teach you
-everything in the time we have.
+이 수업에서 최대한 많이 배우려면 모든 연습 문제를 직접 풀어 보세요. 도구를 더 배우고 싶도록 동기를 주고, 무엇이 가능한지 보여 주며, 기본적인 내용 일부는 자세히 설명하겠습니다. 다만 주어진 시간 안에 모든 것을 가르칠 수는 없습니다.

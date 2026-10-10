@@ -1,6 +1,7 @@
 ---
 layout: lecture
-title: "Virtual Machines and Containers"
+title: "가상 머신과 컨테이너"
+lang: ko
 presenter: Anish, Jon
 date: 2019-01-15
 order: 2
@@ -9,125 +10,91 @@ video:
   id: LJ9ki5zq6Ik
 ---
 
-# Virtual Machines
+# 가상 머신
+{: id="virtual-machines"}
 
-Virtual machines are simulated computers. You can configure a guest virtual
-machine with some operating system and configuration and use it without
-affecting your host environment.
+가상 머신은 소프트웨어로 구현한 컴퓨터입니다. 게스트 가상 머신에 운영체제와 설정을 구성하고, 호스트 환경과 분리해서 사용할 수 있습니다.
 
-For this class, you can use VMs to experiment with operating systems, software,
-and configurations without risk: you won't affect your primary development
-environment.
+이 수업에서는 가상 머신을 이용해 주 개발 환경에 영향을 주지 않고 운영체제, 소프트웨어, 설정을 시험할 수 있습니다.
 
-In general, VMs have lots of uses. They are commonly used for running software
-that only runs on a certain operating system (e.g. using a Windows VM on Linux
-to run Windows-specific software). They are often used for experimenting with
-potentially malicious software.
+가상 머신의 용도는 다양합니다. 특정 운영체제에서만 동작하는 소프트웨어를 실행할 때 자주 사용합니다. 예를 들어 Linux에서 Windows 가상 머신을 실행해 Windows 전용 프로그램을 쓸 수 있습니다. 악성일 가능성이 있는 소프트웨어를 분석할 때도 사용합니다.
 
-## Useful features
+## 유용한 기능
+{: id="useful-features"}
 
-- **Isolation**: hypervisors do a pretty good job of isolating the guest from
-the host, so you can use VMs to run buggy or untrusted software reasonably
-safely.
+- **격리**: 하이퍼바이저는 게스트와 호스트를 격리합니다. 덕분에 버그가 있거나 신뢰하기 어려운 소프트웨어를 비교적 안전하게 실행할 수 있습니다.
+- **스냅숏**: 디스크와 메모리 등을 포함한 가상 머신의 상태를 저장할 수 있습니다. 변경을 가한 뒤 이전 상태로 복구할 수 있어, 데이터를 망가뜨릴 수 있는 작업을 시험할 때도 유용합니다.
 
-- **Snapshots**: you can take "snapshots" of your virtual machine, capturing
-the entire machine state (disk, memory, etc.), make changes to your machine,
-and then restore to an earlier state. This is useful for testing out
-potentially destructive actions, among other things.
+## 단점
+{: id="disadvantages"}
 
-## Disadvantages
+가상 머신은 일반적으로 실제 하드웨어에서 직접 실행하는 것보다 느리므로, 어떤 작업에는 적합하지 않을 수 있습니다.
 
-Virtual machines are generally slower than running on bare metal, so they may
-be unsuitable for certain applications.
+## 설정
+{: id="setup"}
 
-## Setup
+- **자원**: 호스트와 물리 자원을 공유합니다. CPU와 메모리 등을 할당할 때 이를 고려하세요.
+- **네트워크**: 여러 방식이 있지만, 대부분의 용도에는 기본 NAT 설정으로 충분합니다.
+- **게스트 확장 기능**: 많은 하이퍼바이저는 호스트와의 연동을 개선하는 소프트웨어를 게스트에 설치할 수 있습니다. 가능하면 활용하세요.
 
-- **Resources**: shared with host machine; be aware of this when allocating
-physical resources.
+## 참고 자료
+{: id="resources"}
 
-- **Networking**: many options, default NAT should work fine for most use
-cases.
+- 하이퍼바이저
+    - [VirtualBox](https://www.virtualbox.org/): 오픈 소스
+    - [Virt-manager](https://virt-manager.org/): KVM 가상 머신과 LXC 컨테이너를 관리하는 오픈 소스 도구
+    - [VMware](https://www.vmware.com/): 상용 제품이며, [MIT 학생](https://ist.mit.edu/vmware-fusion)은 IS&T에서 받을 수 있습니다.
 
-- **Guest addons**: many hypervisors can install software in the guest to
-enable nicer integration with host system. You should use this if you can.
+주요 하이퍼바이저와 가상 머신을 이미 써 봤다면, 명령줄에서 관리하는 방법도 배워 보세요. [libvirt](https://wiki.libvirt.org/page/UbuntuKVMWalkthrough)는 여러 가상화 플랫폼과 하이퍼바이저를 관리할 수 있는 도구 모음입니다.
 
-## Resources
+## 연습 문제
+{: id="exercises"}
 
-- Hypervisors
-    - [VirtualBox](https://www.virtualbox.org/) (open-source)
-    - [Virt-manager](https://virt-manager.org/) (open-source, manages KVM virtual machines and LXC containers)
-    - [VMWare](https://www.vmware.com/) (commercial, available from IS&T [for
-    MIT students](https://ist.mit.edu/vmware-fusion))
+1. 하이퍼바이저를 내려받아 설치하세요.
+1. 새 가상 머신을 만들고 [Debian](https://www.debian.org/) 같은 Linux 배포판을 설치하세요.
+1. 스냅숏을 시험하세요. **복구용 스냅숏을 만든 실습용 가상 머신 안에서만** `sudo rm -rf --no-preserve-root /`처럼 파괴적인 명령을 실행해 보고, 이전 상태로 쉽게 돌아올 수 있는지 확인하세요. 호스트 디렉터리를 공유한 상태에서는 실행하지 마세요.
+1. [포크 폭탄](https://en.wikipedia.org/wiki/Fork_bomb)(`:(){ :|:& };:`)이 무엇인지 읽고, 실습용 가상 머신에서 실행해 CPU와 메모리 등의 자원 격리가 어떻게 동작하는지 확인하세요.
+1. 게스트 확장 기능을 설치하고 창 표시 방식, 파일 공유 등의 기능을 시험하세요.
 
-If you are already familiar with popular hypervisors/VMs you may want to learn more about how to do this from a command line friendly way. One option is the [libvirt](https://wiki.libvirt.org/page/UbuntuKVMWalkthrough) toolkit which allows you to manage multiple different virtualization providers/hypervisors.
+# 컨테이너
+{: id="containers"}
 
-## Exercises
+가상 머신은 비교적 무겁습니다. 실행 환경을 자동으로 빠르게 만들고 싶다면 컨테이너를 사용할 수 있습니다. 다음과 같은 도구가 있습니다.
 
-1. Download and install a hypervisor.
+- Amazon Firecracker
+- Docker
+- rkt
+- lxc
 
-1. Create a new virtual machine and install a Linux distribution (e.g.
-[Debian](https://www.debian.org/)).
+컨테이너는 *대체로* 가상 파일 시스템, 가상 네트워크 인터페이스, chroot, 메모리 격리 등 Linux의 여러 기능을 조합해 가상화된 환경처럼 보이도록 만듭니다.
 
-1. Experiment with snapshots. Try things that you've always wanted to try, like
-   running `sudo rm -rf --no-preserve-root /`, and see if you can recover
-   easily.
+가상 머신과 보안·격리 특성이 같지는 않습니다. 일반적으로 성능이 높고 시작도 훨씬 빠르지만, 항상 그런 것은 아닙니다.
 
-1. Read what a [fork-bomb](https://en.wikipedia.org/wiki/Fork_bomb) (`:(){ :|:& };:`) is and run it on the VM to see that the resource isolation (CPU, Memory, &c) works.
+컨테이너의 성능상 이점은 운영체제 전체를 별도로 실행하는 가상 머신과 달리 호스트의 Linux 커널을 공유한다는 데서 나옵니다. 단, Windows나 macOS에서 Linux 컨테이너를 실행하려면 중간 계층으로 Linux 가상 머신이 필요합니다.
 
-1. Install guest addons and experiment with different windowing modes, file
-   sharing, and other features.
+![Docker 컨테이너와 가상 머신의 구조 비교](/2019/files/containers-vs-vms.png)
+_출처: blog.docker.com. Docker 컨테이너와 가상 머신의 구조를 비교한 그림입니다._
 
-# Containers
+컨테이너는 표준화된 환경에서 작업을 자동 실행할 때 유용합니다.
 
-Virtual Machines are relatively heavy-weight; what if you want to spin
-up machines in an automated fashion? Enter containers!
+- 빌드 시스템
+- 개발 환경
+- 실행에 필요한 구성을 갖춘 서버
+- 신뢰할 수 없는 프로그램 실행
+    - 학생 제출물 채점
+    - 일부 클라우드 컴퓨팅 작업
+- 지속적 통합
+    - Travis CI
+    - GitHub Actions
 
- - Amazon Firecracker
- - Docker
- - rkt
- - lxc
+Docker 같은 컨테이너 도구는 [의존성 지옥](https://en.wikipedia.org/wiki/Dependency_hell)을 해결하는 데도 많이 쓰입니다. 한 컴퓨터에서 실행할 여러 서비스의 의존성이 충돌한다면 컨테이너로 분리할 수 있습니다.
 
-Containers are _mostly_ just an assembly of various Linux security
-features, like virtual file system, virtual network interfaces, chroots,
-virtual memory tricks, and the like, that together give the appearance
-of virtualization.
+보통은 컨테이너 환경을 만드는 방법을 파일에 작성합니다. Alpine Linux 같은 작은 *베이스 이미지*에서 시작해, 패키지 설치, 파일 복사, 빌드, 설정 파일 작성 등의 명령으로 원하는 환경을 구성합니다. 외부에 노출할 포트와 컨테이너를 시작할 때 실행할 명령인 *엔트리포인트*도 지정할 수 있습니다. 채점 스크립트가 엔트리포인트의 한 예입니다.
 
-Not quite as secure or isolated as a VM, but pretty close and getting
-better. Usually higher performance, and much faster to start, but not
-always.
+코드 저장소 사이트인 [GitHub](https://github.com/)와 비슷하게, [Docker Hub](https://hub.docker.com/) 같은 컨테이너 이미지 저장소도 있습니다. 여러 소프트웨어의 미리 만들어진 이미지를 받아 실행할 수 있습니다.
 
-The performance boost comes from the fact that unlike VMs which run an entire copy of the operating system, containers share the linux kernel with the host. However note that if you are running linux containers on Windows/macOS a Linux VM will need to be active as a middle layer between the two.
+## 연습 문제
+{: id="exercises-1"}
 
-![Docker vs VM](/2019/files/containers-vs-vms.png)
-_Comparison between Docker containers and Virtual Machines. Credit: blog.docker.com_
-
-Containers are handy for when you want to run an automated task in a
-standardized setup:
-
- - Build systems
- - Development environments
- - Pre-packaged servers
- - Running untrusted programs
-   - Grading student submissions
-   - (Some) cloud computing
- - Continuous integration
-   - Travis CI
-   - GitHub Actions
-
-Moreover, container software like Docker has also been extensively used as a solution for [dependency hell](https://en.wikipedia.org/wiki/Dependency_hell). If a machine needs to be running many services with conflicting dependencies they can be isolated using containers.
-
-Usually, you write a file that defines how to construct your container.
-You start with some minimal _base image_ (like Alpine Linux), and then
-a list of commands to run to set up the environment you want (install
-packages, copy files, build stuff, write config files, etc.). Normally,
-there's also a way to specify any external ports that should be
-available, and an _entrypoint_ that dictates what command should be run
-when the container is started (like a grading script).
-
-In a similar fashion to code repository websites (like [GitHub](https://github.com/)) there are some container repository websites (like [DockerHub](https://hub.docker.com/))where many software services have prebuilt images that one can easily deploy.
-
-## Exercises
-
-1. Choose a container software (Docker, LXC, …) and install a simple Linux image. Try SSHing into it.
-
-1. Search and download a prebuilt container image for a popular web server (nginx, apache, …)
+1. Docker, LXC 등 컨테이너 도구를 선택하고 간단한 Linux 이미지를 설치하세요. 컨테이너에 SSH로 접속해 보세요.
+1. nginx, Apache 같은 웹 서버의 미리 만들어진 컨테이너 이미지를 찾아 내려받으세요.

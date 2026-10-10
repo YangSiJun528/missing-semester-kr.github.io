@@ -1,6 +1,7 @@
 ---
 layout: lecture
-title: "Automation"
+title: "자동화"
+lang: ko
 presenter: Jose
 date: 2019-01-24
 order: 3
@@ -10,29 +11,24 @@ video:
 special: true
 ---
 
-Sometimes you write a script that does something but you want for it to run periodically, say a backup task. You can always write an *ad hoc* solution that runs in the background and comes online periodically. However, most UNIX systems come with the cron daemon which can run task with a frequency up to a minute based on simple rules.
+백업처럼 어떤 스크립트를 주기적으로 실행하고 싶을 때가 있습니다. 백그라운드에서 기다리다가 일정 시간마다 실행하는 임시방편을 직접 만들 수도 있습니다. 하지만 대부분의 유닉스 시스템에는 간단한 규칙으로 작업을 예약하고 최소 1분 간격으로 실행할 수 있는 cron 데몬이 있습니다.
 
-On most UNIX systems the cron daemon, `crond` will be running by default but you can always check using `ps aux | grep crond`.
+많은 유닉스 시스템에서 cron 데몬인 `crond`는 기본으로 실행됩니다. `ps aux | grep crond`로 확인할 수 있습니다.
 
-## The crontab
+## crontab
+{: #the-crontab}
 
-The configuration file for cron can be displayed running `crontab -l` edited running `crontab -e` The time format that cron uses are five space separated fields along with the user and command
+cron 설정은 `crontab -l`로 확인하고 `crontab -e`로 편집합니다. 시간은 공백으로 구분된 다섯 필드로 지정하며, 사용자와 실행할 명령도 함께 적습니다.
 
-- **minute** -  What minute of the hour the command will run on,
-     and is between '0' and '59'
-- **hour** -    This controls what hour the command will run on, and is specified in
-         the 24 hour clock, values must be between 0 and 23 (0 is midnight)
-- **dom** - This is the Day of Month, that you want the command run on, e.g. to
-     run a command on the 19th of each month, the dom would be 19.
-- **month** -   This is the month a specified command will run on, it may be specified
-     numerically (0-12), or as the name of the month (e.g. May)
-- **dow** - This is the Day of Week that you want a command to be run on, it can
-     also be numeric (0-7) or as the name of the day (e.g. sun).
-- **user** -    This is the user who runs the command.
-- **command** - This is the command that you want run. This field may contain
-     multiple words or spaces.
+- **minute**: 매시간 몇 분에 실행할지 지정합니다. 범위는 0~59입니다.
+- **hour**: 몇 시에 실행할지 24시간제로 지정합니다. 범위는 0~23이며, 0은 자정입니다.
+- **dom**: 날짜(day of month)를 지정합니다. 예를 들어 매월 19일에 실행하려면 19를 씁니다.
+- **month**: 실행할 월을 0~12의 숫자나 `May` 같은 월 이름으로 지정합니다.
+- **dow**: 요일(day of week)을 0~7의 숫자나 `sun` 같은 이름으로 지정합니다.
+- **user**: 명령을 실행할 사용자입니다.
+- **command**: 실행할 명령입니다. 여러 단어나 공백이 들어갈 수 있습니다.
 
-Note that using an asterisk `*` means all and using an asterisk followed by a slash and number means every nth value. So `*/5` means every five. Some examples are
+별표 `*`는 가능한 모든 값을 뜻합니다. 별표 뒤에 `/`와 숫자를 붙이면 해당 필드에서 그 수만큼 간격을 둡니다. 예를 들어 분 필드의 `*/5`는 5분마다 실행한다는 뜻입니다.
 
 ```shell
 */5   *    *   *   *       # Every five minutes
@@ -42,41 +38,40 @@ Note that using an asterisk `*` means all and using an asterisk followed by a sl
   0   0    *   *   5       # Every Friday at 12:00 am
   0   0    1   */2 *       # Every other month, the first day, 12:00am
 ```
-You can find many more examples of common crontab schedules in [crontab.guru](https://crontab.guru/examples.html)
 
-## Shell environment and logging
+자주 쓰는 일정의 예시는 [crontab.guru](https://crontab.guru/examples.html)에서 더 찾아볼 수 있습니다.
 
-A common pitfall when using cron is that it does not load the same environment scripts that common shells do such as `.bashrc`, `.zshrc`, &c and it does not log the output anywhere by default. Combined with the maximum frequency being one minute, it can become quite painful to debug cronscripts initially.
+## 셸 환경과 로그
+{: #shell-environment-and-logging}
 
-To deal with the environment, make sure that you use absolute paths in all your scripts and modify your environment variables such as `PATH` so the script can run successfully. To simplify logging, a good recommendation is to write your crontab in a format like this
+cron을 사용할 때 흔히 겪는 문제는 `.bashrc`, `.zshrc`처럼 대화형 셸이 읽는 환경 설정 파일을 똑같이 읽지 않는다는 점입니다. 출력도 기본적으로 로그 파일에 저장되지 않습니다. 실행 간격도 최소 1분이라 처음에는 스크립트를 디버깅하기가 번거로울 수 있습니다.
 
+실행 환경 문제를 줄이려면 스크립트에서 절대 경로를 사용하고, `PATH` 같은 환경 변수를 필요한 값으로 설정하세요. 로그를 쉽게 남기려면 crontab을 다음과 같은 형식으로 작성하는 것이 좋습니다.
 
 ```shell
 * * * * *   user  /path/to/cronscripts/every_minute.sh >> /tmp/cron_every_minute.log 2>&1
 ```
 
-And write the script in a separate file. Remember that `>>` appends to the file and that `2>&1` redirects `stderr` to `stdout` (you might to want keep them separate though).
+스크립트 본문은 별도 파일에 작성합니다. `>>`는 파일 끝에 내용을 덧붙이고, `2>&1`은 표준 오류(`stderr`)를 표준 출력(`stdout`)과 같은 곳으로 보냅니다. 필요하면 두 출력을 따로 저장해도 됩니다.
 
-## Anacron
+## anacron
+{: #anacron}
 
-One caveat of using cron is that if the computer is powered off or asleep when the cron script should run then it is not executed. For frequent tasks this might be fine, but if a task runs less often, you may want to ensure that it is executed. [anacron](https://linux.die.net/man/8/anacron) works similar to `cron` except that the frequency is specified in days. Unlike cron, it does not assume that the machine is running continuously. Hence, it can be used on machines that aren't running 24 hours a day, to control regular jobs as daily, weekly, and monthly jobs.
+cron 작업을 실행할 시각에 컴퓨터가 꺼져 있거나 절전 상태라면 해당 작업은 실행되지 않습니다. 자주 실행하는 작업이라면 괜찮을 수 있지만, 드물게 실행하는 작업은 빠뜨리지 않도록 해야 할 수 있습니다. [anacron](https://linux.die.net/man/8/anacron)은 cron과 비슷하지만 주기를 일 단위로 지정합니다. 컴퓨터가 계속 켜져 있다고 가정하지 않으므로, 하루 24시간 실행하지 않는 컴퓨터에서도 일별·주별·월별 작업을 관리할 수 있습니다.
 
+## 연습 문제
+{: #exercises}
 
-## Exercises
+1. 매분 다운로드 폴더에서 이미지 파일을 찾아 사진 폴더로 옮기는 스크립트를 작성하세요. [MIME 형식](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types)을 확인하거나, 흔한 이미지 확장자를 정규 표현식으로 찾을 수 있습니다.
 
-1. Make a script that looks every minute in your downloads folder for any file that is a picture (you can look into [MIME types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) or use a regular expression to match common extensions) and moves them into your Pictures folder.
-
-1. Write a cron script to weekly check for outdated packages in your system and prompts you to update them or updates them automatically.
-
-
+1. 매주 시스템에서 오래된 패키지를 확인하고 업데이트를 요청하거나 자동으로 업데이트하는 cron 스크립트를 작성하세요.
 
 {% comment %}
+추가 주제:
 
 - [fswatch](https://github.com/emcrisostomo/fswatch)
-- GUI automation (pyautogui) [Automating the boring stuff Chapter 18](https://automatetheboringstuff.com/chapter18/)
+- GUI 자동화(pyautogui): [Automate the Boring Stuff 18장](https://automatetheboringstuff.com/chapter18/)
 - Ansible/puppet/chef
-
 - https://xkcd.com/1205/
 - https://xkcd.com/1319/
-
 {% endcomment %}
