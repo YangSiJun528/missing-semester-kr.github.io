@@ -10,13 +10,13 @@ layout: default
     <iframe src="https://www.youtube.com/embed/{{ page.video.id }}" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
   </div>
 {% elsif page.panopto %}
-  <p class="center padded bordered"><strong><a href="{{ page.panopto }}">Click here to view the raw lecture video on Panopto (MIT Kerberos login required).</a></strong><br>
-  An edited version of this video will be posted after the course is over. Edited lecture videos will be posted to YouTube shortly after the conclusion of the course.</p>
+  <p class="center padded bordered"><strong><a href="{{ page.panopto }}">Panopto에서 편집 전 강의 영상을 볼 수 있습니다(MIT Kerberos 로그인 필요).</a></strong><br>
+  수업이 끝난 뒤 편집한 강의 영상을 YouTube에 공개할 예정입니다.</p>
 {% elsif page.last_year %}
-  <p class="center padded bordered"><strong><a href="{{ page.last_year }}">Click here to view last year's lecture video.</a></strong><br>
-  This year's lecture video is coming soon.</p>
+  <p class="center padded bordered"><strong><a href="{{ page.last_year }}">지난해 강의 영상 보기</a></strong><br>
+  올해 강의 영상은 곧 공개됩니다.</p>
 {% elsif page.video %}
-  <p class="center padded bordered"><strong>Lecture video coming soon!</strong></p>
+  <p class="center padded bordered"><strong>강의 영상은 곧 공개됩니다!</strong></p>
 {% endif %}
 
 {{ content }}
@@ -24,6 +24,6 @@ layout: default
 <hr>
 
 <div class="small center">
-<p><a href="https://github.com/missing-semester/missing-semester/blob/master/{{ page.path }}">Edit this page</a>.</p>
-<p>Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA</a>.</p>
+<p><a href="https://github.com/missing-semester/missing-semester/blob/master/{{ page.path }}">이 페이지 수정하기</a>.</p>
+<p><a href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA</a> 라이선스를 따릅니다.</p>
 </div>

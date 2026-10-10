@@ -1,140 +1,87 @@
 ---
 layout: lecture
-title: "Why we are teaching this class"
+title: "이 수업을 만든 이유"
 ---
 
-During a traditional Computer Science education, chances are you will take
-plenty of classes that teach you advanced topics within CS, everything from
-Operating Systems to Programming Languages to Machine Learning. But at many
-institutions there is one essential topic that is rarely covered and is instead
-left for students to pick up on their own: computing ecosystem literacy.
+일반적인 컴퓨터 과학 교육에서는 운영체제, 프로그래밍 언어, 기계학습 등 고급 주제를 다루는 수업을 많이 듣습니다. 하지만 여러 교육기관에서 거의 가르치지 않고 학생들이 알아서 익히도록 남겨 두는 필수 주제가 있습니다. 바로 컴퓨팅 생태계를 이해하고 활용하는 능력입니다.
 
-Over the years, we have helped teach several classes at MIT, and over and over
-we have seen that many students have limited knowledge of the tools available
-to them. Computers were built to automate manual tasks, yet students often
-perform repetitive tasks by hand or fail to take full advantage of powerful
-tools such as version control and text editors. In the best case, this results
-in inefficiencies and wasted time; in the worst case, it results in issues like
-data loss or inability to complete certain tasks.
+우리는 여러 해 동안 MIT의 여러 수업에서 가르치는 일을 도우며, 많은 학생이 자신이 쓸 수 있는 도구를 충분히 알지 못한다는 사실을 반복해서 확인했습니다. 컴퓨터는 수작업을 자동화하기 위해 만들어졌지만, 학생들은 반복 작업을 손으로 하거나 버전 관리와 텍스트 편집기 같은 강력한 도구를 충분히 활용하지 못하곤 합니다. 가볍게는 비효율과 시간 낭비로 끝나지만, 심하면 데이터를 잃거나 필요한 작업을 끝내지 못하기도 합니다.
 
-These topics are not taught as part of the university curriculum: students are
-never shown how to use these tools, or at least not how to use them
-efficiently, and thus waste time and effort on tasks that _should_ be simple.
-The standard CS curriculum is missing critical topics about the computing
-ecosystem that could make students' lives significantly easier.
+대학 교과과정에서는 이런 주제를 다루지 않습니다. 도구를 사용하는 법, 적어도 효율적으로 사용하는 법을 배우지 못한 학생들은 간단해야 할 일에 시간과 노력을 낭비합니다. 표준 CS 교과과정에는 학생들의 생활을 훨씬 편하게 만들어 줄 컴퓨팅 생태계의 중요한 주제들이 빠져 있습니다.
 
-# The missing semester of your CS education
+# 여러분의 CS 교육에서 누락된 학기
 
-To help remedy this, we created a class that covers all the topics we
-consider crucial to be an effective computer scientist and programmer. The
-class is pragmatic and practical, and it provides hands-on introduction to
-tools and techniques that you can immediately apply in a wide variety of
-situations you will encounter. The latest iteration of this class, with
-substantially revised material, is being run during MIT's "Independent
-Activities Period" in January 2026 — a one-month semester that features shorter
-student-run classes. While the lectures themselves are only available to the MIT
-community, we will provide all lecture materials along with video recordings of
-lectures to the public.
+이 공백을 메우고자, 유능한 컴퓨터 과학자와 프로그래머가 되는 데 중요하다고 생각하는 주제를 모아 수업을 만들었습니다. 실용적인 수업으로, 여러분이 마주칠 여러 상황에 바로 적용할 수 있는 도구와 기법을 직접 사용해 봅니다. 자료를 크게 개편한 최신 수업은 2026년 1월 MIT의 독립 활동 기간(Independent Activities Period)에 진행됩니다. 학생들이 운영하는 짧은 수업들로 구성된 한 달짜리 학기입니다. 현장 강의에는 MIT 구성원만 참여할 수 있지만, 모든 강의 자료와 녹화 영상은 공개합니다.
 
-If this sounds like it might be for you, here are some concrete
-examples of what the class will teach:
+관심이 생겼다면, 이 수업에서 무엇을 배우는지 구체적인 예를 살펴보세요.
 
-## Command shell
+## 명령 셸
 
-How to automate common and repetitive tasks with aliases, scripts,
-and build systems. No more copy-pasting commands from a text
-document. No more "run these 15 commands one after the other". No
-more "you forgot to run this thing" or "you forgot to pass this
-argument".
+별칭, 스크립트, 빌드 시스템으로 흔히 하는 반복 작업을 자동화합니다. 텍스트 문서에서 명령어를 복사해 붙여 넣거나, 명령어 15개를 순서대로 실행할 필요가 없어집니다. 명령어나 인자를 빠뜨려 생기는 실수도 줄일 수 있습니다.
 
-For example, searching through your history quickly can be a huge time saver. In the example below we show several tricks related to navigating your shell history for `convert` commands.
+예를 들어 명령어 기록을 빠르게 검색하면 시간을 크게 절약할 수 있습니다. 아래에서는 셸 기록에서 `convert` 명령을 찾는 여러 요령을 보여 줍니다.
 
-<video autoplay="autoplay" loop="loop" controls muted playsinline  oncontextmenu="return false;"  preload="auto"  class="demo">
+<video autoplay="autoplay" loop="loop" controls muted playsinline oncontextmenu="return false;" preload="auto" class="demo">
   <source src="/static/media/demos/history.mp4" type="video/mp4">
 </video>
 
-## Version control
+## 버전 관리
 
-How to use version control _properly_, and take advantage of it to
-save you from disaster, collaborate with others, and quickly find and
-isolate problematic changes. No more `rm -rf; git clone`. No more
-merge conflicts (well, fewer of them at least). No more huge blocks
-of commented-out code. No more fretting over how to find what broke
-your code. No more "oh no, did we delete the working code?!". We'll
-even teach you how to contribute to other people's projects with pull
-requests!
+버전 관리를 *제대로* 활용하여 실수에 대비하고, 다른 사람과 협업하고, 문제를 일으킨 변경을 빠르게 찾아 분리하는 법을 배웁니다. `rm -rf; git clone`으로 처음부터 다시 시작하거나, 많은 코드를 주석 처리해 남겨 둘 필요가 없습니다. 병합 충돌도 줄일 수 있습니다. 무엇 때문에 코드가 망가졌는지, 잘 작동하던 코드를 지워 버린 것은 아닌지 걱정할 일도 줄어듭니다. 풀 리퀘스트로 다른 사람의 프로젝트에 기여하는 법도 배웁니다.
 
-In the example below we use `git bisect` to find which commit broke a unit test and then we fix it with `git revert`.
-<video autoplay="autoplay" loop="loop" controls muted playsinline  oncontextmenu="return false;"  preload="auto"  class="demo">
+아래에서는 `git bisect`로 단위 테스트를 망가뜨린 커밋을 찾고 `git revert`로 되돌립니다.
+
+<video autoplay="autoplay" loop="loop" controls muted playsinline oncontextmenu="return false;" preload="auto" class="demo">
   <source src="/static/media/demos/git.mp4" type="video/mp4">
 </video>
 
-## Text editing
+## 텍스트 편집
 
-How to efficiently edit files from the command-line, both locally and
-remotely, and take advantage of advanced editor features. No more
-copying files back and forth. No more repetitive file editing.
+로컬과 원격 환경의 명령줄에서 파일을 효율적으로 편집하고, 편집기의 고급 기능을 활용하는 법을 배웁니다. 파일을 이리저리 복사하거나 같은 편집을 반복하지 않아도 됩니다.
 
-Vim macros are one of its best features, in the example below we quickly convert an html table to csv format using a nested vim macro.
-<video autoplay="autoplay" loop="loop" controls muted playsinline  oncontextmenu="return false;"  preload="auto"  class="demo">
+Vim의 강력한 기능 중 하나는 매크로입니다. 아래에서는 중첩된 Vim 매크로로 HTML 표를 CSV 형식으로 빠르게 변환합니다.
+
+<video autoplay="autoplay" loop="loop" controls muted playsinline oncontextmenu="return false;" preload="auto" class="demo">
   <source src="/static/media/demos/vim.mp4" type="video/mp4">
 </video>
 
-## Remote machines
+## 원격 컴퓨터
 
-How to stay sane when working with remote machines using SSH keys and
-terminal multiplexing. No more keeping many terminals open just to
-run two commands at once. No more typing your password every time you
-connect. No more losing everything just because your Internet
-disconnected or you had to reboot your laptop.
+SSH 키와 터미널 멀티플렉싱으로 원격 컴퓨터에서 편하게 작업하는 법을 배웁니다. 명령 두 개를 동시에 실행하려고 터미널을 여러 개 띄우거나, 접속할 때마다 비밀번호를 입력할 필요가 없습니다. 인터넷 연결이 끊기거나 노트북을 재부팅했다고 작업을 모두 잃을 일도 없습니다.
 
-In the example below we use `tmux` to keep sessions alive in remote servers and `mosh` to support network roaming and disconnection.
+아래에서는 `tmux`로 원격 서버의 세션을 유지하고, `mosh`로 네트워크 전환과 연결 끊김에 대응합니다.
 
-<video autoplay="autoplay" loop="loop" controls muted playsinline  oncontextmenu="return false;"  preload="auto"  class="demo">
+<video autoplay="autoplay" loop="loop" controls muted playsinline oncontextmenu="return false;" preload="auto" class="demo">
   <source src="/static/media/demos/ssh.mp4" type="video/mp4">
 </video>
 
-## Finding files
+## 파일 찾기
 
-How to quickly find files that you are looking for. No
-more clicking through files in your project until you find the one
-that has the code you want.
+필요한 파일을 빠르게 찾는 법을 배웁니다. 원하는 코드가 나올 때까지 프로젝트의 파일을 하나씩 클릭할 필요가 없습니다.
 
-In the example below we quickly look for files with `fd` and for code snippets with `rg`. We also quickly `cd` and `vim` recent/frequent files/folder using `fasd`.
+아래에서는 `fd`로 파일을, `rg`로 코드 조각을 빠르게 찾습니다. `fasd`를 사용해 최근에 사용했거나 자주 사용하는 파일과 폴더를 `cd`와 `vim`으로 바로 엽니다.
 
-<video autoplay="autoplay" loop="loop" controls muted playsinline  oncontextmenu="return false;"  preload="auto"  class="demo">
+<video autoplay="autoplay" loop="loop" controls muted playsinline oncontextmenu="return false;" preload="auto" class="demo">
   <source src="/static/media/demos/find.mp4" type="video/mp4">
 </video>
 
-## Data wrangling
+## 데이터 가공
 
-How to quickly and easily modify, view, parse, plot, and compute over
-data and files directly from the command-line. No more copy pasting
-from log files. No more manually computing statistics over data. No
-more spreadsheet plotting.
+명령줄에서 데이터와 파일을 빠르게 수정하고, 살펴보고, 파싱하고, 그래프로 그리고, 계산하는 법을 배웁니다. 로그 파일에서 복사해 붙여 넣거나, 통계를 손으로 계산하거나, 그래프를 그리려고 스프레드시트를 열 필요가 없습니다.
 
-## Code quality and continuous integration
+## 코드 품질과 지속적 통합
 
-How to use autoformatting, linting, testing, and code coverage tools to improve
-code quality. No more ugly code. No more regressions. No more code that works
-on your computer but crashes on everyone else's.
+자동 서식 지정, 린트, 테스트, 코드 커버리지 도구로 코드 품질을 높이는 법을 배웁니다. 읽기 어려운 코드, 다시 나타나는 버그, 내 컴퓨터에서만 작동하는 코드를 줄일 수 있습니다.
 
-## Beyond the code
+## 코드 밖의 일
 
-How to write great documentation, communicate clearly with open-source
-maintainers, submit actionable issues, and contribute pull requests that get
-merged. No more confused users who can't get started using your software. No
-more ghosting from maintainers.
+좋은 문서를 쓰고, 오픈 소스 유지보수자와 명확하게 소통하고, 해결에 도움이 되는 이슈를 작성하고, 병합할 수 있는 풀 리퀘스트를 만드는 법을 배웁니다. 사용자가 시작 방법을 몰라 헤매거나 유지보수자에게 답변을 받지 못하는 일을 줄일 수 있습니다.
 
-# Conclusion
+# 마무리
 
-This, and more, will be covered across the 9 class lectures, each including
-exercises for you to get more familiar with the tools on your own. If you can't
-wait until January 2026, you can also take a look at the lectures from the
-[previous offering of the course](/2020/), which covers many of the same
-topics.
+이런 주제를 비롯한 여러 내용을 9개 강의에서 다룹니다. 각 강의에는 스스로 도구에 익숙해질 수 있는 연습문제가 있습니다. 2026년 1월까지 기다릴 수 없다면, 비슷한 주제를 많이 다룬 [이전 강의](/2020/)를 먼저 살펴보세요.
 
-We hope to see you in January, whether virtually or in person!
+1월에 온라인으로든 현장에서든 만나기를 바랍니다!
 
-Happy hacking,<br>
-[Anish](https://anish.io/), [Jon](https://thesquareplanet.com/), and [Jose](https://josejg.com/)
+즐겁게 해킹하세요.<br>
+[Anish](https://anish.io/), [Jon](https://thesquareplanet.com/), [Jose](https://josejg.com/)

@@ -1,8 +1,8 @@
 ---
 layout: page
-title: Past Offerings
+title: 지난 강의
 description: >
-  Find all past offerings of Missing Semester.
+  연도별 Missing Semester 강의를 찾아볼 수 있습니다.
 ---
 
 {% comment %} pop to remove default "posts" collection {% endcomment %}
@@ -13,4 +13,4 @@ description: >
 {% endfor %}
 </ul>
 
-Each year's lectures are fully self-contained. We recommend starting with the most recent version of the material. There is variation in the topics covered year to year, so we continue to host notes and videos for earlier versions of this course.
+각 연도의 강의는 그 자체로 완결된 과정입니다. 가장 최근 자료부터 시작하는 것을 권장합니다. 해마다 다루는 주제가 달라 이전 강의의 노트와 영상도 계속 제공합니다.

@@ -1,8 +1,8 @@
 ---
 layout: page
-title: "2020 Lectures"
+title: "2020년 강의"
 description: >
-  Lecture notes and videos for Missing Semester, MIT IAP 2020.
+  MIT IAP 2020 Missing Semester의 강의 노트와 영상입니다.
 permalink: /2020/
 phony: true
 ---
@@ -16,9 +16,9 @@ phony: true
         {% if lecture.ready %}
           <a href="{{ lecture.url }}">{{ lecture.title }}</a>
         {% elsif lecture.noclass %}
-          {{ lecture.title }} [no class]
+          {{ lecture.title }} [휴강]
         {% else %}
-          {{ lecture.title }} [coming soon]
+          {{ lecture.title }} [공개 예정]
         {% endif %}
         {% if lecture.details %}
           <br>
@@ -29,11 +29,11 @@ phony: true
   {% endfor %}
 </ul>
 
-Video recordings of the lectures are available [on YouTube](https://www.youtube.com/playlist?list=PLyzOVJj3bHQuloKGG59rS43e29ro7I57J).
+녹화된 강의 영상은 [YouTube](https://www.youtube.com/playlist?list=PLyzOVJj3bHQuloKGG59rS43e29ro7I57J)에서 볼 수 있습니다.
 
-# Beyond MIT
+# MIT 밖으로
 
-We've also shared this class beyond MIT in the hopes that others may benefit from these resources. You can find posts and discussion on
+더 많은 사람이 이 자료를 활용할 수 있도록 MIT 밖에도 수업을 공개했습니다. 아래에서 관련 글과 토론을 볼 수 있습니다.
 
  - [Hacker News](https://news.ycombinator.com/item?id=22226380)
  - [Lobsters](https://lobste.rs/s/ti1k98/missing_semester_your_cs_education_mit)
@@ -55,6 +55,6 @@ Some more URLs:
 - https://twitter.com/MIT_CSAIL/status/1581313961093484545
 {% endcomment %}
 
-# Acknowledgments
+# 감사의 말
 
-We thank Elaine Mello, Jim Cain, and [MIT Open Learning](https://openlearning.mit.edu/) for making it possible for us to record lecture videos; Anthony Zolnik and [MIT AeroAstro](https://aeroastro.mit.edu/) for A/V equipment; and Brandi Adams and [MIT EECS](https://www.eecs.mit.edu/) for supporting this class.
+강의 영상 녹화를 도와준 Elaine Mello, Jim Cain, [MIT Open Learning](https://openlearning.mit.edu/), 시청각 장비를 지원한 Anthony Zolnik과 [MIT AeroAstro](https://aeroastro.mit.edu/), 수업을 지원한 Brandi Adams와 [MIT EECS](https://www.eecs.mit.edu/)에 감사드립니다.

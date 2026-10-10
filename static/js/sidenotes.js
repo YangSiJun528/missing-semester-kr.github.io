@@ -64,7 +64,7 @@
     ref.className = 'sidenote-ref';
     ref.id = 'sidenote-ref-' + sidenoteIndex;
     ref.setAttribute('data-sidenote', sidenoteIndex);
-    ref.innerHTML = '<span class="sidenote-arrows">›››</span><span class="sidenote-label">note ' + sidenoteIndex + '</span><span class="sidenote-arrows">›››</span>';
+    ref.innerHTML = '<span class="sidenote-arrows">›››</span><span class="sidenote-label">참고 ' + sidenoteIndex + '</span><span class="sidenote-arrows">›››</span>';
     prevElement.parentNode.insertBefore(ref, blockquote);
 
     // Mark original blockquote for mobile display
@@ -89,7 +89,7 @@
     backArrow.className = 'sidenote-back';
     backArrow.href = '#sidenote-ref-' + sidenoteIndex;
     backArrow.textContent = ' ↩';
-    backArrow.title = 'Back to note ' + sidenoteIndex;
+    backArrow.title = '본문의 참고 ' + sidenoteIndex + ' 위치로 돌아가기';
     var lastPara = clone.querySelector('p:last-of-type');
     if (lastPara) {
       lastPara.appendChild(backArrow);
