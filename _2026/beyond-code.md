@@ -1,8 +1,8 @@
 ---
 layout: lecture
-title: "Beyond the Code"
+title: "코드 밖의 일"
 description: >
-  Learn about essential soft skills including documentation, open-source community norms, and AI etiquette.
+  문서화, 오픈 소스 커뮤니티의 관례, AI 사용 예절 등 개발에 필요한 소통 능력을 배웁니다.
 thumbnail: /static/assets/thumbnails/2026/lec8.png
 date: 2026-01-22
 ready: true
@@ -11,408 +11,148 @@ video:
   id: 2DOEATfXT8k
 ---
 
-Being a good software engineer isn't just about writing code that
-works. It's about writing code that others (including future you) can
-understand, maintain, and build upon. It's about communicating
-clearly, contributing thoughtfully, and being a good citizen in the
-ecosystems you participate in—whether open source or proprietary.
+좋은 소프트웨어 엔지니어는 작동하는 코드뿐 아니라 다른 사람과 미래의 자신이 이해하고 유지보수하고 확장할 수 있는 코드를 작성합니다. 명확하게 소통하고, 신중하게 기여하며, 오픈 소스든 비공개 프로젝트든 자신이 참여하는 생태계의 책임 있는 구성원으로 행동합니다.
 
-# One-way communication
+# 글로 전달하기
+{: #one-way-communication}
 
-Much of software engineering involves writing for people who lack your
-current context: teammates who join later, maintainers who inherit
-your code, or yourself in six months when you've forgotten why you
-made a particular choice. A key piece of advice for all this kind of
-writing is that your goal is to capture and convey the *why*, not just
-the *what*. The what tends to be self-explanatory, while the *why* is
-hard-earned knowledge that is easily lost to time.
+소프트웨어 공학에서는 지금의 맥락을 모르는 사람을 위해 글을 쓰는 일이 많습니다. 나중에 합류할 동료, 코드를 물려받을 유지보수자, 결정을 내린 이유를 잊은 6개월 뒤의 자신이 독자입니다. 핵심은 *무엇*뿐 아니라 *왜*를 기록하고 전달하는 것입니다. 무엇을 했는지는 대개 드러나지만, 이유는 어렵게 얻고도 시간이 지나면 쉽게 사라지는 지식입니다.
 
-Perhaps the most common form of engineer-to-engineer communication
-(apart from the code itself) is code comments. I've personally found
-that a lot of code comments are useless. But they don't have to be! Good
-comments explain things that the code itself cannot: *why* something is
-done a particular way, not *how* it works (which is what the code
-shows). They can save hours of confusion, while bad comments add noise
-or, worse, mislead.
+코드 자체를 제외하면 개발자 사이에서 가장 흔한 소통 수단은 주석일 것입니다. 쓸모없는 주석도 많지만 꼭 그래야 하는 것은 아닙니다. 좋은 주석은 코드가 보여 주는 작동 방식보다 왜 그렇게 했는지, 코드만으로는 알 수 없는 내용을 설명합니다. 좋은 주석은 몇 시간의 혼란을 줄이고, 나쁜 주석은 잡음을 더하거나 오해를 만듭니다.
 
-Types of comments that are nearly always worthwhile:
+대체로 가치 있는 주석 유형은 다음과 같습니다.
 
-- **TODOs**: Mark incomplete or unpolished code, but leave enough
-  context for someone else to understand what's outstanding and why it
-  was deferred. "TODO: optimize" is useless; "TODO: this O(n²) loop is
-  fine for `n<100`, but will need indexing if we scale" is actionable.
-- **References**: Link to external sources when code implements an
-  algorithm from a paper, adapts code from elsewhere, or encodes
-  behaviour specified in documentation. Use permalinks. Note any
-  divergences from the reference.
-- **Correctness arguments**: Explain *why* non-trivial code produces
-  correct results. The code shows the steps; a comment explains why
-  those steps work.
-- **Hard-learned lessons**: If you spent 30+ minutes debugging something
-  and the fix is a non-obvious incantation, document it. Your past self
-  didn't realize it was needed; future readers won't either.
-- **Rationale for constants**: Magic numbers deserve explanation. Why
-  1492? Why 16 bits? Was it chosen randomly, derived from testing, or
-  required for correctness? Even "chosen arbitrarily" is useful
-  information.
-- **Load-bearing choices**: If correctness depends on a
-  seemingly-innocent implementation detail (e.g., "must be a BTreeSet
-  because iteration order matters below"), call it out explicitly.
-- **"Why not"s**: When you deliberately avoid the obvious approach,
-  explain why. Otherwise someone will "fix" it later and break things.
+- **TODO**: 미완성 부분을 표시하되 무엇이 남았고 왜 미뤘는지 이해할 맥락을 남기세요. "TODO: 최적화"보다 "TODO: 이 O(n²) 반복문은 `n<100`에서는 괜찮지만 규모가 커지면 인덱싱이 필요하다"가 실행에 옮기기 쉽습니다.
+- **참고 출처**: 논문의 알고리즘을 구현하거나 외부 코드를 변형하거나 문서의 규정된 동작을 구현했다면 영구 링크를 남기고 원본과 다른 점을 적으세요.
+- **정당성 설명**: 복잡한 코드가 왜 올바른 결과를 내는지 설명하세요. 코드는 절차를, 주석은 그 절차가 성립하는 이유를 보여 줍니다.
+- **어렵게 얻은 교훈**: 30분 넘게 디버깅해서 찾은 해결책이 직관적이지 않다면 기록하세요. 과거의 자신이 필요성을 몰랐다면 미래의 독자도 모를 것입니다.
+- **상수의 근거**: 왜 1492인지, 왜 16비트인지 설명하세요. 임의로 골랐는지, 실험 결과인지, 정확성을 위한 필수 조건인지가 중요합니다. "임의로 선택했다"도 유용한 정보입니다.
+- **정확성을 좌우하는 선택**: "아래에서 순회 순서가 중요하므로 반드시 BTreeSet이어야 한다"처럼 사소해 보이는 구현이 정확성에 영향을 준다면 명시하세요.
+- **다른 방법을 쓰지 않은 이유**: 뻔해 보이는 접근을 의도적으로 피했다면 이유를 적으세요. 그렇지 않으면 누군가 나중에 "고친다"며 망가뜨릴 수 있습니다.
 
-READMEs (you have one, right?) are also a common first touch-point with
-other developers. A good one answers four questions immediately: What
-does this do? Why should I care? How do I use it? How do I install it?
-In that order. Structure it like a funnel: a one-liner and maybe a
-visual demo at the top so someone can decide in seconds if this solves
-their problem, then progressively add depth. Show usage before
-installation — people want to see what they're getting before committing
-to setup steps.
+README도 다른 개발자가 처음 접하는 문서입니다. 좋은 README는 순서대로 네 질문에 바로 답합니다. 무엇을 하나요? 왜 필요한가요? 어떻게 사용하나요? 어떻게 설치하나요? 맨 위에 한 줄 설명과 시각적 시연을 두어 몇 초 만에 적합성을 판단하게 하고 점차 깊게 설명하세요. 사람들은 설치에 시간을 쓰기 전에 무엇을 얻는지 알고 싶어 하므로 사용 예를 설치법보다 먼저 보여 주세요.
 
-Commit messages are another kind of "writing for others" that is often
-neglected. They are often written as "fixed blah" or "added foo", and
-while that may be sufficient in some cases, it's easy to forget that
-they form the historical record of *why* the codebase evolved the way it
-did. When someone (including you!) runs `git blame` trying to understand
-a confusing change, good commit messages should give them answers.
+커밋 메시지도 자주 소홀히 여기는 독자를 위한 글입니다. "무엇을 수정", "무엇을 추가"만으로 충분한 경우도 있지만, 코드베이스가 *왜* 그렇게 변했는지 남기는 역사 기록임을 잊기 쉽습니다. 자신을 포함한 누군가 `git blame`으로 낯선 변경을 추적할 때 답을 얻을 수 있어야 합니다.
 
-In general, the body should answer:
-- What problem forced this change?
-- What alternatives did you consider?
-- What are the trade-offs or implications?
-- What might be surprising about this approach?
+보통 본문에는 다음 답이 필요합니다.
 
-> Obviously you should scale detail with complexity. A one-line typo fix
-> needs only a subject. A subtle race condition fix that took hours to
-> debug deserves paragraphs explaining the problem and solution.
+- 어떤 문제 때문에 변경했나요?
+- 어떤 대안을 고려했나요?
+- 어떤 절충과 영향이 있나요?
+- 이 접근에서 예상 밖일 수 있는 부분은 무엇인가요?
 
-For complex changes, it can be useful to follow a Problem → Solution →
-Implications structure: Start with the forcing function or limitation,
-then explain what changed and the key design decisions, and then list
-noteworthy consequences (positive and negative). That last part is
-particularly important; real engineering involves balancing concerns,
-and documenting that a trade-off was intentional prevents future
-developers from thinking you missed the problem.
+> 상세함은 복잡도에 맞추세요. 한 줄 오타 수정은 제목만으로 충분합니다. 몇 시간 걸려 찾은 미묘한 경쟁 조건은 문제와 해법을 여러 문단으로 설명할 가치가 있습니다.
 
-LLMs _can_ be helpful in writing commit messages. However, if you simply
-point one at your change and ask it to write the commit message for the
-change, the LLM will only have access to the _what_, not the _why_. And
-the resulting commit message will thus be mostly descriptive (the
-opposite of what we want!). If you used an LLM to help you make the
-change in the first place, asking the LLM to write the commit in that
-same session can be a much better option since your conversation with
-the LLM is inherently a rich source of context about the change!
-Otherwise, or in addition, a useful trick is to specifically tell the
-LLM you'd like a commit message focused on the "why" (and other nuances
-from the notes above), and then _tell it to query you for missing
-context_. Essentially, you're acting like a MCP "tool" for the coding
-agent that it can use to "read" context.
+복잡한 변경은 문제 → 해결책 → 영향 순서가 유용합니다. 제약이나 계기를 설명하고, 변경과 설계 결정을 소개한 뒤, 좋은 영향과 나쁜 영향을 적습니다. 실제 설계는 여러 요구를 절충하므로, 의도적인 선택임을 기록해야 후속 개발자가 문제를 놓쳤다고 오해하지 않습니다.
 
-As your changes get more complex, make sure to also break up commits
-logically (`git add -p` is your friend). Each commit should represent
-one coherent change that could be understood and reviewed independently.
-Don't mix refactoring with new features or combine unrelated bug fixes,
-as this muddies the story for which changes fixed what problem, and will
-almost certainly slow down the eventual review of your changes. It also
-gives you superpowers through `git bisect`, but that's a story for
-another time.
+LLM도 커밋 메시지 작성에 도움이 될 *수* 있습니다. 하지만 diff만 보여 주면 *무엇*만 알고 *왜*는 모르므로 변경 나열에 머물기 쉽습니다. LLM과 함께 작업했다면 같은 대화에서 메시지를 쓰게 하는 편이 좋습니다. 대화에는 변경 맥락이 풍부하기 때문입니다. 또는 "왜"에 집중하고 부족한 맥락은 자신에게 질문하도록 요청하세요. 사용자가 에이전트에 맥락을 읽게 해 주는 MCP "도구"처럼 역할하는 셈입니다.
 
-> One note as you start being more diligent about technical writing, and
-> using it more extensively, make sure you respect the reader. It's easy
-> to end up over-explaining once you start, but you have to resist that
-> urge lest the reader read _none_ of what you've written. Explain the
-> "why" and trust them to figure out the "how" for their situation.
+변경이 복잡해질수록 논리적으로 커밋을 나누세요. `git add -p`가 유용합니다. 각 커밋은 독립적으로 이해하고 검토할 수 있는 일관된 변경이어야 합니다. 리팩터링과 새 기능, 관계없는 버그 수정을 섞으면 어떤 변경이 어떤 문제를 풀었는지 흐려지고 리뷰가 느려집니다. 잘 나눈 커밋은 `git bisect`도 강력하게 만들어 줍니다.
 
-# Collaboration
+> 기술 문서를 더 열심히 쓸수록 독자를 존중하세요. 지나친 설명은 아무것도 읽지 않게 만들 수 있습니다. "왜"를 설명하고 자신의 상황에 맞는 "어떻게"는 독자가 알아낼 수 있다고 믿으세요.
 
-As engineers, we may spend a large part of our job coding at our own
-keyboard, but a sizeable chunk of our time is also taken up by
-communicating with others. That time is usually split into collaboration
-and education, and the payoff from investing in getting better at both is
-significant.
+# 협업
+{: #collaboration}
 
-## Contributing
+개발자는 키보드 앞에서 코딩하는 시간도 많지만, 다른 사람과 소통하는 시간도 상당합니다. 주로 협업과 배움에 쓰이며, 두 능력을 키우는 투자는 큰 효과가 있습니다.
 
-Whether you are submitting a bug report, contributing a simple bug fix,
-or implementing a huge feature, it's worth keeping in mind that there
-are usually orders of magnitude more users than there are contributors,
-and an order of magnitude more contributors than there are maintainers.
-As a result, maintainer time is highly oversubscribed. If you want to
-increase the likelihood that your contribution goes somewhere
-productive, you have to ensure that your contributions carry a high
-signal-to-noise ratio and are worth the maintainers' time.
+## 기여하기
+{: #contributing}
 
-For example, a good bug report respects the maintainer's time by
-providing everything needed to understand and reproduce the problem:
+버그 보고, 작은 수정, 큰 기능 구현 모두에서 기억할 점이 있습니다. 대개 사용자는 기여자보다 훨씬 많고, 기여자는 유지보수자보다 훨씬 많습니다. 따라서 유지보수자의 시간에는 수요가 몰립니다. 기여가 성과로 이어지려면 불필요한 내용은 줄이고 유지보수자가 시간을 쓸 가치가 있는 정보를 제공해야 합니다.
 
-- **Environment**: OS, version numbers, relevant configuration
-- **What you expected** vs **what actually happened**
-- **Steps to reproduce**: Be specific. "Click the button" is less useful
-  than "Click the Submit button on the /settings page while logged in as
-  an admin."
-- **What you've already tried**: This prevents duplicate suggestions and
-  shows you've done some investigation
+좋은 버그 보고는 문제를 이해하고 재현하는 데 필요한 내용을 갖춥니다.
 
-> If you find a security vulnerability, don't post it publicly. Contact
-> the maintainers privately first and give them reasonable time to fix
-> it before disclosure. Many projects have a SECURITY.md file or
-> similar for this purpose.
+- **환경**: 운영체제, 버전, 관련 설정.
+- **기대한 결과와 실제 결과**.
+- **재현 절차**: "버튼 클릭"보다 "관리자로 로그인한 상태에서 /settings 페이지의 Submit 버튼 클릭"처럼 구체적으로 씁니다.
+- **이미 시도한 방법**: 중복 제안을 줄이고 조사한 내용을 전달합니다.
 
-**Make sure you search for existing issues.** Your bug or feature
-request may already be reported, and it's far better to add information
-to existing discussions rather than creating duplicates. Not to mention,
-it reduces noise for the maintainers.
+> 보안 취약점을 찾았다면 공개적으로 올리지 마세요. 유지보수자에게 비공개로 먼저 연락하고 수정할 시간을 주세요. 많은 프로젝트가 `SECURITY.md` 등에 절차를 안내합니다.
 
-Minimal reproducible examples are gold, if you can come up with one.
-They save the maintainer a huge amount of time and effort, and
-reliably reproducing the bug is often the hardest part of fixing it. Not
-to mention, the effort you put into isolating the problem often helps
-you understand it better too, and sometimes leads you to find a fix
-yourself.
+**기존 이슈를 먼저 검색하세요.** 이미 보고된 버그나 요청이라면 중복 이슈보다 기존 논의에 정보를 더하는 편이 좋고 유지보수자의 부담도 줄입니다.
 
-If you don't hear back right away, keep in mind that maintainers are
-often volunteers with limited time. If you're waiting for a reply from
-them, a polite follow-up after a couple weeks is fine; daily pings are
-not. Similarly, "me too" comments, or bug reports that are just a
-copy-paste of some terminal output tend to be a net-negative in terms of
-getting traction for your issue.
+최소 재현 예제를 만들 수 있다면 큰 도움이 됩니다. 유지보수자의 시간과 노력을 크게 줄이며, 안정적인 재현이 수정의 가장 어려운 부분인 경우도 많습니다. 문제를 좁히는 과정에서 자신도 더 잘 이해하고 직접 해결책을 찾기도 합니다.
 
-If you're looking to make a code contribution, you'll also want to
-familiarize yourself with the contribution guidelines. Many projects
-have a `CONTRIBUTING.md` — follow it. You'll also usually want to start
-small; a typo fix or documentation improvement is a great first
-contribution as it helps you learn the project's processes without also
-having to go through lots of back and forth on the content.
+답이 바로 오지 않더라도 유지보수자는 시간이 한정된 자원봉사자일 수 있습니다. 몇 주 뒤 정중히 후속 문의를 하는 것은 괜찮지만 매일 재촉하지 마세요. "저도 그래요"나 터미널 출력만 붙여 넣은 보고는 문제 해결에 오히려 도움이 되지 않는 경우가 많습니다.
 
-> Check what license the project uses, as any code you contribute will
-> fall under the same license. In particular, look out for copyleft
-> licenses (like GPL), which requires derivatives to also be open source
-> and may have implications for your employer if you touch it!
-> [choosealicense.com](https://choosealicense.com/) has more useful
-> information.
+코드 기여를 하려면 기여 지침도 익히세요. `CONTRIBUTING.md`가 있으면 따르세요. 처음에는 오타나 문서 개선처럼 작은 작업이 좋습니다. 내용에 대한 긴 논의 없이 프로젝트 절차를 익힐 수 있습니다.
 
-When you've decided to open a pull request ("PR"), first make sure you
-isolate the change you actually want to be accepted. If your PR changes
-lots of other unrelated things at the same time, chances are the
-reviewer will send it back to you asking you to clean it up. This is
-similar to how you should break down your git commits into semantically
-related chunks.
+> 기여 코드에도 프로젝트의 라이선스가 적용되므로 확인하세요. GPL 같은 카피레프트 라이선스는 파생물에도 소스 공개 등의 조건을 요구할 수 있어 고용주와 관련된 영향도 살펴봐야 합니다. [choosealicense.com](https://choosealicense.com/)에 유용한 정보가 있습니다.
 
-In some cases, if you have many seemingly-disparate changes but
-they're all needed to enable one feature, it may be okay to open a
-larger PR that captures all the changes. However, in this case, commit
-hygiene is particularly important so that maintainers have the option
-to review the change "commit by commit".
+풀 리퀘스트(PR)를 열기로 했다면 받아들여지길 원하는 변경을 분리하세요. 무관한 수정이 많이 섞여 있으면 정리해 달라는 요청을 받기 쉽습니다. Git 커밋을 의미 있는 단위로 나누는 것과 같은 원리입니다.
 
-Next, make sure you explain the "why" behind the change well. Don't just
-describe _what_ changed — explain _why_ the change is needed and _why_
-this is a good way to address the problem. You should also proactively
-call out parts of the change that warrant special attention in the
-review, if any. Depending on `CONTRIBUTING.md` and the nature of your
-change, reviewers may also expect to see additional information like
-trade-offs you made or how to test the change.
+겉으로는 다른 변경이지만 한 기능에 모두 필요하다면 큰 PR도 괜찮을 수 있습니다. 이때는 유지보수자가 커밋별로 검토할 수 있도록 커밋 구성이 특히 중요합니다.
 
-> We recommend contributing back to upstream projects rather than
-> "forking" the project, at least as a first approach. Forking (license
-> permitting) should be reserved for when the contributions you want to
-> make are out of scope for the original project. If you do fork, make
-> sure you acknowledge the original project!
+무엇을 바꿨는지뿐 아니라 왜 필요하고 왜 이 해법이 적절한지 설명하세요. 특별히 검토할 부분도 미리 짚으세요. 기여 지침과 변경 성격에 따라 절충점이나 테스트 방법을 요구할 수도 있습니다.
 
-AI makes it incredibly easy to generate plausible-looking code and PRs
-quickly, but this doesn't excuse you from understanding what you're
-contributing. Submitting AI-generated code you can't explain burdens
-maintainers with reviewing and potentially maintaining code that even
-its author doesn't understand. It's fine to use AI to help you
-identify issues and produce fixes/features, **so long as you still do
-the due diligence** to polish it into a worthwhile contribution, rather
-than passing that work on to the (already-overloaded) maintainers.
+> 우선은 독립적인 포크 프로젝트를 유지하기보다 원본에 기여하는 것을 권합니다. 별도 포크는 원하는 변화가 원본 프로젝트의 범위를 벗어날 때 라이선스가 허용하는 한에서 고려하세요. 포크한다면 원본 프로젝트를 명시하세요!
 
-Remember that for maintainers, accepting a PR means accepting long-term
-responsibility. They will be maintaining this code long after the
-contributor has moved on, and so may decline changes that are
-well-intentioned but don't fit the project's direction, add complexity
-they don't want to maintain, or where the need simply isn't sufficiently
-well-documented. It's on _you_ as the contributor to make the case for
-why accepting the contribution is worth the maintenance burden.
+AI로 그럴듯한 코드와 PR을 빠르게 만들 수 있어도 자신이 기여하는 내용을 이해할 책임은 사라지지 않습니다. 설명할 수 없는 코드를 제출하면 작성자조차 모르는 코드의 검토·유지 책임이 유지보수자에게 넘어갑니다. 문제 탐색과 수정·구현에 AI를 쓰는 것은 괜찮지만, **기여할 가치가 있도록 직접 검토하고 다듬어야 합니다**. 이미 바쁜 유지보수자에게 그 일을 넘기지 마세요.
 
-> When receiving feedback on a PR, remember that your code is not you!
-> Reviewers are trying to make the code better, not criticizing you
-> personally. Ask clarifying questions if you disagree — you might learn
-> something, or maybe they will.
+PR 수락은 장기적인 책임을 받아들이는 일입니다. 기여자가 떠난 뒤에도 유지보수자는 코드를 관리합니다. 선의의 변경도 방향에 맞지 않거나, 부담스러운 복잡성을 추가하거나, 필요성이 충분히 설명되지 않으면 거절될 수 있습니다. 유지 비용을 감수할 가치가 있음을 설명할 책임은 기여자에게 있습니다.
 
-## Reviewing
+> 코드와 자신을 동일시하지 마세요. 리뷰어는 코드를 개선하려는 것이지 사람을 비난하는 것이 아닙니다. 동의하지 않으면 구체적으로 질문하세요. 어느 쪽이든 새로 배울 수 있습니다.
 
-You might think code review is something senior developers do, but
-you'll likely be asked to review code much earlier than you expect, and
-your perspective is valuable. Fresh eyes catch things that experienced
-developers overlook, and questions from someone less familiar with the
-code often reveal assumptions that should be documented or simplified.
+## 리뷰하기
+{: #reviewing}
 
-Review is also one of the fastest ways to learn. You'll see how others
-approach problems, pick up patterns and idioms, and develop intuition
-for what makes code readable. Beyond personal growth, reviews catch bugs
-before they reach production, spread knowledge across the team, and
-improve code quality through collaboration. They are not merely
-bureaucratic overhead.
+코드 리뷰가 선임 개발자만의 일처럼 느껴져도 생각보다 일찍 맡게 될 수 있습니다. 새로운 시각은 숙련자가 놓친 부분을 잡고, 익숙하지 않은 사람의 질문은 문서화하거나 단순화해야 할 가정을 드러냅니다.
 
-Good code review is a skill you need to hone over time, but there are
-some tips that can make them much better much faster:
+리뷰는 빠른 학습 방법이기도 합니다. 다른 사람의 접근법과 관용구를 배우고 읽기 좋은 코드에 대한 감각을 키웁니다. 운영 전에 버그를 찾고, 팀에 지식을 공유하고, 함께 코드 품질을 높이므로 단순한 행정 절차가 아닙니다.
 
-- **Review the code, not the person**:
-  "This function is confusing" vs "You wrote confusing code."
-- **Prefer actionable comments**:
-  "Can you replace these globals with a config dataclass" is an easier
-  comment to address than "Don't use globals here"
-- **Ask questions rather than making demands**:
-  "What happens if X is null here?" invites discussion better than
-  "Handle the null case."
-- **Explain the "why"**:
-  "Consider using a constant here" is less useful than "Consider using a
-  constant here so we can easily adjust the timeout based on
-  environment."
-- **Distinguish blocking issues from suggestions**:
-  Be clear about what must change versus what's a matter of preference.
-- **Acknowledge what's good**:
-  Pointing out clever solutions or clean implementations is encouraging
-  and helps the author know what to continue doing.
-- **Know when to stop**:
-  Contributors only have so much time and patience, and it's not always
-  best spent handling all the nits. Focus on the big things, and
-  consider tidying up nits yourself after the fact.
+시간을 들여 익혀야 하지만 다음 요령이 도움이 됩니다.
 
-> AI tools can catch certain issues, but they're not a substitute for
-> human review. They miss context, don't understand product
-> requirements, and can confidently suggest wrong things. They're worth
-> using as a first pass, but not a replacement for thoughtful human
-> review.
+- **사람보다 코드에 의견을 주세요**: "헷갈리는 코드를 작성하셨네요"보다 "이 함수가 이해하기 어렵습니다"라고 하세요.
+- **실행 가능한 제안을 하세요**: "전역 변수를 쓰지 마세요"보다 "이 전역 변수들을 설정 dataclass로 바꿀 수 있을까요?"가 대응하기 쉽습니다.
+- **요구보다 질문을 하세요**: "null을 처리하세요"보다 "여기서 X가 null이면 어떻게 되나요?"가 논의에 좋습니다.
+- **이유를 설명하세요**: "상수를 쓰세요"보다 "환경별로 타임아웃을 쉽게 바꾸도록 상수를 쓰면 좋겠습니다"가 유용합니다.
+- **필수 수정과 제안을 구분하세요**: 반드시 바꿀 문제인지 선호인지 분명히 하세요.
+- **좋은 점도 짚으세요**: 명료한 구현이나 좋은 해법을 알려 주면 작성자가 계속할 방식을 알 수 있습니다.
+- **멈출 때를 아세요**: 기여자의 시간과 인내도 한정되어 있습니다. 큰 문제에 집중하고 사소한 정리는 나중에 직접 처리하는 방안도 고려하세요.
 
-# Education
+> AI는 일부 문제를 찾는 데 유용하지만 사람의 리뷰를 대신하지 않습니다. 맥락과 제품 요구를 놓치고 잘못된 제안을 확신할 수 있습니다. 첫 검토에 활용하되 신중한 사람의 검토를 대체하지 마세요.
 
-A lot of our non-coding time as engineers is spent either asking or
-answering questions, possibly a mixture of both; during collaboration,
-in dialogue with peers, or while trying to learn. Asking good questions
-is a skill that makes you better at learning from anyone, not just
-perfect explainers. Julia Evans has some excellent blog posts on "[How
-to ask good questions](https://jvns.ca/blog/good-questions/)" and "[How
-to get useful answers to your
-questions](https://jvns.ca/blog/2021/10/21/how-to-get-useful-answers-to-your-questions/)"
-that are worth reading.
+# 배우고 가르치기
+{: #education}
 
-Some particularly valuable pieces of advice are:
+코딩 이외의 시간에는 협업, 동료와의 대화, 학습 과정에서 질문하고 답하는 일이 많습니다. 좋은 질문을 하면 설명을 아주 잘하는 사람뿐 아니라 누구에게서든 더 잘 배울 수 있습니다. Julia Evans의 [좋은 질문을 하는 법](https://jvns.ca/blog/good-questions/)과 [유용한 답을 얻는 법](https://jvns.ca/blog/2021/10/21/how-to-get-useful-answers-to-your-questions/)을 읽어보세요.
 
-- **State your understanding first**: Say what you think you know and
-  ask "is that right?" This helps the answerer identify your actual
-  knowledge gaps.
-- **Ask yes/no questions**: "Is X true?" prevents tangential
-  explanations and usually prompts useful elaboration anyway.
-- **Be specific**: "How do SQL joins work?" is too vague. "Does a LEFT
-  JOIN include rows where the right table has no match?" is answerable.
-- **Admit when you don't understand**: Interrupt to ask about unfamiliar
-  terms. This reflects confidence, not weakness. Similarly, if they ask
-  questions of you that you do not know the answer to, it's best to say
-  "I don't know", and possibly follow up with "but I think ..." or even
-  "but I can find out".
-- **Don't accept incomplete answers**: Keep asking follow-ups until you
-  actually understand.
-- **Do some research first**: Basic investigation helps you ask more
-  targeted questions (though casual questions among colleagues are
-  fine).
+특히 다음 조언이 유용합니다.
 
-Remember: well-crafted questions benefit entire communities. They
-surface hidden assumptions that others need to understand too.
+- **먼저 자신이 이해한 내용을 말하세요**: 알고 있다고 생각하는 내용을 설명하고 맞는지 물으면 실제로 부족한 부분을 찾기 쉽습니다.
+- **예·아니요로 답할 질문을 하세요**: "X가 맞나요?"는 논점이 벗어나는 것을 줄이고 유용한 부연도 유도합니다.
+- **구체적으로 물으세요**: "SQL 조인은 어떻게 작동하나요?"보다 "LEFT JOIN은 오른쪽 테이블에 대응 행이 없어도 포함하나요?"가 답하기 쉽습니다.
+- **모르면 인정하세요**: 낯선 용어가 나오면 멈추고 질문하세요. 약점이 아니라 자신감의 표현입니다. 자신에게 온 질문도 모르면 "모르겠습니다"라고 하고, 필요하면 "하지만 제 생각에는…" 또는 "알아보겠습니다"라고 덧붙이세요.
+- **불완전한 답에 멈추지 마세요**: 실제로 이해할 때까지 후속 질문을 하세요.
+- **먼저 조금 조사하세요**: 기본적인 조사가 질문을 구체적으로 만듭니다. 물론 동료 사이의 가벼운 질문도 괜찮습니다.
 
-> Note that this advice applies just as much when communicating with
-> LLMs!
+좋은 질문은 다른 사람도 알아야 할 숨은 가정을 드러내므로 커뮤니티 전체에 도움이 됩니다.
 
-# AI etiquette
+> LLM과 대화할 때도 같은 조언이 적용됩니다!
 
-With the growing use of LLMs and AI across software engineering, the
-social and professional norms around are still in flux. We already
-covered many of the tactical considerations in the [agentic coding
-lecture](/2026/agentic-coding/), but there are also "softer" parts of
-their use that are worth discussing.
+# AI 사용 예절
+{: #ai-etiquette}
 
-The first of these is that when AI meaningfully contributed to your
-work, **disclose it**. This isn't about shame — it's about honesty,
-setting appropriate expectations, and ensuring the resulting work gets
-the appropriate level of review. It's also worthwhile to disclose which
-_parts_ you use AI for — there's a meaningful distinction between "this
-whole thing is vibecoded" and "I wrote this backup tool and used an LLM
-to style the web frontend". For example, we've used LLMs to help write
-some of these lecture notes, including proofreading, brainstorming, and
-generating first drafts of code snippets and exercises.
+소프트웨어 공학에서 LLM과 AI 사용이 늘며 사회적·직업적 관례도 바뀌고 있습니다. [에이전트 코딩 강의](/2026/agentic-coding/)의 실무적 고려 외에도 사용 태도에 관해 논의할 부분이 있습니다.
 
-You'll also want to follow the norms of the teams and projects you're
-contributing to here. Some teams have stricter policies around the use
-of AI than others (e.g., for compliance or data residency reasons), and
-you don't want to accidentally run afoul of that. Being open about your
-use helps prevent potentially costly mistakes.
+AI가 작업에 의미 있게 기여했다면 **밝히세요**. 정직하게 기대치를 맞추고 필요한 수준의 검토를 받기 위해서입니다. 어느 *부분*에 썼는지도 알려 주세요. "전부 바이브 코딩했다"와 "백업 도구는 직접 만들고 웹 화면 스타일에만 LLM을 썼다"는 다릅니다. 강사진도 이 노트의 교정, 아이디어 탐색, 코드 예제·연습문제의 초안 작성에 LLM을 활용했습니다.
 
-> If you're aiming to learn as part of the work you're doing, keep in
-> mind that if you have AI do all or most of the work for you can be
-> self-defeating; you're likely to learn more about prompting (and maybe
-> reviewing AI output) than the task itself. Especially when you're
-> learning, the point may be the journey, not the destination, so using
-> AI to "get the solution quickly" is an anti-goal.
+참여하는 팀과 프로젝트의 관례도 따르세요. 규정 준수나 데이터 보관 위치 등의 이유로 더 엄격한 정책을 둔 곳도 있습니다. 사용을 공개하면 비용이 큰 실수를 예방할 수 있습니다.
 
-A related concern comes up in interviews and other assessment
-situations. These are often intended to specifically evaluate _your_
-skills and abilities, not those of an LLM. More companies now allow you
-to use LLMs and other AI-assisted tooling in interviews as long as you
-let them observe those interactions as part of the interview (i.e., they
-are evaluating your skill in making use of those tools too!), but those
-are still in the minority. If you are unsure about whether AI assistance
-is in scope for a particular task, ask!
+> 학습이 목적이라면 AI에 대부분을 맡기는 것이 목표를 해칠 수 있습니다. 작업 자체보다 프롬프트 작성과 결과 검토만 배울 수 있기 때문입니다. 배움에서는 도착점보다 과정이 중요할 수 있어, 정답을 빨리 얻는 것이 오히려 목표에 어긋납니다.
 
-> It should go without saying that if an assessment situation explicitly
-> calls for no external tools, no LLMs, etc., you should not use them.
-> Trying to do so discretely without getting caught **will** come back
-> to bite you.
+면접과 평가에서도 비슷합니다. 보통 LLM이 아닌 *여러분*의 능력을 평가하려는 자리입니다. 최근에는 AI와의 상호작용을 관찰하는 조건으로 사용을 허용하는 기업도 늘고 있습니다. 도구 활용 능력까지 평가하는 것입니다. 하지만 아직 소수이므로, 허용 여부가 불분명하면 물어보세요.
 
-# Exercises
+> 외부 도구나 LLM을 금지한다고 명시했다면 사용하지 마세요. 들키지 않게 몰래 쓰려는 시도는 결국 문제가 됩니다.
 
-1. Browse the source code of a well-known project (e.g.,
-   [Redis](https://github.com/redis/redis) or
-   [curl](https://github.com/curl/curl)). Find examples of some of the
-   comment types mentioned in the lecture: a useful TODO, a reference to
-   external documentation, a "why not" comment explaining an avoided
-   approach, or a hard-learned lesson. What would be lost if that
-   comment was not there?
+# 연습문제
+{: #exercises}
 
-1. Pick an open-source project you're interested in and look at its
-   recent commit history (`git log`). Find one commit with a good
-   message that explains *why* the change was made, and one with a weak
-   message that only describes *what* changed. For the weak one, look at
-   the diff (`git show <hash>`) and try to write a better commit message
-   following the Problem → Solution → Implications structure. Notice how
-   much work is required to reassemble the necessary context after the
-   fact!
-
-1. Compare the READMEs of three GitHub projects with 1000+ stars. Are
-   all of them equally useful? Look for things that come across mostly
-   as noise to you as a lesson for future READMEs you write yourself.
-
-1. Find an open issue on a project you use (check the "good first issue"
-   or "help wanted" labels if they have it). Evaluate the issue against
-   the criteria from the lecture: does it seem like it values the
-   maintainer's time and contains all the information necessary to debug
-   it, or do you expect that the maintainer may need to go multiple
-   rounds of questions with the submitter to get to the root problem?
-
-1. Think of a bug you've encountered in software you use (or find one in
-   an issue tracker). Practice creating a minimal reproducible example:
-   strip away everything unrelated to the bug until you have the
-   smallest case that still demonstrates the problem. Write up what you
-   removed and why.
-
-1. Find a merged pull request on a project you're familiar with that has
-   substantive review comments (not just "LGTM"). Read through the
-   review. Were all the comments equally productive? If you were the PR
-   author, how would you find the experience of getting all those
-   comments?
-
-1. Go to Stack Overflow and find a question in a technology you know
-   that has a highly-voted answer. Then find one that was closed or
-   heavily downvoted. Compare them against the advice from the lecture;
-   was it predictable which question would get better answers?
+1. [Redis](https://github.com/redis/redis), [curl](https://github.com/curl/curl) 등 유명 프로젝트에서 유용한 TODO, 외부 출처, 피한 접근의 이유, 어렵게 얻은 교훈을 담은 주석을 찾으세요. 없었다면 어떤 정보가 사라질까요?
+1. 관심 있는 프로젝트의 `git log`에서 변경 이유를 잘 설명한 메시지와 변경 내용만 나열한 메시지를 찾으세요. 후자는 `git show <hash>`로 diff를 보고 문제 → 해결책 → 영향 구조로 다시 써 보세요. 나중에 맥락을 복원하는 데 얼마나 많은 일이 필요한지 확인하세요.
+1. 별 1,000개 이상인 GitHub 프로젝트 세 개의 README를 비교하세요. 모두 똑같이 유용한가요? 잡음처럼 느껴지는 내용을 찾아 자신의 README 작성에 참고하세요.
+1. 사용하는 프로젝트에서 열린 이슈를 찾으세요. `good first issue`나 `help wanted` 라벨도 좋습니다. 유지보수자의 시간을 존중하고 디버깅에 필요한 정보를 갖췄나요, 아니면 원인을 이해하려면 여러 차례 질문해야 할까요?
+1. 직접 겪었거나 이슈에서 찾은 버그로 최소 재현 예제를 만드세요. 관련 없는 것을 모두 제거해 문제가 남는 가장 작은 사례를 만들고, 무엇을 왜 제거했는지 기록하세요.
+1. 익숙한 프로젝트에서 "LGTM" 이상의 실질적인 리뷰가 있는 병합된 PR을 찾으세요. 모든 의견이 생산적이었나요? 작성자였다면 그 피드백을 어떻게 느꼈을까요?
+1. 아는 기술에 관한 Stack Overflow 질문 중 높은 평가의 답을 받은 질문과 닫히거나 낮은 평가를 받은 질문을 비교하세요. 강의의 조언으로 어느 질문이 더 좋은 답을 받을지 예상할 수 있었나요?
