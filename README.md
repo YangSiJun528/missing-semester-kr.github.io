@@ -1,4 +1,6 @@
-# The Missing Semester of Your CS Education [[![Build Status](https://travis-ci.com/missing-semester/missing-semester.svg?branch=master)](https://travis-ci.com/missing-semester/missing-semester)]
+# The Missing Semester of Your CS Education
+
+[![Build Status](https://github.com/missing-semester/missing-semester/actions/workflows/build.yml/badge.svg)](https://github.com/missing-semester/missing-semester/actions/workflows/build.yml) [![Links Status](https://github.com/missing-semester/missing-semester/actions/workflows/links.yml/badge.svg)](https://github.com/missing-semester/missing-semester/actions/workflows/links.yml)
 
 Website for [The Missing Semester of Your CS Education](https://missing.csail.mit.edu/)!
 
