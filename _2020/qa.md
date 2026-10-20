@@ -1,11 +1,15 @@
 ---
 layout: lecture
 title: "Q&A"
-date: 2019-01-30
+description: >
+  Answers to student questions on topics like operating systems, shell scripting, tool recommendations, and more.
+thumbnail: /static/assets/thumbnails/2020/lec11.png
+date: 2020-01-30
 ready: true
 video:
-    aspect: 56.25
-    id: Wz50FvGG6xU
+  aspect: 56.25
+  id: Wz50FvGG6xU
+special: true
 ---
 
 마지막 강의에선, 학생들이 등록한 질문을 답변했습니다:
@@ -104,9 +108,9 @@ video:
 프로파일링을 목적으로 사용하는 꽤 도움되는 가장 쉬운 툴은 [시간을 출력하는 것](/2020/debugging-profiling/#timing)입니다.
 여러분은 그저 여러분의 코드에 각각 다른 부분을 시간으로 재어서 확인하는 것입니다. 이를 반복한다면 여러분은 코드를 이중 탐색(binary search)해 어느 부분이 시간이 오래 걸리는지 찾아낼 수 있습니다.
 
-더욱 발전된 툴로써는 Valgrind의 [Callgrind](http://valgrind.org/docs/manual/cl-manual.html)를 사용하면 프로그램을 실행하고 모든 것이 얼마나 걸리는지, 스택 상황은 어떤지, 어떤 함수가 다른 함수를 호출하는지 확인할 수 있습니다. 그리고 Callgrind는 소스코드에 줄별로 얼마나 시간이 걸리는지 주석 처리를 한 새로운 코드를 만들어줍니다. 하지만 Callgrind는 여러분의 프로그램을 더욱 느리게 하고 쓰레드(thread)를 지원하지 않습니다. 다른 경우에는 [`perf`](http://www.brendangregg.com/perf.html) 툴이나 다른 언어에서 지원하는 샘플링 프로파일러 (sampling profiler)를 사용하면 유용한 데이터를 빠르고 예쁘게 내보냅니다. [Flamegraphs](http://www.brendangregg.com/flamegraphs.html)는 위 툴로 나온 데이터를 출력하기 위한 좋은 시각화 도구입니다. 또한, 작업 중인 프로그래밍 언어 또는 작업에 대한 특정 도구도 존재합니다. 예를 들어 웹 개발의 경우, Chrome과 Firefox에 내장된 개발 도구는 환상적인 프로파일러를 가지고 있습니다.
+더욱 발전된 툴로써는 Valgrind의 [Callgrind](https://valgrind.org/docs/manual/cl-manual.html)를 사용하면 프로그램을 실행하고 모든 것이 얼마나 걸리는지, 스택 상황은 어떤지, 어떤 함수가 다른 함수를 호출하는지 확인할 수 있습니다. 그리고 Callgrind는 소스코드에 줄별로 얼마나 시간이 걸리는지 주석 처리를 한 새로운 코드를 만들어줍니다. 하지만 Callgrind는 여러분의 프로그램을 더욱 느리게 하고 쓰레드(thread)를 지원하지 않습니다. 다른 경우에는 [`perf`](https://www.brendangregg.com/perf.html) 툴이나 다른 언어에서 지원하는 샘플링 프로파일러 (sampling profiler)를 사용하면 유용한 데이터를 빠르고 예쁘게 내보냅니다. [Flamegraphs](https://www.brendangregg.com/flamegraphs.html)는 위 툴로 나온 데이터를 출력하기 위한 좋은 시각화 도구입니다. 또한, 작업 중인 프로그래밍 언어 또는 작업에 대한 특정 도구도 존재합니다. 예를 들어 웹 개발의 경우, Chrome과 Firefox에 내장된 개발 도구는 환상적인 프로파일러를 가지고 있습니다.
 
-가끔 여러분의 시스템이 파일을 읽거나 네트워크 패킷을 보내는 등의 이벤트(시스템 호출)를 기다리는 파트가 여러분의 코드 중 가장 느린 곳일 겁니다. 이러면 하드웨어 기능 측면에서 이론적 속도에 대한 내부(back-of-the-envelope) 계산이 실제 판독 값에서 벗어나지 않는지 확인할 필요가 있습니다. 시스템 호출의 대기 시간을 분석할 수 있는 특수 도구도 있습니다. 예를 들어 [eBPF](http://www.brendangregg.com/blog/2019-01-01/learn-ebpf-tracing.html)와 같은 도구는 사용자 프로그램의 커널 추적을 도와줍니다. 만약 이러한 저수준의 프로파일링을 해야 한다면 [`bpftrace`](https://github.com/iovisor/bpftrace)도 사용하면 좋습니다.
+가끔 여러분의 시스템이 파일을 읽거나 네트워크 패킷을 보내는 등의 이벤트(시스템 호출)를 기다리는 파트가 여러분의 코드 중 가장 느린 곳일 겁니다. 이러면 하드웨어 기능 측면에서 이론적 속도에 대한 내부(back-of-the-envelope) 계산이 실제 판독 값에서 벗어나지 않는지 확인할 필요가 있습니다. 시스템 호출의 대기 시간을 분석할 수 있는 특수 도구도 있습니다. 예를 들어 [eBPF](https://www.brendangregg.com/blog/2019-01-01/learn-ebpf-tracing.html)와 같은 도구는 사용자 프로그램의 커널 추적을 도와줍니다. 만약 이러한 저수준의 프로파일링을 해야 한다면 [`bpftrace`](https://github.com/iovisor/bpftrace)도 사용하면 좋습니다.
 
 ## 어떤 브라우저 플러그인을 사용하시나요?
 
@@ -114,9 +118,10 @@ video:
 
 - [uBlock Origin](https://github.com/gorhill/uBlock) - 이 플러그인은 그저 광고만 막지 않고, 페이지가 할 수 있는 [모든 종류](https://github.com/gorhill/uBlock/wiki/Blocking-mode)의 통신을 막는 블로커(blocker)입니다. 심지어 페이지 내 스크립트나 부가적인 리소스 로딩도 다룰 수 있습니다. 이런 차단을 하고 싶다면 [미디엄 모드](https://github.com/gorhill/uBlock/wiki/Blocking-mode:-medium-mode)나 [하드 모드](https://github.com/gorhill/uBlock/wiki/Blocking-mode:-hard-mode)를 사용하면 됩니다. 이 경우 설정을 충분히 변경하기 전에는 일부 사이트가 작동하지 않을 수 있지만, 온라인 보안을 크게 향상할 수 있습니다. 굳이 그럴 필요가 없다면, [이지 모드](https://github.com/gorhill/uBlock/wiki/Blocking-mode:-easy-mode)는 충분히 일반적인 광고나 추적을 막을 수 있습니다. 또한, 추가 설정으로 어떤 거를 막을지 설정할 수 있습니다.
 - [Stylus](https://github.com/openstyles/stylus/) - Stylish의 수정 버전으로 ([사용자의 브라우저 기록을 탈취한 적](https://www.theregister.co.uk/2018/07/05/browsers_pull_stylish_but_invasive_browser_extension/)이 있는 Stylish는 사용하지 마세요!), 웹사이트 별 사용자 정의 CSS을 적용할 수 있게 해줍니다. Stylus를 사용하면 웹 사이트의 모양을 쉽게 수정할 수 있는데, 예를 들어 사이드바를 제거하거나 배경색을 변경하거나 텍스트 크기나 글꼴을 선택할 수 있습니다. 이를 통해 여러분이 자주 방문하는 웹사이트를 더 읽기 쉽게 만들 수 있습니다. 게다가 Stylus를 통해 [userstyles.org](https://userstyles.org/)에 공유된 스타일을 사용하거나 직접 자신의 스타일을 공유할 수 있습니다. 대부분의 웹사이트의 다크 모드 스타일은 거의 userstyle 사이트에 있습니다.
-- Full Page Screen Capture - Firefox와 [Chrome extension](https://chrome.google.com/webstore/detail/full-page-screen-capture/fdpohaocaechififmbbbbbknoalclacl?hl=en) 둘 다 지원됩니다. 참고용으로 페이지를 인쇄하는 거보다 더 좋게 사이트를 전체 스크린샷으로 찍을 수 있습니다.
+- Full Page Screen Capture - [Firefox](https://screenshots.firefox.com/)와 [Chrome extension](https://chrome.google.com/webstore/detail/full-page-screen-capture/fdpohaocaechififmbbbbbknoalclacl?hl=en) 둘 다 지원됩니다. 참고용으로 페이지를 인쇄하는 거보다 더 좋게 사이트를 전체 스크린샷으로 찍을 수 있습니다.
 - [Multi Account Containers](https://addons.mozilla.org/en-US/firefox/addon/multi-account-containers/) - 쿠키들을 "containers" 단위로 분리하면서, 웹에서 서로 다른 정보를 통해 웹서핑할 수 있게 도와주거나 웹사이트 간 사용자 정보를 공유하지 못하도록 막을 수 있습니다.
 - 통합 암호 매니저(Password Manager Integration) - 대부분의 암호 매니저는 웹 사이트에 자격 증명을 입력하는 것이 더 편리할 뿐만 아니라 더 안전하게 만드는 브라우저 확장 기능이 있습니다. 단순히 사용자 및 암호를 복사하는 것에 비해 이러한 도구는 먼저 웹 사이트 도메인이 항목에 나열된 도메인과 일치하는지 확인하여 인기 웹 사이트를 가장하여 자격 증명을 도용하는 피싱 공격을 방지할 수 있습니다.
+- [Vimium](https://github.com/philc/vimium) - Vim 에디터 방식으로 키보드를 사용해 웹을 탐색하고 조작할 수 있는 브라우저 확장 기능입니다.
 
 ## 데이터를 다룰 수 있는 다른 유용한 툴은 무엇이 있나요?
 
@@ -124,7 +129,7 @@ video:
 
 일반적으로 더욱 독특한 데이터 처리 툴은 Vim과 Python입니다. 일부 복잡하고 다중 줄의 변경을 원하는 경우 Vim 매크로는 매우 귀중한 툴이 될 수 있습니다. 일련의 동작을 기록하기만 하면 될 뿐 아니라 원하는 횟수만큼 반복할 수 있는데, 예를 들어 [편집기 렉쳐 노트](/2020/editors/#macros) (그리고 작년 [강의 영상](/2019/editors/))에는 XML-formatted 파일을 Vim 매크로만으로 JSON으로 바꾸는 예시가 있습니다.
 
-CSV로 제공되는 표로 나타낸 데이터들은 Python 라이브러리인 [pandas](https://pandas.pydata.org/)라는 좋은 툴이 있습니다. 그룹별로, 조인(join) 또는 필터와 같은 복잡한 작업을 쉽게 정의할 뿐만 아니라 데이터의 서로 다른 속성을 쉽게 표시할 수 있기 때문입니다. 또한 pandas에선 XLS, HTML, LaTex와 같이 표로 나타낸 다양한 파일 형식으로 변환하는 것을 도와줍니다. 대안으로는 R 프로그래밍 언어 (논의할 필요 없이 [나쁜](http://arrgh.tim-smith.us/) 프로그래밍 언어)에서는 데이터를 통한 통계 계산에 많은 기능이 있으며 파이프라인의 마지막 단계로 상당히 유용할 수 있습니다. [ggplot2](https://ggplot2.tidyverse.org/)는 R의 훌륭한 플롯 라이브러리입니다.
+CSV로 제공되는 표로 나타낸 데이터들은 Python 라이브러리인 [pandas](https://pandas.pydata.org/)라는 좋은 툴이 있습니다. 그룹별로, 조인(join) 또는 필터와 같은 복잡한 작업을 쉽게 정의할 뿐만 아니라 데이터의 서로 다른 속성을 쉽게 표시할 수 있기 때문입니다. 또한 pandas에선 XLS, HTML, LaTex와 같이 표로 나타낸 다양한 파일 형식으로 변환하는 것을 도와줍니다. 대안으로는 R 프로그래밍 언어 (논의할 필요 없이 [나쁜](https://arrgh.tim-smith.us/) 프로그래밍 언어)에서는 데이터를 통한 통계 계산에 많은 기능이 있으며 파이프라인의 마지막 단계로 상당히 유용할 수 있습니다. [ggplot2](https://ggplot2.tidyverse.org/)는 R의 훌륭한 플롯 라이브러리입니다.
 
 ## 도커(Docker)와 가상 머신(Virtual Machine)의 차이점은 무엇인가요?
 

@@ -1,7 +1,10 @@
 ---
 layout: lecture
 title: "Editors (Vim)"
-date: 2019-01-15
+description: >
+  Learn how to use Vim, a powerful text editor designed for efficient code editing.
+thumbnail: /static/assets/thumbnails/2020/lec3.png
+date: 2020-01-15
 ready: true
 video:
   aspect: 56.25
@@ -44,7 +47,7 @@ Vim의 디자인은 많은 프로그래머들이 긴 텍스트 문장을 쓰는�
 - **Normal**: 파일을 탐색하고 편집하는 모드
 - **Insert**: 텍스트 입력 모드
 - **Replace**: 텍스트 변경 모드
-- **Visual** (텍스트 일부, 라인 또는 블럭): 텍스트의 블럭을 선택하는 모드
+- **Visual** (`v`: 텍스트 일부, `V`: 라인, `Ctrl-v`: 블럭): 텍스트의 블럭을 선택하는 모드
 - **Command-line**: 명령어를 실행하는 모드
 
 운용 모드에 따라 키 입력 또한 다른 의미를 가지게 됩니다. 예를 들어, 입력(Insert) 모드의 문자 `x`는 문자 'x'가 입력되는 것으로 끝나지만, 일반(Normal) 모드에서는 커서 아래의 문자가 삭제되고, 비주얼(Visual) 모드에서는 선택된 항목이 삭제됩니다.
@@ -53,7 +56,7 @@ Vim은 기본 설정으로 왼쪽 하단에 현재 모드를 표시합니다. �
 
 어떠한 모드에서 일반 모드로 전환하기 위해선 `<ESC>`(이스케이프 키)를 누르면 됩니다. 반대로 일반 모드에서 입력 모드로 들어가기 위해선 `i`키를 누르면 되고, 변경(Replace) 모드로 들어가기 위해선 `R`키를, 비주얼 모드는 `v`키, 비주얼 라인 모드는 `V`키, 비주얼 블럭 모드는 `<C-v>`(Ctrl-V 또는 `^V`)를, 그리고 명령어(Command-line) 모드는 `:`키를 누르면 해당 모드로 들어가게 됩니다.
 
-여러분은 Vim을 사용하면서 `<ESC>`를 많이 사용하게 될 것입니다. 그렇기에 이스케이프 키를 캡스 락(Caps Lock)으로 변경하는 방안을 고려해보는 것도 좋습니다. ([macOS instructions](https://vim.fandom.com/wiki/Map_caps_lock_to_escape_in_macOS)).
+여러분은 Vim을 사용하면서 `<ESC>`를 많이 사용하게 될 것입니다. 그렇기에 이스케이프 키를 캡스 락(Caps Lock)으로 변경하는 방안을 고려해보는 것도 좋습니다. ([macOS instructions](https://vim.fandom.com/wiki/Map_caps_lock_to_escape_in_macOS)). 또는 [간단한 키 조합을 Esc에 매핑](https://vim.fandom.com/wiki/Avoid_the_escape_key#Mappings)할 수도 있습니다.
 
 # 기초
 
@@ -124,7 +127,7 @@ Vim에서 가장 중요한 아이디어는 Vim의 인터페이스 자체가 프�
     - 예를 들어, `cw`는 단어를 변경
     - `d{motion}` + `i`와 같은 기능
 - `x` 해당 문자 삭제 (`dl`과 동일한 기능)
-- `s` 해당 문자 치환 (`xi`과 동일한 기능)
+- `s` 해당 문자 치환 (`cl`과 동일한 기능)
 - 비주얼 모드 + 조작(manipulation)
     - 텍스트를 선택한 후, `d`로 삭제하거나 `c`로 변경
 - `u` 해당 작업 되돌리기, `<C-r>` 해당 작업 다시 하기
@@ -209,7 +212,7 @@ Vim은 Vimscript 명령을 포함하는 `~/.vimrc` 일반-텍스트 구성 파�
 
 Vim은 강력한 커스터마이징 기능을 제공하기 때문에, 커스터마이징 옵션을 찾아보는 시간은 그 자체로 유익할 것입니다. 여러분은 다른 사람들이 깃허브에 올려놓은 닷파일(dotfile)을 살펴보며 영감을 얻을 수도 있을 것입니다. 예를 들어, 해당 강의의 교사의 Vim 구성은 다음과 같습니다.
 ([Anish](https://github.com/anishathalye/dotfiles/blob/master/vimrc),
-[Jon](https://github.com/jonhoo/configs/blob/master/editor/.config/nvim/init.vim) (uses [neovim](https://neovim.io/)),
+[Jon](https://github.com/jonhoo/configs/blob/master/editor/.config/nvim/init.lua) (uses [neovim](https://neovim.io/)),
 [Jose](https://github.com/JJGO/dotfiles/blob/master/vim/.vimrc))
 이 주제에 대한 좋은 블로그 게시물들도 많이 있습니다. 하지만 다른 사람의 전체 구성을 복사하여 붙여넣지 말고, 읽고 이해한 후 필요한 내용을 가져가시길 바랍니다.
 
@@ -250,15 +253,16 @@ set editing-mode vi
 
 ## 그 밖의 것들
 
-웹 [브라우저](http://vim.wikia.com/wiki/Vim_key_bindings_for_web_browsers)를 위한 Vim 키바인딩 익스텐션도 있습니다. [Vimium](https://chrome.google.com/webstore/detail/vimium/dbepggeogbaibhgnhhndojpepiihcmeb?hl=en)은 유명한 크롬 전용 익스텐션이고 [Tridactyl](https://github.com/tridactyl/tridactyl)은 파이어폭스 전용 익스텐션입니다. 여러분은 [Jupyter notebooks](https://github.com/lambdalisue/jupyter-vim-binding)의 Vim 바인딩을 확인할 수도 있습니다.
+웹 [브라우저](https://vim.fandom.com/wiki/Vim_key_bindings_for_web_browsers)를 위한 Vim 키바인딩 익스텐션도 있습니다. [Vimium](https://chrome.google.com/webstore/detail/vimium/dbepggeogbaibhgnhhndojpepiihcmeb?hl=en)은 유명한 크롬 전용 익스텐션이고 [Tridactyl](https://github.com/tridactyl/tridactyl)은 파이어폭스 전용 익스텐션입니다. 여러분은 [Jupyter notebooks](https://github.com/jupyterlab-contrib/jupyterlab-vim)의 Vim 바인딩을 확인할 수도 있습니다. Vim과 비슷한 키 바인딩을 제공하는 소프트웨어는 [이 긴 목록](https://reversed.top/2016-08-13/big-list-of-vim-like-software)에서도 찾아볼 수 있습니다.
 
 # Vim 심화
+{: #advanced-vim}
 
 다음은 Vim 에디터의 강력한 힘을 보여주는 몇 가지 예입니다. 저희가 이런 것들을 모두 알려드릴 수는 없지만, 앞으로 여러분이 꾸준히 학습해나가게 된다면 충분히 배울 수 있는 내용이라고 생각합니다. 이를 위한 한 가지 좋은 휴리스틱이 있습니다. 여러분이 에디터를 사용할 때, "더 나은 방법이 있을 거야"라고 생각할 때마다, 아마도 온라인에는 여러분이 찾고자 하는 방법이 있을 것입니다.
 
 ## 검색과 변환
 
-`:s` (substitute, 대치) 명령어 ([documentation](http://vim.wikia.com/wiki/Search_and_replace)).
+`:s` (substitute, 대치) 명령어 ([documentation](https://vim.fandom.com/wiki/Search_and_replace)).
 
 - `%s/foo/bar/g`
     - 파일 내부에서 모든 foo를 bar로 대체합니다
@@ -308,12 +312,12 @@ set editing-mode vi
 
 - `vimtutor`는 Vim과 함께 설치되는 튜토리얼입니다. 즉, 만약 Vim이 설치되었다면, 여러분은 쉘에서 `vimtutor`를 실행할 수 있어야 합니다
 - [Vim Adventures](https://vim-adventures.com/)는 Vim을 배우기 위한 게임입니다
-- [Vim Tips Wiki](http://vim.wikia.com/wiki/Vim_Tips_Wiki)
+- [Vim Tips Wiki](https://vim.fandom.com/wiki/Vim_Tips_Wiki)
 - [Vim Advent Calendar](https://vimways.org/2019/)에는 다양한 Vim 팁들이 있습니다
-- [Vim Golf](http://www.vimgolf.com/) 는 [code golf](https://en.wikipedia.org/wiki/Code_golf)의 일종이지만, 프로그래밍 언어가 Vim의 UI로 되어있습니다
+- [Vim Golf](https://www.vimgolf.com/) 는 [code golf](https://en.wikipedia.org/wiki/Code_golf)의 일종이지만, 프로그래밍 언어가 Vim의 UI로 되어있습니다
 - [Vi/Vim Stack Exchange](https://vi.stackexchange.com/)
 - [Vim Screencasts](http://vimcasts.org/)
-- [Practical Vim](https://pragprog.com/book/dnvim2/practical-vim-second-edition) (서적)
+- [Practical Vim](https://pragprog.com/titles/dnvim2/) (서적)
 
 # 연습문제
 
