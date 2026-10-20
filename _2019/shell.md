@@ -2,6 +2,8 @@
 layout: lecture
 title: "Shell and Scripting"
 presenter: Jon
+date: 2019-01-15
+order: 3
 video:
   aspect: 56.25
   id: dbDRfmH5uSI
@@ -121,7 +123,7 @@ Bash splits arguments by whitespace; not always what you want!
    but what if a filename contains a newline?! turns into space!
  - quote all use of variables that you don't want split
  - but how do we fix our script above?
-   what does `for f in "$(ls)"` do do you think?
+   what do you think `for f in "$(ls)"` does?
 
 Globbing is the answer!
 
@@ -251,7 +253,7 @@ Also, a double dash `--` is used in built-in commands and many other commands to
 
 ## Exercises
 
-1. If you are completely new to the shell you may want to read a more comprehensive guide about it such as [BashGuide](http://mywiki.wooledge.org/BashGuide). If you want a more in-depth introduction [The Linux Command Line](http://linuxcommand.org/tlcl.php) is a good resource.
+1. If you are completely new to the shell you may want to read a more comprehensive guide about it such as [BashGuide](https://mywiki.wooledge.org/BashGuide). If you want a more in-depth introduction [The Linux Command Line](https://linuxcommand.org/tlcl.php) is a good resource.
 
 1. **PATH, which, type**
 

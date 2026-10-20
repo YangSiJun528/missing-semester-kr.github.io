@@ -2,6 +2,8 @@
 layout: lecture
 title: "Program Introspection"
 presenter: Anish
+date: 2019-01-29
+order: 1
 video:
   aspect: 62.5
   id: 74MhV-7hYzg
@@ -70,7 +72,7 @@ Run test code with CPU profiler: `go test -cpuprofile=cpu.out`
 
 Analyze profile: `go tool pprof -web cpu.out`
 
-Run test code with CPU profiler: `go test -memprofile=cpu.out`
+Run test code with Memory profiler: `go test -memprofile=mem.out`
 
 Analyze profile: `go tool pprof -web mem.out`
 

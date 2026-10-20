@@ -2,6 +2,8 @@
 layout: lecture
 title: "Command-line environment"
 presenter: Jose
+date: 2019-01-17
+order: 1
 video:
   aspect: 62.5
   id: i0rf1gpKL1E
@@ -84,7 +86,7 @@ One thing to note when using these frameworks is that if the code they run is no
 
 ## Terminal Emulators & Multiplexers
 
-Along with customizing your shell it is worth spending some time figuring out your choice of **terminal emulator** and its settings. There are many many terminal emulators out there (here is a [comparison](https://anarc.at/blog/2018-04-12-terminal-emulators-1/)).
+Along with customizing your shell it is worth spending some time figuring out your choice of **terminal emulator** and its settings. There are many terminal emulators out there (here is a [comparison](https://anarc.at/blog/2018-04-12-terminal-emulators-1/)).
 
 Since you might be spending hundreds to thousands of hours in your terminal it pays off to look into its settings. Some of the aspects that you may want to modify in your terminal include:
 
@@ -129,7 +131,7 @@ If you are in need of navigating many folders and/or previewing many files, [ran
 
 ### `rg/fzf` vs `grep`
 
-`grep` is a great tool but if you want to grep through many files at once, there are better tools for that purpose. [ack](https://beyondgrep.com/), [ag](https://github.com/ggreer/the_silver_searcher) & [rg](https://github.com/BurntSushi/ripgrep) recursively search your current directory for a regex pattern while respecting your gitignore rules. They all work pretty similar but I favor `rg` due to how fast it can search my entire home directory.
+`grep` is a great tool but if you want to grep through many files at once, there are better tools for that purpose. [ack](https://github.com/beyondgrep/ack3), [ag](https://github.com/ggreer/the_silver_searcher) & [rg](https://github.com/BurntSushi/ripgrep) recursively search your current directory for a regex pattern while respecting your gitignore rules. They all work pretty similar but I favor `rg` due to how fast it can search my entire home directory.
 
 Similarly, it can be easy to find yourself doing `CMD | grep PATTERN` over an over again. [fzf](https://github.com/junegunn/fzf) is a command line fuzzy finder that enables you to interactively filter the output of pretty much any command.
 
