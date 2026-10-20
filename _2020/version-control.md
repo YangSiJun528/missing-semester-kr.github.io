@@ -46,6 +46,7 @@ VCSs는 누군가가 만들었던 각가의 스냅샷과 스냅샷에 연결된 
 갓은 기록 유지, 분기를 지원, 협업 기능 과 같이 버전과 관리에 대한 모든 우수한 기능을 사용할수 있는 매우 정교한 모델을 가지고있습니다. 
 
 ## 스냅샷
+{: #snapshots}
 
 깃은 최상위 디렉토리 내의 폴더와 파일 목록에대한 기록을 일련의 스냅샷으로 모델링 합니다.
 깃에서는 파일은 "blob" 이라고 하며 그것은 단지 바이트 묶음임입니다
@@ -483,7 +484,7 @@ index 94bab17..f0013b2 100644
 `git stash`할때 어떤 일이 생기나요? `git log--all --oneline` 을 실행할때 무엇을 볼수 있나요? 
 `git stash pop` 실행 하여  `git stash` 한 작업을 취소하세요. 어떤 시나리오가 유용할가요?
 1. 많은 명령어 도구들과 마찬가지로 Git은 `~/.gitconfig` 라고 불리는 환경설정 파일 (또는 dotfile)을 제공합니다. 
-`git graph`를 실행할 때 `git log --all --graph --decrypt --online` 의 출력을 얻을 수 있도록 `~/.gitconfig` 에 별칭을 생성해 보세요. 파일을 직접 [편집](https://git-scm.com/docs/git-config#Documentation/git-config.txt-alias)하거나 `git config` 명령으로 별칭을 추가할 수 있습니다. Git 별칭에 관한 설명은 [여기](https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases)에서 볼 수 있습니다.
+`git graph`를 실행할 때 `git log --all --graph --decorate --oneline` 의 출력을 얻을 수 있도록 `~/.gitconfig` 에 별칭을 생성해 보세요. 파일을 직접 [편집](https://git-scm.com/docs/git-config#Documentation/git-config.txt-alias)하거나 `git config` 명령으로 별칭을 추가할 수 있습니다. Git 별칭에 관한 설명은 [여기](https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases)에서 볼 수 있습니다.
 1. `git config --global core.excludesfile  ~/.gitignore_global` 을 실행 하면 `~/.gitignore_global` 에서 전역 무시 패턴을 정의 할 수 있습니다. 이 명령은 Git이 사용할 전역 무시 파일의 위치만 설정하므로, 해당 경로에 파일을 직접 만들어야 합니다. 이후 `.DS_Store` 와 같이 OS와 관련되거나 에디터와 관련된 임시 파일을 무시하도록 전역 gitignore 파일을 설정해 보세요.
 1. [수업을 위한 웹사이트의 저장소](https://github.com/missing-semester/missing-semester)를 fork하고, 
 오타 또는 기타 개선 사항을 찾아 GitHub에서 pull request 해보세요. [이 안내](https://github.com/firstcontributions/first-contributions)를 참고해도 좋습니다. 유용한 PR만 보내주세요(스팸은 보내지 말아주세요!). 개선할 점을 찾지 못했다면 이 문제는 건너뛰어도 됩니다.
