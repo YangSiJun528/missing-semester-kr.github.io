@@ -261,7 +261,7 @@ dotfiles를 어떻게 체계적으로 구성할 수 있을까요? 버전 관리 
 - **변경 내용 추적**: 여러분은 아마 프로그래머로서 일을 할 동안 dotfiles을 유지 관리할 것이고, 버전 기록은 오래 지속되는 프로젝트에 유용할 것입니다.
 
 dotfiles에 무엇을 넣어야할까요?
-온라인상의 자료 또는 [`매뉴얼 페이지`](https://en.wikipedia.org/wiki/Man_page)를 읽으며 여러 가지 도구에 대한 설정울 배울 수 있습니다. 또 다른 좋은 방법은 인터넷에서 특정 프로그램에 대한 블로그 게시물을 검색하는 것입니다. 여기에서 블로거는 그들이 선호하는 customizations(사용자 정의)에 대해 이야기할 것입니다. customizations(사용자 정의)에 대해 배우는 또 다른 방법은 다른 사람들의 dotfile을 살펴 보는 것 입니다. Github에서 수많은 [`dotfiles 저장소`](https://github.com/search?o=desc&q=dotfiles&s=stars&type=Repositories)를 찾을 수 있습니다. 가장 인기있는 저장소는 [`여기`](https://github.com/mathiasbynens/dotfiles)입니다.(하지만 configurations을 무턱대고 복사하는 것은 올바른 방법이 아님을 알려드립니다.) [`이것`](https://dotfiles.github.io/)은 이 주제에 대한 또 다른 좋은 자료입니다.
+온라인상의 자료 또는 [`매뉴얼 페이지`](https://en.wikipedia.org/wiki/Man_page)를 읽으며 여러 가지 도구에 대한 설정울 배울 수 있습니다. 또 다른 좋은 방법은 인터넷에서 특정 프로그램에 대한 블로그 게시물을 검색하는 것입니다. 여기에서 블로거는 그들이 선호하는 customizations(사용자 정의)에 대해 이야기할 것입니다. customizations(사용자 정의)에 대해 배우는 또 다른 방법은 다른 사람들의 dotfile을 살펴 보는 것 입니다. GitHub에서 수많은 [`dotfiles 저장소`](https://github.com/search?o=desc&q=dotfiles&s=stars&type=Repositories)를 찾을 수 있습니다. 가장 인기있는 저장소는 [`여기`](https://github.com/mathiasbynens/dotfiles)입니다.(하지만 configurations을 무턱대고 복사하는 것은 올바른 방법이 아님을 알려드립니다.) [`이것`](https://dotfiles.github.io/)은 이 주제에 대한 또 다른 좋은 자료입니다.
 
 모든 강사들은 GitHub에서 공적으로 액세스할 수 있는 dotfiles을 가지고 있습니다 : [Anish](https://github.com/anishathalye/dotfiles), [Jon](https://github.com/jonhoo/configs), [Jose](https://github.com/jjgo/dotfiles).
 
@@ -367,10 +367,10 @@ ssh를 통해 파일을 복사하는 방법에는 여러 가지가 있습니다.
 이것을 _포트 포워딩(port forwarding)_ 이라고 하며 로컬 포트 포워딩(Local Port Forwarding)과 원격 포트 포워딩(Remote Port Forwarding)의 두 가지 형태로 제공됩니다. (자세한 내용은 사진을 참조해주십시오. 저작권은 [StackOverflow 게시물](https://unix.stackexchange.com/questions/115897/whats-ssh-port-forwarding-and-whats-the-difference-between-ssh-local-and-remot)에 있습니다.) 
 
 **로컬 포트 포워딩(Local Port Forwarding)**
-![Local Port Forwarding](/static/media/images/local-port-forwarding.png "Local Port Forwarding")
+![Local Port Forwarding](/static/media/images/local-port-forwarding.png)
 
 **원격 포트 포워딩(Remote Port Forwarding)**
-![Remote Port Forwarding](/static/media/images/remote-port-forwarding.png "Remote Port Forwarding")
+![Remote Port Forwarding](/static/media/images/remote-port-forwarding.png)
 
 가장 일반적인 시나리오는 로컬 포트 포워딩(local port forwarding)으로, 원격 장치의 서비스가 포트에서 수신 대기하고 로컬 장치의 포트를 원격 포트로 연결하는 경우입니다.
 예를 들어 '8888' 포트를 수신하는 원격 서버에서 주피터 노트북을 실행하면, 이를 로컬 포트 `9999`로 전달하기 위해 `ssh -L 9999:localhost:8888 foobar@remote_server`를 수행한 다음 로컬 장치에서 `localhost : 9999`로 이동합니다.

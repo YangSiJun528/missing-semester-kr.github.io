@@ -8,8 +8,8 @@ details: build systems, dependency management, testing, CI
 date: 2020-01-27
 ready: true
 video:
-  aspect: 56.25
-  id: _Ms1Z4xfqv4
+    aspect: 56.25
+    id: _Ms1Z4xfqv4
 ---
 
 우리가 메타프로그래밍(metaprogramming)이라고 할 때, 이 용어는 무얼 뜻하는 것일까요?  
@@ -144,7 +144,7 @@ pdflatex paper.tex
 
 -   우분투 시스템 패키지(Ubuntu system packages)를 위한 [우분투 패키지 레포지토리(the Ubuntu package repository)](https://packages.ubuntu.com) - `apt` [툴(tool)](http://taewan.kim/tip/apt-apt-get/)을 통해 접근할 수 있음
 -   프로그래밍 언어 루비(Ruby) 라이브러리들을 위한 [루비젬(RubyGem)](https://rubygems.org)
--   파이썬(Python) 라이브러리들을 위한 [파이파이(Pypi)](https://pypi.org)
+-   파이썬(Python) 라이브러리들을 위한 [파이파이(PyPI)](https://pypi.org)
 -   [아치 리눅스](https://www.archlinux.org) 사용자-기여 패키지들을(Arch Linux user-contributed packges) 위한 [아치 사용자 레포지토리(Arch User Repository)](https://aur.archlinux.org)
 
 이러한 레포지토리들과 상호작용하는 정확한 방법은 레포지토리마다 다르고 툴마다 다르기 때문에, 우리는 이 강의에서 특정 레포지토리의 너무 세부적인 사항까지는 들어가지 않을 것입니다. 우리가 _다룰_ 것은 레포지토리들이 모두 사용하는 몇몇 공통적인 용어입니다.  

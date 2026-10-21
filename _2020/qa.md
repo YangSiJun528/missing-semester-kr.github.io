@@ -7,8 +7,8 @@ thumbnail: /static/assets/thumbnails/2020/lec11.png
 date: 2020-01-30
 ready: true
 video:
-  aspect: 56.25
-  id: Wz50FvGG6xU
+    aspect: 56.25
+    id: Wz50FvGG6xU
 special: true
 ---
 
