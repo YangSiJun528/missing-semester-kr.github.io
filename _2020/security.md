@@ -1,11 +1,15 @@
 ---
 layout: lecture
 title: "Security and Cryptography"
-date: 2019-01-28
+description: >
+  Learn about cryptographic primitives like hashes and key derivation functions, and understand how tools like Git and SSH use them.
+thumbnail: /static/assets/thumbnails/2020/lec9.png
+date: 2020-01-28
 ready: true
 video:
   aspect: 56.25
   id: tjwobAmnKTo
+special: true
 ---
 
 지난 해의 [security and privacy lecture](/2019/security/)는 컴퓨터 _사용자_ 측면에서 어떻게 더 안전해 질 수 있는가에 초점을 맞췄습니다. 이번에는, Git에서의 Hash 함수 혹은 키 유도 함수의 사용과 SSH 에서의 대칭/비대칭 암호 시스템과 같이 지난 수업에서 다룬 도구를 이해하는데 관련이 있는 보안과 암호학 개념에 초점을 맞출 것입니다.
@@ -54,7 +58,7 @@ f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0
 - 약한 충돌 저항성(Target collision resistant) : `m_1`이 주어졌을 때, `hash(m_1) = hash(m_2)`를 만족하는 `m_2`를 찾기 어려움
 - 강한 충돌 저항성(Collision resistant) : `hash(m_1) = hash(m_2)`를 만족하는 `m_1`과 `m_2`를 찾기 어려움(약한 충돌 저항성보다 강한 속성)
 
-참고 : 특정 목적으로 사용할 수도 있지만, SHA-1은 [더 이상](https://shattered.io/) 안전한 암호화를 위한 Hash 함수로 취급하지 않습니다. [lifetimes of cryptographic hash functions](https://valerieaurora.org/hash.html)가 아마 흥미로울 것 입니다. 그러나, 특정 Hash 함수를 추천하는 것은 이 강의의 범위를 벗어납니다. 만약 이 글을 읽는 독자가 이러한 문제를 가지고 있다면, 보안/암호학에 대한 정규 교육이 필요합니다.
+참고 : 특정 목적으로 사용할 수도 있지만, SHA-1은 [더 이상](https://web.archive.org/web/20260207211148/https://shattered.io/) 안전한 암호화를 위한 Hash 함수로 취급하지 않습니다. [lifetimes of cryptographic hash functions](https://valerieaurora.org/hash.html)가 아마 흥미로울 것 입니다. 그러나, 특정 Hash 함수를 추천하는 것은 이 강의의 범위를 벗어납니다. 만약 이 글을 읽는 독자가 이러한 문제를 가지고 있다면, 보안/암호학에 대한 정규 교육이 필요합니다.
 
 ## 어플리케이션(Applications)
 
@@ -150,8 +154,8 @@ Keybase에는 [사회적 증명](https://keybase.io/blog/chat-apps-softer-than-t
 
 ## Password managers
 
-이 도구는 모든 사용자가 사용해야하는 필수적인 도구입니다.(예:[KeePassXC](https://keepassxc.org/)).
-암호 관리자를 사용하게 되면 임의로 만든 고유한 high-entropy 암호를 모든 웹 사이트에 사용할 수 있고, KDF를 사용해 생성된 키를 사용한 대칭 암호로 암호화된 모든 패스워드를 한 곳에 저장할 수 있습니다.
+이 도구는 모든 사용자가 사용해야하는 필수적인 도구입니다.(예:[KeePassXC](https://keepassxc.org/), [pass](https://git.zx2c4.com/password-store/about/), [1Password](https://1password.com)).
+암호 관리자를 사용하게 되면 임의로 만든 고유한 high-entropy 암호를 모든 로그인에 편리하게 사용할 수 있고, KDF를 사용해 생성된 키를 사용한 대칭 암호로 암호화된 모든 패스워드를 한 곳에 저장할 수 있습니다.
 
 암호 관리자를 사용하면 암호 재사용을 피할 수 있고(이를 통해 웹사이트에 문제 발생 시 덜 영향을 받을 수 있음), high-entropy 암호를 사용할 수 있으며(손상될 가능성이 낮음), high-entropy 암호 하나만 기억하면 됩니다. 
 
@@ -202,13 +206,13 @@ security concepts, tips
 # 예제
 
 1. **Entropy.**
-    1. 패스워드는 사전 내의 5개의 소문자 단어를 합한 것으로 가정하고, 각 단어는 100,000 크기의 사전에서 무작위로 선택합니다.
+    1. 패스워드는 사전 내의 4개의 소문자 단어를 합한 것으로 가정하고, 각 단어는 100,000 크기의 사전에서 무작위로 선택합니다.
        예를 들면 `correcthorsebatterystaple`입니다. 이 때, 이 패스워드의 엔트로피는 몇 비트인가?
     1. 암호가 8개의 임의 영문자(소문자, 대문자 모두 포함)와 숫자를 선택하는 다른 암호를 고려 합니다. 예를 들면 `rg8Ql34g` 입니다. 엔트로피는 몇 비트인가요?
     1. 어느 쪽이 더 강력한 패스워드인가요?
     1. 공격자가 초당 10,000개의 암호를 추측할 수 있다고 가정합니다. 각 암호들을 해독하는데 평균적으로 얼마나 걸립니까?
 
-1. **Cryptographic hash functions.** [mirror](https://www.debian.org/CD/http-ftp/)에서 Debian이미지를 다운로드합니다. (예- [from this Argentinean mirror](http://debian.xfree.com.ar/debian-cd/current/amd64/iso-cd/).  Argentinean mirror에서 다운로드 한 경우, `debian.org`로 호스팅 되는 공식 Debian 사이트에서 해쉬 값을 가져 와(예 - [this file](https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/SHA256SUMS) 해쉬 값을 교차 확인(예- `sha256sum`명령어 사용)합니다.)
+1. **Cryptographic hash functions.** [mirror](https://www.debian.org/CD/http-ftp/)에서 Debian이미지를 다운로드합니다. (예- [from this Argentinean mirror](http://debian.xfree.com.ar/debian-cd/current/amd64/iso-cd/)).  Argentinean mirror에서 다운로드 한 경우, `debian.org`로 호스팅 되는 공식 Debian 사이트에서 해쉬 값을 가져 와(예 - [this file](https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/SHA256SUMS) 해쉬 값을 교차 확인(예- `sha256sum`명령어 사용)합니다.)
  
 1. **대칭키 암호** 
    [OpenSSL](https://www.openssl.org/) : `openssl aes-256-cbc -salt -in {input filename} -out {output filename}`를 사용하여 AES암호화로 파일 암호화를 합니다.
@@ -216,7 +220,6 @@ security concepts, tips
    
 1. **비대칭키 암호**
     1. [SSH keys](https://www.digitalocean.com/community/tutorials how-to-set-up-ssh-keys--2)를 접근해야 하는 컴퓨터에 설정합니다(Kerberos가 SSH keys와 이상하게 동작하기 때문에, Athena가 아닌 것으로 합니다).
-       연결된 튜토리얼처럼 RSA키를 사용하는 것이 아닌 더 안전한 [ED25519키](https://wiki.archlinux.org/index.php/SSH_keys#Ed25519)를 사용합니다.
        개인 키가 비밀번호로 암호화 되었는지 확인하여 저장시 보호되도록 합니다.
     1. [GPG설정](https://www.digitalocean.com/community/tutorials/how-to-use-gpg-to-encrypt-and-sign-messages)
     1. Anish에게 암호화된 전자 메일([공개키](https://keybase.io/anish))을 보냅니다.

@@ -1,11 +1,15 @@
 ---
 layout: lecture
 title: "기타 흥미로운 주제들"
-date: 2019-01-29
+description: >
+  Learn about a variety of useful topics including keyboard remapping, daemons, backups, APIs, and more.
+thumbnail: /static/assets/thumbnails/2020/lec10.png
+date: 2020-01-29
 ready: true
 video:
   aspect: 56.25
   id: JZDt-PRq0uo
+special: true
 ---
 
 ## Table of Contents
@@ -45,7 +49,7 @@ video:
 - 키보드나 소프트웨어에 따라 재매핑 필요
 
 키보드 매핑을 시작하는 데 도움이 될 참고 자료:
-- macOS - [karabiner-elements](https://pqrs.org/osx/karabiner/), [skhd](https://github.com/koekeishiya/skhd) 또는 [BetterTouchTool](https://folivora.ai/)
+- macOS - [karabiner-elements](https://karabiner-elements.pqrs.org/), [skhd](https://github.com/koekeishiya/skhd) 또는 [BetterTouchTool](https://folivora.ai/)
 - Linux - [xmodmap](https://wiki.archlinux.org/index.php/Xmodmap) 또는 [Autokey](https://github.com/autokey/autokey)
 - Windows - 제어판, [AutoHotkey](https://www.autohotkey.com/) 또는 [SharpKeys](https://www.randyrants.com/category/sharpkeys/)
 - QMK - 키보드가 커스텀 펌웨어를 지원하는 경우 [QMK](https://docs.qmk.fm/)를 사용해 키보드를 사용하는 모든 기기에서 매핑이 작동하도록 할 수 있습니다.
@@ -134,7 +138,7 @@ FUSE 파일 시스템의 몇 가지 예를 첨부합니다.
 
 ## VPN
 
-VPN이 유행이긴 하지만 그것이 [정당한 이유](https://gist.github.com/joepie91/5a9909939e6ce7d09e29) 때문인지는 확실치 않습니다. VPN이 수행하는 작업과 VPN이 사용자에게 제공하지 않는 작업은 무엇인지 알고 사용해야 합니다. VPN은 그저 인터넷 서비스 제공업체를 바꾸는 한 방법일 뿐입니다. 여러분이 생성한 트래픽은 "실제" 위치가 아닌 VPN 제공업체에서 오는 것처럼 보이며 연결된 네트워크에는 암호화된 트래픽만 표시됩니다.
+VPN이 유행이긴 하지만 그것이 [정당한 이유](https://web.archive.org/web/20230710155258/https://gist.github.com/joepie91/5a9909939e6ce7d09e29) 때문인지는 확실치 않습니다. VPN이 수행하는 작업과 VPN이 사용자에게 제공하지 않는 작업은 무엇인지 알고 사용해야 합니다. VPN은 그저 인터넷 서비스 제공업체를 바꾸는 한 방법일 뿐입니다. 여러분이 생성한 트래픽은 "실제" 위치가 아닌 VPN 제공업체에서 오는 것처럼 보이며 연결된 네트워크에는 암호화된 트래픽만 표시됩니다.
 
 이런 점이 매력적으로 보일 수도 있지만, 여러분이 VPN을 사용할 때 실제로 하는 일은 ISP에서 VPN 호스팅 회사로 신뢰를 이동하는 행위라는 것을 명심하십시오. 여러분의 ISP가 _볼 수 있는_ 것들은 이제 VPN 제공 업체가 _대신_ 볼 수 있습니다. ISP보다 VPN 제공 업체를 _더 신뢰한다면_ 상관없겠지만, 그게 아니라면 VPN을 사용함으로써 잃는 것보다 얻은 것이 더 많다고 장담할 수는 없습니다. 공항에서 암호화되지 않은 공용 와이파이를 사용할 때 꺼림칙하다고 생각할 수도 있겠지만, 그렇다고 집에서 사용하는 것이 더 신뢰할만하다고 보기도 어렵습니다.
 
@@ -196,7 +200,7 @@ VPN이 유행이긴 하지만 그것이 [정당한 이유](https://gist.github.c
 - CPU, 디스크, 램 및 GPU가 장착된 컴퓨터
 - 물리적으로 접속할 수 있는 것보다 더 많은 컴퓨터(비용은 초 단위로 계산되므로 짧은 시간 동안 많은 컴퓨터가 필요하다면 몇 분 동안 1,000대의 컴퓨터를 대여할 수 있습니다.)
 
-[아마존 AWS](https://aws.amazon.com/), [구글 클라우드](https://cloud.google.com/) 그리고 [디지털 오션](https://www.digitalocean.com/) 같은 서비스가 유명합니다.
+[아마존 AWS](https://aws.amazon.com/), [구글 클라우드](https://cloud.google.com/), [Microsoft Azure](https://azure.microsoft.com/) 그리고 [디지털 오션](https://www.digitalocean.com/) 같은 서비스가 유명합니다.
 
 MIT CSAIL의 멤버라면 [CSAIL 오픈스택 인스턴스](https://tig.csail.mit.edu/shared-computing/open-stack/)로 연구 목적을 위한 무료 가상 환경을 이용할 수 있습니다.
 

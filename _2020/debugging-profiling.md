@@ -1,7 +1,10 @@
 ---
 layout: lecture
 title: "Debugging and Profiling"
-date: 2019-01-23
+description: >
+  Learn how to debug programs using logging, debuggers, and static analysis, and how to profile code for performance.
+thumbnail: /static/assets/thumbnails/2020/lec7.png
+date: 2020-01-23
 ready: true
 video:
   aspect: 56.25
@@ -37,7 +40,9 @@ $ python logger.py color
 # 색칠된 형식으로 출력하기
 ```
 
-읽기 쉬운 로그를 위한 한 가지 팁은 색칠된 로그를 뽑는 것입니다. 방금 여러분은 색깔 덕분에 훨씬 더 읽기 쉬웠을 것입니다. 어떻게 할 수 있을까요? `ls` 나 `grep` 과 같은 프로그램은 색칠된 출력으로 바꾸어주는 특수문자 시퀀스인 [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code)를 사용합니다. 예를 들어, `echo -e "\e[38;2;255;0;0mThis is red\e[0m"` 를 실행하면 `This is red` 라는 메시지가 빨간색으로 출력됩니다. 아래는 터미널에 많은 RGB 색을 출력하는 방법에 대한 스크립트입니다.
+읽기 쉬운 로그를 위한 한 가지 팁은 색칠된 로그를 뽑는 것입니다. 방금 여러분은 색깔 덕분에 훨씬 더 읽기 쉬웠을 것입니다. 어떻게 할 수 있을까요? `ls` 나 `grep` 과 같은 프로그램은 색칠된 출력으로 바꾸어주는 특수문자 시퀀스인 [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code)를 사용합니다. 예를 들어, `echo -e "\e[38;2;255;0;0mThis is red\e[0m"` 를 실행하면 `This is red` 라는 메시지가 빨간색으로 출력됩니다. 이 예제는 터미널이 [트루 컬러](https://github.com/termstandard/colors#truecolor-support-in-output-devices)를 지원해야 합니다. macOS의 Terminal.app처럼 이를 지원하지 않는 터미널에서는 더 널리 지원되는 16색 이스케이프 코드를 사용할 수 있습니다. 예를 들어 `echo -e "\e[31;1mThis is red\e[0m"`를 실행해보세요.
+
+아래는 트루 컬러를 지원하는 터미널에 많은 RGB 색을 출력하는 방법에 대한 스크립트입니다.
 
 ```bash
 #!/usr/bin/env bash
@@ -66,7 +71,7 @@ log show --last 1m | grep Hello
 journalctl --since "1m ago" | grep Hello
 ```
 
-데이터 랭글링 강의에서 보았던 것처럼 로그는 장황하기 때문에 원하는 정보를 얻기 위해서는 전처리와 필터링이 필요합니다. 만약 `journalctl` 나 `log show` 를 사용하여 자주 필터링 한다면 출력을 첫 번째로 필터링하기 위한 플래그 사용을 고려해볼 수 있습니다. 또한 로그 파일을 더욱 잘 보이도록 도와주는 [`lnav`](http://lnav.org/) 같은 도구도 있습니다.
+데이터 랭글링 강의에서 보았던 것처럼 로그는 장황하기 때문에 원하는 정보를 얻기 위해서는 전처리와 필터링이 필요합니다. 만약 `journalctl` 나 `log show` 를 사용하여 자주 필터링 한다면 출력을 첫 번째로 필터링하기 위한 플래그 사용을 고려해볼 수 있습니다. 또한 로그 파일을 더욱 잘 보이도록 도와주는 [`lnav`](https://lnav.org/) 같은 도구도 있습니다.
 
 ## 디버거(Debugger)
 
@@ -112,14 +117,13 @@ print(bubble_sort([4, 2, 1, 8, 7, 6]))
 
 ## 전문화된 도구
 
-디버깅하려는 대상이 블랙박스 바이너리(black box binary)라도 이를 돕는 도구들이 있습니다. 프로그램은 커널으로만 할 수 있는 작업을 수행해야 할 때마다 [시스템 호출(System Calls)](https://en.wikipedia.org/wiki/System_call)을 사용합니다. 프로그램이 만들어 내는 시스템 호출을 추적할 수 있는 명령어가 있습니다. 리눅스에서는 [`strace`](https://www.man7.org/linux/man-pages/man1/strace.1.html)를 사용하고 맥OS와 BSD에서는 [`dtrace`](http://dtrace.org/blogs/about/)를 사용합니다. `dtrace` 는 `D`언어로 작성되어 있기 때문에 사용하기 까다롭습니다. 하지만 `strace`와 유사한 인터페이스를 갖는 [`dtruss`](https://www.manpagez.com/man/1/dtruss/)라는 래퍼가 있습니다. (자세한 사항은 [이곳](https://8thlight.com/blog/colin-jones/2015/11/06/dtrace-even-better-than-strace-for-osx.html)을 참고해주세요)
+디버깅하려는 대상이 블랙박스 바이너리(black box binary)라도 이를 돕는 도구들이 있습니다. 프로그램은 커널으로만 할 수 있는 작업을 수행해야 할 때마다 [시스템 호출(System Calls)](https://en.wikipedia.org/wiki/System_call)을 사용합니다. 프로그램이 만들어 내는 시스템 호출을 추적할 수 있는 명령어가 있습니다. 리눅스에서는 [`strace`](https://www.man7.org/linux/man-pages/man1/strace.1.html)를 사용하고 맥OS와 BSD에서는 [`dtrace`](https://dtrace.org/about/)를 사용합니다. `dtrace` 는 `D`언어로 작성되어 있기 때문에 사용하기 까다롭습니다. 하지만 `strace`와 유사한 인터페이스를 갖는 [`dtruss`](https://www.manpagez.com/man/1/dtruss/)라는 래퍼가 있습니다. (자세한 사항은 [이곳](https://8thlight.com/blog/colin-jones/2015/11/06/dtrace-even-better-than-strace-for-osx.html)을 참고해주세요)
 
-아래는 `strace` 나 `dtruss` 를 사용하여 `ls`의 실행에 대한 [`stat`](https://www.man7.org/linux/man-pages/man2/stat.2.html) 시스템 호출을 추적하는 예시입니다. `strace`에 대하여 더욱 자세히 알고 싶다면 [이곳](https://blogs.oracle.com/linux/strace-the-sysadmins-microscope-v2)을 참고해주세요. 
+아래는 `strace` 나 `dtruss` 를 사용하여 `ls`의 실행에 대한 [`stat`](https://www.man7.org/linux/man-pages/man2/stat.2.html) 시스템 호출을 추적하는 예시입니다. `strace`에 대하여 더욱 자세히 알고 싶다면 [이 글](https://blogs.oracle.com/linux/strace-the-sysadmins-microscope-v2)과 [이 소책자](https://jvns.ca/strace-zine-unfolded.pdf)를 참고해주세요. 
 
 ```bash
 # 리눅스에서
 sudo strace -e lstat ls -l > /dev/null
-4
 # 맥OS에서
 sudo dtruss -t lstat64_extended ls -l > /dev/null
 ```
@@ -154,9 +158,7 @@ time.sleep(60)
 print(baz)
 ```
 
-정적 분석 도구는 이런 이슈를 잡아냅니다. 코드에서 [`pyflakes`](https://pypi.org/project/pyflakes)를 실행해준다면 두 버그에 관련된 에러를 얻을 수 있습니다. [`mypy`](http://mypy-lang.org/)는 변수 타입 오류를 탐지할 수 있는 또 다른 도구입니다. 아래 스크립트에서, `mypy`가 `bar`변수는 `int`로 정의되었지만 `float`로 변했다고 경고하고 있습니다. 코드를 실행하지 않고도 이런 이슈를 탐지할 수 있다는 것에 다시 한 번 주목해주세요.
-
-쉘 도구 강의에서 다루었던 [`shellcheck`](https://www.shellcheck.net/)과 유사한 도구입니다. 
+정적 분석 도구는 이런 이슈를 잡아냅니다. 코드에서 [`pyflakes`](https://pypi.org/project/pyflakes)를 실행해준다면 두 버그에 관련된 에러를 얻을 수 있습니다. [`mypy`](https://mypy-lang.org/)는 변수 타입 오류를 탐지할 수 있는 또 다른 도구입니다. 아래 스크립트에서, `mypy`가 `bar`변수는 `int`로 정의되었지만 `float`로 변했다고 경고하고 있습니다. 코드를 실행하지 않고도 이런 이슈를 탐지할 수 있다는 것에 다시 한 번 주목해주세요.
 
 ```bash
 $ pyflakes foobar.py
@@ -170,6 +172,8 @@ foobar.py:11: error: Name 'baz' is not defined
 Found 3 errors in 1 file (checked 1 source file)
 ```
 
+쉘 도구 강의에서 다루었던 [`shellcheck`](https://www.shellcheck.net/)과 유사한 도구입니다. 
+
 대부분의 코드 에디터나 IDE는 경고나 에러의 위치를 강조하여 보여주는 도구를 자체적으로 가지고 있습니다. 이 도구는 **코드 린팅(linting)** 이라고 불리며 코드 스타일 위반이나 안전하지 않은 코드 구축 등의 여러 타입에 대한 이슈를 보여줍니다.
 
 vim에서는 [`ale`](https://vimawesome.com/plugin/ale) 이나 [`syntastic`](https://vimawesome.com/plugin/syntastic) 플러그인을 통해 위의 것들을 할 수 있습니다. [`pylint`](https://github.com/PyCQA/pylint) 와 [`pep8`](https://pypi.org/project/pep8/) 는 파이썬을 위한 코드 스타일 린터(linter)입니다. 그리고 [`bandit`](https://pypi.org/project/bandit/) 은 파이썬 코드에서 일반적인 보안 이슈를 찾아내기 위해서 설계된 도구입니다. [Awesome Static Analysis](https://github.com/mre/awesome-static-analysis) 나 [Awesome Linters](https://github.com/caramelomartins/awesome-linters) 등과 같이 다른 언어에 대해서도 정적 분석 도구나 린터의 목록을 작성해놓은 페이지가 있습니다.
@@ -178,7 +182,7 @@ vim에서는 [`ale`](https://vimawesome.com/plugin/ale) 이나 [`syntastic`](htt
 
 # 프로파일링
 
-코드가 작동 도중에 CPU나 메모리를 과도하게 잡아먹는다면, 그저 원하는대로 움직인다는 사실만으로 만족하기는 이릅니다. 알고리즘 수업에서 빅-O 표기법에 대해서 배우기는 하지만 여러분의 프로그램에서 주요 지점을 찾아내는 방법은 가르치지 않습니다. [섣부른 최적화(premature optimization)는 만악의 근원](http://wiki.c2.com/?PrematureOptimization)이기 때문에, 여러분은 프로파일러와 모니터링 도구에 대해서 배워야 합니다. 이런 도구들은 여러분이 시간과 자원을 많이 소비하는 부분을 찾아내고 그 부분을 최적화하는 데에 도움을 줄 것입니다.
+코드가 작동 도중에 CPU나 메모리를 과도하게 잡아먹는다면, 그저 원하는대로 움직인다는 사실만으로 만족하기는 이릅니다. 알고리즘 수업에서 빅-O 표기법에 대해서 배우기는 하지만 여러분의 프로그램에서 주요 지점을 찾아내는 방법은 가르치지 않습니다. [섣부른 최적화(premature optimization)는 만악의 근원](https://wiki.c2.com/?PrematureOptimization)이기 때문에, 여러분은 프로파일러와 모니터링 도구에 대해서 배워야 합니다. 이런 도구들은 여러분이 시간과 자원을 많이 소비하는 부분을 찾아내고 그 부분을 최적화하는 데에 도움을 줄 것입니다.
 
 ## 시간
 
@@ -213,7 +217,7 @@ print(time.time() - start)
 예를 들어, HTTP 요청을 명령한 후에 [`time`](https://www.man7.org/linux/man-pages/man1/time.1.html)을 사용하여 시간을 재보세요. 연결이 느리다면 아래와 같은 결과물을 얻게 될 것입니다. 아래에서 요청이 완료되는 데에 2초가 넘게 걸렸지만 CPU 사용자 시간과 커널 CPU 시간은 각각 15ms, 12ms만 걸린 것을 볼 수 있습니다.
 
 ```bash
-$ time curl https://missing.csail.mit.edu &> /dev/null`
+$ time curl https://missing.csail.mit.edu &> /dev/null
 real    0m2.561s
 user    0m0.015s
 sys     0m0.012s
@@ -295,7 +299,7 @@ if __name__ == '__main__':
     get_urls()
 ```
 
-만약에 `cProfile` 을 사용하한다면 2500줄이 넘는 결과물을 받게 됩니다. 게다가 이 출력물은 시간이 오래 걸린 순서대로 정렬되기 때문에 더욱 이해하기 어렵습니다. 하지만 [`line_profiler`](https://github.com/rkern/line_profiler)는 줄마다 걸린 시간을 보여줍니다.
+만약에 `cProfile` 을 사용하한다면 2500줄이 넘는 결과물을 받게 됩니다. 게다가 이 출력물은 시간이 오래 걸린 순서대로 정렬되기 때문에 더욱 이해하기 어렵습니다. 하지만 [`line_profiler`](https://github.com/pyutils/line_profiler)는 줄마다 걸린 시간을 보여줍니다.
 
 ```bash
 $ kernprof -l -v a.py
@@ -361,11 +365,11 @@ Line #    Mem usage  Increment   Line Contents
 
 소프트웨어 프로젝트가 매우 복잡하기 때문에 실제로 출력된 프로파일링 결과는 너무나도 많은 양의 정보를 포함하고 있습니다. 사람은 많은 숫자를 읽고 이해하는 것에 대한 거부감이 있으며 시각 자료를 좋아합니다. 그래서 프로파일링 출력물을 훨씬 보기 쉽게 해주는 많은 시각화 도구들이 나오게 되었습니다.
 
-[Flame Graph](http://www.brendangregg.com/flamegraphs.html)는 샘플링 프로파일러를 사용한 CPU프로파일링 정보를 보여주는 가장 일반적인 방법입니다. Y축에는 함수 호출을 계측적으로 보여주고, X축에는 소요된 시간의 비율을 보여줍니다. 또한 특정 부분을 확대하여 볼 수 있도록 매우 인터랙티브하다는 장점이 있습니다(아래 이미지를 클릭해보세요).
+[Flame Graph](https://www.brendangregg.com/flamegraphs.html)는 샘플링 프로파일러를 사용한 CPU프로파일링 정보를 보여주는 가장 일반적인 방법입니다. Y축에는 함수 호출을 계측적으로 보여주고, X축에는 소요된 시간의 비율을 보여줍니다. 또한 특정 부분을 확대하여 볼 수 있도록 매우 인터랙티브하다는 장점이 있습니다(아래 이미지를 클릭해보세요).
 
-[![FlameGraph](http://www.brendangregg.com/FlameGraphs/cpu-bash-flamegraph.svg)](http://www.brendangregg.com/FlameGraphs/cpu-bash-flamegraph.svg)
+[![FlameGraph](https://www.brendangregg.com/FlameGraphs/cpu-bash-flamegraph.svg)](https://www.brendangregg.com/FlameGraphs/cpu-bash-flamegraph.svg)
 
-Call graphs나 control flow graphs는 각 함수를 노드로, 호출되는 과정을 엣지로 나타내어 프로그램 내부 서브루틴 간의 관계를 표현합니다. 수행 시간이나 호출 횟수 등의 프로파일링 정보과 같이 본다면 이런 그래프는 프로그램의 흐름을 보기에 유용한 도구입니다. 파이썬에서는 [`pycallgraph`](http://pycallgraph.slowchop.com/en/master/) 라이브러리를 사용하여 이런 그래프를 볼 수 있습니다.
+Call graphs나 control flow graphs는 각 함수를 노드로, 호출되는 과정을 엣지로 나타내어 프로그램 내부 서브루틴 간의 관계를 표현합니다. 수행 시간이나 호출 횟수 등의 프로파일링 정보과 같이 본다면 이런 그래프는 프로그램의 흐름을 보기에 유용한 도구입니다. 파이썬에서는 [`pycallgraph`](https://pycallgraph.readthedocs.io/) 라이브러리를 사용하여 이런 그래프를 볼 수 있습니다.
 
 ![Call Graph](https://upload.wikimedia.org/wikipedia/commons/2/2f/A_Call_Graph_generated_by_pycallgraph.png)
 
@@ -374,13 +378,13 @@ Call graphs나 control flow graphs는 각 함수를 노드로, 호출되는 과�
 
 리소스가 얼마나 소비되는 지 이해하는 것은 프로그램의 성능을 분석하기 위한 첫 번째 단계로 고려되기도 합니다. 네트워크 연결이 느리거나 충분하지 않은 메모리 등으로 리소스가 제한되면 프로그램이 느려집니다. 이를 위해 CPU 사용량, 메모리 사용량, 디스크 사용량 등의 시스템 리소스를 보여주는 커맨드라인 도구들이 있습니다.
 
-- **범용 모니터링** - 가장 유명한 것은 [`top`](https://www.man7.org/linux/man-pages/man1/top.1.html)을 개선한 버전인 [`htop`](https://hisham.hm/htop/index.php)일 것입니다. `htop`은 현재 실행되고 있는 작업에 대한 다양한 통계량을 보여줍니다. `htop`에는 많은 옵션과 키바인드가 있습니다. 예를 들어, `<F6>`은 프로세스를 정렬해주고 `t`는 계층적 트리를 부여주며 `h`는 스레드를 전환합니다. [`glances`](https://nicolargo.github.io/glances/)도 뛰어난 UI로 `htop`과 비슷하게 구현되어 있는 도구입니다. 모든 프로세스에 대해 집계한 측정값을 얻기 위해서는  [`dstat`](http://dag.wiee.rs/home-made/dstat/) 라는 도구를 사용합니다. 이 도구는 I/O, 네트워킹, CPU 사용률, 컨텍스트 스위치 등에 대한 리소스 수치를 실시간으로 보여줍니다.
+- **범용 모니터링** - 가장 유명한 것은 [`top`](https://www.man7.org/linux/man-pages/man1/top.1.html)을 개선한 버전인 [`htop`](https://htop.dev/)일 것입니다. `htop`은 현재 실행되고 있는 작업에 대한 다양한 통계량을 보여줍니다. `htop`에는 많은 옵션과 키바인드가 있습니다. 예를 들어, `<F6>`은 프로세스를 정렬해주고 `t`는 계층적 트리를 부여주며 `h`는 스레드를 전환합니다. [`glances`](https://nicolargo.github.io/glances/)도 뛰어난 UI로 `htop`과 비슷하게 구현되어 있는 도구입니다. 모든 프로세스에 대해 집계한 측정값을 얻기 위해서는  [`dool`](https://github.com/scottchiefbaker/dool) 라는 도구를 사용합니다. 이 도구는 I/O, 네트워킹, CPU 사용률, 컨텍스트 스위치 등에 대한 리소스 수치를 실시간으로 보여줍니다.
 - **I/O 작업** - [`iotop`](https://www.man7.org/linux/man-pages/man8/iotop.8.html)은 실시간 I/O 사용량에 대한 정보를 보여주어 무거운 I/O 디스크 작업을 사용하는 프로세스를 체크하기 편리합니다.
-- **디스크 사용량** - [`df`](https://www.man7.org/linux/man-pages/man1/df.1.html)는 각 파티션의 수치를 보여주고 [`du`](http://man7.org/linux/man-pages/man1/du.1.html)(**d**isk **u**sage)는 현재 폴더에 있는 각 파일의 디스크 사용량을 보여줍니다. 이런 도구에서 `-h` 플래그는 프로그램에게 사람이 읽을 수 있는 형식으로 출력하도록 지시합니다. [`ncdu`](https://dev.yorhel.nl/ncdu)는 `du`의 더욱 인터랙티브한 버전으로 폴더를 탐색하면서 파일이나 폴더를 지울 수 있도록 합니다.
+- **디스크 사용량** - [`df`](https://www.man7.org/linux/man-pages/man1/df.1.html)는 각 파티션의 수치를 보여주고 [`du`](https://man7.org/linux/man-pages/man1/du.1.html)(**d**isk **u**sage)는 현재 폴더에 있는 각 파일의 디스크 사용량을 보여줍니다. 이런 도구에서 `-h` 플래그는 프로그램에게 사람이 읽을 수 있는 형식으로 출력하도록 지시합니다. [`ncdu`](https://dev.yorhel.nl/ncdu)는 `du`의 더욱 인터랙티브한 버전으로 폴더를 탐색하면서 파일이나 폴더를 지울 수 있도록 합니다.
 - **메모리 사용량** - [`free`](https://www.man7.org/linux/man-pages/man1/free.1.html)는 시스템에 있는 사용하고 있는 메모리와 남아있는 메모리의 양이 얼마나 되는지 보여줍니다. 메모리 사용량은 `htop`과 같은 도구를 사용해서도 볼 수 있습니다.
 - **열린 파일** - [`lsof`](https://www.man7.org/linux/man-pages/man8/lsof.8.html)은 프로세스에 의해서 열린 파일에 대한 목록 정보를 보여줍니다. 특정 파일이 프로세스에 의해 열리는지 아닌지를 체크하기에 유용합니다.
-- **네트워크 연결과 구성** - [`ss`](https://www.man7.org/linux/man-pages/man8/ss.8.html)는 수신 및 발신에 대한 네트워크 패킷과 인터페이스에 대한 통계를 모니터링합니다. `ss`는 보통 주어진 포트를 사용하는 프로세스를 파악합는데 사용합니다. 라우팅과 네트워크 장치, 인터페이스를 볼 때는 [`ip`](http://man7.org/linux/man-pages/man8/ip.8.html)를 사용할 수도 있습니다.  `netstat` 이나 `ifconfig`은 위와 같은 도구들 때문에 더 이상 사용되지 않습니다.
-- **네트워크 사용량** - [`nethogs`](https://github.com/raboof/nethogs) 와 [`iftop`](http://www.ex-parrot.com/pdw/iftop/) 은 네트워크 사용량을 모니터링 할 수 있는 좋은 인터랙티브 CLI 도구입니다.
+- **네트워크 연결과 구성** - [`ss`](https://www.man7.org/linux/man-pages/man8/ss.8.html)는 수신 및 발신에 대한 네트워크 패킷과 인터페이스에 대한 통계를 모니터링합니다. `ss`는 보통 주어진 포트를 사용하는 프로세스를 파악합는데 사용합니다. 라우팅과 네트워크 장치, 인터페이스를 볼 때는 [`ip`](https://man7.org/linux/man-pages/man8/ip.8.html)를 사용할 수도 있습니다.  `netstat` 이나 `ifconfig`은 위와 같은 도구들 때문에 더 이상 사용되지 않습니다.
+- **네트워크 사용량** - [`nethogs`](https://github.com/raboof/nethogs) 와 [`iftop`](https://pdw.ex-parrot.com/iftop/) 은 네트워크 사용량을 모니터링 할 수 있는 좋은 인터랙티브 CLI 도구입니다.
 
 만약 이런 도구를 테스트하고 싶다면 [`stress`](https://linux.die.net/man/1/stress)라는 명령어를 사용하여 인위적으로 부하를 줄 수 있습니다.
 
@@ -403,7 +407,7 @@ Summary
    21.89 ± 2.33 times faster than 'find . -iname "*.jpg"'
 ```
 
-디버깅과 마찬가지로 브라우저에는 웹 페이지 로딩을 프로파일링 하기 위한 좋은 도구가 제공됩니다. 이 도구로 시간을 많이 소요하는 과정이 로딩인지 렌더링인지 스크립팅인지 등을 파악할 수 있습니다. 더 많은 정보는 [Firefox](https://developer.mozilla.org/en-US/docs/Mozilla/Performance/Profiling_with_the_Built-in_Profiler)나 [Chrome](https://developers.google.com/web/tools/chrome-devtools/rendering-tools)을 확인해주세요.
+디버깅과 마찬가지로 브라우저에는 웹 페이지 로딩을 프로파일링 하기 위한 좋은 도구가 제공됩니다. 이 도구로 시간을 많이 소요하는 과정이 로딩인지 렌더링인지 스크립팅인지 등을 파악할 수 있습니다. 더 많은 정보는 [Firefox](https://profiler.firefox.com/docs/)나 [Chrome](https://developers.google.com/web/tools/chrome-devtools/rendering-tools)을 확인해주세요.
 
 # 연습문제
 
@@ -427,7 +431,7 @@ Summary
 1. (심화) [reversible debugging](https://undo.io/resources/reverse-debugging-whitepaper/)에 대해 읽어보고 [`rr`](https://rr-project.org/) 혹은 [`RevPDB`](https://morepypy.blogspot.com/2016/07/reverse-debugging-for-python.html)를 사용하여 간단한 작업을 해보세요.
 ## 프로파일링
 
-1. [이곳](/static/files/sorts.py)에 다양한 정렬 알고리즘이 구현되어 있습니다. [`cProfile`](https://docs.python.org/3/library/profile.html) 과 [`line_profiler`](https://github.com/rkern/line_profiler)를 사용하여 삽입 정렬과 퀵 정렬의 수행 시간을 비교해보세요. 각 알고리즘에서 병목 현상이 일어나는 곳은 어디인가요? `memory_profiler`를 사용하여 메모리 사용량을 비교해보고 왜 삽입 정렬이 더 나은지를 알아보세요. 내장된 버전의 퀵 소트를 체크해보세요. 도전 : `perf`를 사용하여 각 알고리즘의 주기 횟수 및 캐시 히트/미스를 확인해보세요.
+1. [이곳](/static/files/sorts.py)에 다양한 정렬 알고리즘이 구현되어 있습니다. [`cProfile`](https://docs.python.org/3/library/profile.html) 과 [`line_profiler`](https://github.com/pyutils/line_profiler)를 사용하여 삽입 정렬과 퀵 정렬의 수행 시간을 비교해보세요. 각 알고리즘에서 병목 현상이 일어나는 곳은 어디인가요? `memory_profiler`를 사용하여 메모리 사용량을 비교해보고 왜 삽입 정렬이 더 나은지를 알아보세요. 내장된 버전의 퀵 소트를 체크해보세요. 도전 : `perf`를 사용하여 각 알고리즘의 주기 횟수 및 캐시 히트/미스를 확인해보세요.
 
 1. 다음은 각 숫자에 대한 함수를 사용하여 피보나치 숫자를 계산하기 위한 파이썬 코드입니다. (다음 코드는 논란의 여지가 있습니다.) 
 
@@ -449,7 +453,7 @@ Summary
        print(eval("fib9()"))
    ```
 
-   코드를 파일에 넣고 실행 가능하게 만드세요. [`pycallgraph`](http://pycallgraph.slowchop.com/en/master/)를 설치하고 `pycallgraph graphviz -- ./fib.py`라는 명령어와 함께 위 코드를 실행한 뒤 `pycallgraph.png`를 체크해보세요. `fib0`은 몇 번이나 호출되었을까요? 메모이제이션(memoization)하면 위 함수를 개선할 수 있습니다. 주석처리된 부분의 주석을 제거하고 이미지를 다시 생성해보세요. 이번에는 `fibN` 함수가 몇 번이나 호출되었나요?
+   코드를 파일에 넣고 실행 가능하게 만드세요. 필요한 도구인 [`pycallgraph`](https://lewiscowles1986.github.io/py-call-graph/)와 [`graphviz`](https://graphviz.org/)를 설치하세요. (`dot`을 실행할 수 있다면 GraphViz가 이미 설치되어 있습니다.) `pycallgraph graphviz -- ./fib.py`라는 명령어와 함께 위 코드를 실행한 뒤 `pycallgraph.png`를 체크해보세요. `fib0`은 몇 번이나 호출되었을까요? 메모이제이션(memoization)하면 위 함수를 개선할 수 있습니다. 주석처리된 부분의 주석을 제거하고 이미지를 다시 생성해보세요. 이번에는 `fibN` 함수가 몇 번이나 호출되었나요?
 
 1. 수신하려는 포트가 이미 다른 프로세스에 사용되고 있는 것은 일반적인 문제입니다. 이를 위해 프로세스의 pid를 알아내는 방법을 배워봅시다. `4444` 포트에서 수신 대기하는 최소한의 웹 서버를 만들기 위해서 `python -m http.server 4444` 명령을 실행합니다. 다른 터미널에서 `lsof | grep LISTEN`을 사용하여 모든 수신 프로세스와 포트를 출력합니다. 해당 프로세스의 pid를 찾고 `kill <PID>` 명령을 실행하여 프로세스를 종료합니다.
 
