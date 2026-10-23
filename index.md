@@ -13,13 +13,21 @@ version control system의 화려한 기능 사용 방법 등을 가르쳐 줄 �
 
 이 [수업의 동기](/about/)에 대해 읽어보세요.
 
+# 2026년 강의
+
+{% include lecture-list-2026.html %}
+
+[2026년 강의 노트와 영상](/2026/)을 볼 수 있습니다. 이전 자료는 [2020년 강의](/2020/)와 [2019년 강의](/2019/)에서 확인하세요.
+
+녹화된 수업 영상은 [YouTube](https://www.youtube.com/playlist?list=PLyzOVJj3bHQunmnnTXrNbZnBaCA-ieK4L)에서 볼 수 있습니다.
+
 {% comment %}
 # Registration
 
 Sign up for the IAP 2020 class by filling out this [registration form](https://forms.gle/TD1KnwCSV52qexVt9).
 {% endcomment %}
 
-# 시간표
+# 2020년 강의
 
 {% comment %}
 **Lecture**: 35-225, 2pm--3pm<br>
