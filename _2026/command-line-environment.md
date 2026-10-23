@@ -6,6 +6,9 @@ description: >
 thumbnail: /static/assets/thumbnails/2026/lec2.png
 date: 2026-01-13
 ready: true
+translation_status: source
+human_review: pending
+translation_source: 1d695c94ccafdce3f06d6b9dfe3e6f106097693a
 video:
   aspect: 56.25
   id: ccBGsPedE9Q

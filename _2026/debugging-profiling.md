@@ -6,6 +6,9 @@ description: >
 thumbnail: /static/assets/thumbnails/2026/lec4.png
 date: 2026-01-15
 ready: true
+translation_status: source
+human_review: pending
+translation_source: 1d695c94ccafdce3f06d6b9dfe3e6f106097693a
 panopto: "https://mit.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=a72c48e3-5eb2-46fa-aa03-b3b700e1ca8d"
 video:
   aspect: 56.25
