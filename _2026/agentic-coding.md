@@ -1,12 +1,12 @@
 ---
 layout: lecture
-title: "Agentic Coding"
+title: "에이전트 코딩"
 description: >
-  Learn how to use AI coding agents effectively for software development tasks.
+  소프트웨어 개발 작업에 AI 코딩 에이전트를 효과적으로 사용하는 법을 배웁니다.
 thumbnail: /static/assets/thumbnails/2026/lec7.png
 date: 2026-01-21
 ready: true
-translation_status: source
+translation_status: ai-draft
 human_review: pending
 translation_source: 1d695c94ccafdce3f06d6b9dfe3e6f106097693a
 video:
@@ -14,9 +14,9 @@ video:
   id: sTdz6PZoAnw
 ---
 
-Coding agents are conversational AI models with access to tools such as reading/writing files, web search, and invoking shell commands. They live either in the IDE or in standalone command-line or GUI tools. Coding agents are highly autonomous and powerful tools, enabling a wide variety of use cases.
+코딩 에이전트는 파일 읽기·쓰기, 웹 검색, 셸 명령 실행 같은 도구에 접근할 수 있는 대화형 AI 모델입니다. IDE 안에서 또는 독립적인 명령줄·GUI 도구로 실행됩니다. 자율성이 높고 강력해 다양한 작업에 활용할 수 있습니다.
 
-This lecture builds on the AI-powered development material from the [Development Environment and Tools](/2026/development-environment/) lecture. As a quick demo, let's continue with the example from the [AI-powered development](/2026/development-environment/#ai-powered-development) section:
+이번 강의는 [개발 환경과 도구](/2026/development-environment/)의 AI 개발 내용을 바탕으로 합니다. [AI를 활용한 개발](/2026/development-environment/#ai-powered-development)에서 만든 예제를 이어서 보겠습니다.
 
 ```python
 from urllib.request import urlopen
@@ -33,49 +33,56 @@ def extract(content: str) -> list[str]:
 print(extract(download_contents("https://raw.githubusercontent.com/missing-semester/missing-semester/refs/heads/master/_2026/development-environment.md")))
 ```
 
-We can try prompting a coding agent with the following task:
+에이전트에게 "argparse로 인자를 파싱하는 제대로 된 명령줄 프로그램으로 바꾸고, 타입 표기를 추가해 타입 검사를 통과하게 해 줘"라고 요청할 수 있습니다.
 
 ```
 Turn this into a proper command-line program, with argparse for argument parsing. Add type annotations, and make sure the program passes type checking.
 ```
 
-The agent will read the file to understand it, then make some edits, and finally invoke the type checker to make sure the type annotations are correct. If it makes a mistake such that it fails type checking, it will likely iterate, though this is a simple task so that is unlikely to happen. Because coding agents have access to tools that may be harmful, by default, agent harnesses prompt the user to confirm tool calls.
+에이전트는 파일을 읽고 이해한 다음 수정하고, 타입 검사기로 확인합니다. 검사에 실패하면 보통 다시 수정합니다. 이 예는 단순해 실패할 가능성이 낮습니다. 에이전트의 도구는 유해한 결과도 낼 수 있으므로, 실행 환경인 하네스(harness)는 기본적으로 도구 호출을 사용자에게 확인받게 하곤 합니다.
 
-> If the coding agent makes a mistake --- for example, if you have the `mypy` binary available directly on `$PATH` but the agent tries calling `python -m mypy` --- you can give it text feedback to help it course correct.
+> 예를 들어 `$PATH`에 `mypy`가 직접 있는데 에이전트가 `python -m mypy`를 실행해 실패한다면, 텍스트로 알려 주어 방향을 수정할 수 있습니다.
 
-Coding agents support multi-turn interaction, so you can iterate on work over a back-and-forth conversation with the agent. You can even interrupt the agent if it's going down the wrong track. One helpful mental model might be that of a manager of an intern: the intern will do the nitty gritty work, but will require guidance, and will occasionally do the wrong thing and need to be corrected.
+여러 차례 대화하며 작업을 발전시킬 수 있고, 잘못된 방향으로 가면 중단시킬 수도 있습니다. 인턴을 관리하는 상황을 떠올리면 이해하기 쉽습니다. 세부 작업을 맡기되 지침을 주고, 때로는 잘못된 결과를 바로잡아야 합니다.
 
-> For a more illustrative demo, try asking the agent as a follow-up to run the resulting script. Observe the outputs, and try asking it to make a change (e.g., ask it to include only absolute URLs).
+> 결과 스크립트를 실행하라고 후속 요청을 해 보세요. 출력을 확인하고 절대 URL만 포함하도록 하는 등 변경도 요청해 보세요.
 
-# How AI models and agents work
+# AI 모델과 에이전트의 작동 원리
+{: #how-ai-models-and-agents-work}
 
-Fully explaining the inner workings of modern [large language models (LLMs)](https://en.wikipedia.org/wiki/Large_language_model) and infrastructure such as agent harnesses is beyond the scope of this course. However, having a high-level understanding of some of the key ideas is helpful for effectively _using_ this bleeding edge technology and understanding its limitations.
+현대 [대규모 언어 모델(LLM)](https://en.wikipedia.org/wiki/Large_language_model)과 에이전트 하네스의 내부를 모두 설명하는 것은 이 수업의 범위를 벗어납니다. 하지만 핵심 개념을 알면 최신 기술을 효과적으로 *사용*하고 한계를 이해하는 데 도움이 됩니다.
 
-LLMs can be viewed as modeling the probability distribution of completion strings (outputs) given prompt strings (inputs). LLM inference (what happens when you, e.g., supply a query to a conversational chat app) _samples_ from this probability distribution. LLMs have a fixed _context window_, the maximum length of the input and output strings.
+LLM은 입력인 프롬프트 문자열이 주어졌을 때 출력 문자열의 확률 분포를 모델링한다고 볼 수 있습니다. 대화형 앱에 질문할 때 수행되는 추론은 이 분포에서 출력을 *샘플링*합니다. 입력과 출력의 최대 길이에 해당하는 *컨텍스트 창*도 정해져 있습니다.
 
 {% comment %}
 > In mathematical notation, the LLM models the probability distribution $\pi_\theta$ of completions $y$ conditioned on prompts $x$, and we sample from this distribution: $\hat{y} \sim \pi_\theta(\cdot \mid x)$.
 {% endcomment %}
 
-AI tools such as conversational chat and coding agents build on top of this primitive. For multi-turn interactions, chat apps and agents use turn markers and supply the entire conversation history as the prompt string every time there is a new user prompt, invoking LLM inference once per user prompt. For tool-calling agents, the harness interprets certain LLM outputs as requests to invoke a tool, and the harness supplies the results of the tool call back to the model as part of the prompt string (so LLM inference runs again every time there is a tool call/response). The core concepts in tool-calling agents can be [implemented in 200 lines of code](https://www.mihaileric.com/The-Emperor-Has-No-Clothes/).
+채팅 앱과 코딩 에이전트는 이 기능 위에 만들어집니다. 여러 차례 대화하려면 발화 구분자를 사용해 새 사용자 입력 때마다 전체 대화 기록을 프롬프트로 넣고 추론합니다. 도구 호출 에이전트에서는 하네스가 특정 출력을 도구 실행 요청으로 해석하고, 실행 결과를 다시 프롬프트에 넣습니다. 따라서 도구를 호출하고 응답을 받을 때마다 추론이 다시 수행됩니다. 이 핵심 구조는 [200줄 코드로도 구현](https://www.mihaileric.com/The-Emperor-Has-No-Clothes/)할 수 있습니다.
 
-## Privacy
+## 개인정보와 데이터
+{: #privacy}
 
-Most AI coding tools in their standard configurations send a lot of your data to the cloud. Sometimes the harness runs locally while LLM inference runs in the cloud, other times even more of the software is running in the cloud (and, e.g., the service provider might effectively get a copy of your entire repository as well as all interactions you have with the AI tool).
+대부분의 AI 코딩 도구는 기본 설정에서 많은 데이터를 클라우드로 보냅니다. 하네스만 로컬에서 돌고 추론은 클라우드에서 실행되기도 하며, 더 많은 구성 요소가 클라우드에 있기도 합니다. 서비스 제공자가 전체 저장소와 모든 상호작용의 사본을 사실상 받는 경우도 있습니다.
 
-There are open-source AI coding tools and open-source LLMs that are pretty good (though not quite as good as the proprietary models), but at the present, for most users, running bleeding-edge open LLMs locally will be infeasible due to hardware limitations.
+성능이 상당한 오픈 소스 도구와 모델도 있지만, 독점 모델에는 다소 못 미칩니다. 현재 대부분의 사용자는 하드웨어의 한계로 인해 최신 공개 LLM을 로컬에서 실행하기 어렵습니다.
 
-# Use cases
+# 활용 사례
+{: #use-cases}
 
-Coding agents can be helpful for a wide variety of tasks. Some examples:
+다양한 작업에 사용할 수 있습니다.
 
-- **Implementing new features.** As in the example above, you can ask a coding agent to implement a feature. Giving a good specification is more of an art than a science at this point; you want the input to the agent to be descriptive enough so that the agent does what you want it to do (at least heading in the right direction so you can iterate), but not overly descriptive to the point where you're doing too much work yourself. Test-driven development can be particularly effective: write tests (or use the coding agent to help you write tests), audit them to ensure they capture what you want, and then ask the coding agent to implement the feature. Models are continually improving, so you'll have to keep your intuition up-to-date on what the models are capable of.
-    > We used Claude Code to [implement](https://github.com/missing-semester/missing-semester/pull/345) these Tufte-style sidenotes.
+- **새 기능 구현**: 앞의 예처럼 기능을 요청합니다. 좋은 명세 작성에는 경험이 필요합니다. 원하는 방향으로 가기에 충분히 구체적이어야 하지만, 설명하느라 직접 구현하는 것만큼 일할 필요는 없습니다. 테스트 주도 개발이 특히 효과적일 수 있습니다. 테스트를 직접 쓰거나 에이전트의 도움으로 작성하고, 의도를 제대로 검증하는지 검토한 뒤 구현을 맡기세요. 모델은 계속 좋아지므로 가능한 작업에 대한 감각도 갱신해야 합니다.
+
+  > 강의 사이트의 Tufte식 곁주석은 Claude Code로 [구현](https://github.com/missing-semester/missing-semester/pull/345)했습니다.
+
 {%- comment %}
 No need to demo this, since the intro of a lecture was a small demo of adding a new feature.
 {% endcomment %}
-- **Fixing errors.** If you have errors from your compiler, linter, type checker, or tests, you can ask your agent to correct them, for example with a prompt like "fix the issues with mypy". Coding models are particularly effective when you can get them in a feedback loop, so try to set things up so that the model can run the failing check directly, which will let it iterate autonomously. If this is impractical, you can give the model feedback manually.
-    > On commit [f552b55](https://github.com/missing-semester/missing-semester/commit/f552b5523462b22b8893a8404d2110c4e59613dd) of the missing-semester repo, we prompted Claude Code with "Review the agentic coding lecture for typos and grammatical issues" and subsequently asked it to fix the issues it found, which were committed in [f1e1c41](https://github.com/missing-semester/missing-semester/commit/f1e1c417adba6b4149f7eef91ff5624de40dc637).
+- **오류 수정**: 컴파일러, 린터, 타입 검사기, 테스트 오류를 고치게 할 수 있습니다. 예를 들어 "mypy 오류를 고쳐 줘"라고 요청합니다. 모델이 실패한 검사를 직접 실행하고 반복하도록 피드백 경로를 마련하면 특히 효과적입니다. 어렵다면 결과를 수동으로 알려 주세요.
+
+  > 저장소의 [f552b55](https://github.com/missing-semester/missing-semester/commit/f552b5523462b22b8893a8404d2110c4e59613dd)에서 Claude Code에 에이전트 코딩 강의의 오타와 문법 문제를 검토하고 수정하도록 요청했습니다. 결과는 [f1e1c41](https://github.com/missing-semester/missing-semester/commit/f1e1c417adba6b4149f7eef91ff5624de40dc637)에 커밋했습니다.
+
 {%- comment %}
 Demo a coding agent fixing the bug in https://github.com/anishathalye/dotbot/commit/cef40c902ef0f52f484153413142b5154bbc5e99.
 
@@ -91,18 +98,20 @@ Can prompt coding agent with:
 
 Get it to commit the changes.
 {% endcomment %}
-- **Refactoring.** You can use coding agents to refactor code in various ways, from simple tasks like renaming a method (this kind of refactoring is also supported by [code intelligence](/2026/development-environment/#code-intelligence-and-language-servers)) to more complex tasks like breaking out functionality into a separate module.
-    > We used Claude Code to [split](https://github.com/missing-semester/missing-semester/pull/344) agentic coding into its own lecture.
+- **리팩터링**: [코드 분석 도구](/2026/development-environment/#code-intelligence-and-language-servers)로도 가능한 메서드 이름 변경부터 기능을 별도 모듈로 분리하는 복잡한 작업까지 맡길 수 있습니다.
+
+  > 에이전트 코딩 내용을 독립된 강의로 [분리](https://github.com/missing-semester/missing-semester/pull/344)할 때 Claude Code를 사용했습니다.
+
 {%- comment %}
 Show usage in Missing Semester, point out that the agent did make some mistakes.
 {% endcomment %}
-- **Code review.** You can ask coding agents to review code. You can give them basic guidance, like "review my latest changes that are not yet committed". If you want to review a pull request and your coding agent supports web fetch, or you have command-line tools like the [GitHub CLI](https://cli.github.com/) installed, you might even be able to ask the coding agent "Review the pull request {link}" and it'll handle it from there.
+- **코드 리뷰**: "아직 커밋하지 않은 최신 변경을 검토해 줘"처럼 요청할 수 있습니다. 웹 내용을 가져올 수 있거나 [GitHub CLI](https://cli.github.com/)가 설치되어 있다면 "이 풀 리퀘스트를 검토해 줘: {링크}"만으로도 진행할 수 있습니다.
 {%- comment %}
 In Porcupine repo, prompt agent with:
 
     Review this PR: https://github.com/anishathalye/porcupine/pull/39
 {% endcomment %}
-- **Code understanding.** You can ask a coding agent questions about a codebase, which can be particularly helpful for onboarding.
+- **코드 이해**: 코드베이스에 관해 질문할 수 있습니다. 새 프로젝트에 익숙해질 때 특히 유용합니다.
 {%- comment %}
 Some prompts to try in the missing-semester repo:
 
@@ -110,39 +119,43 @@ Some prompts to try in the missing-semester repo:
 
     How are the social preview cards implemented?
 {% endcomment %}
-- **As a shell.** You can ask the coding agent to use a particular tool to solve a task, so you can invoke a shell command using natural language, such as "use the find command to find all files older than 30 days" or "use mogrify to resize all the jpgs to 50% of their original size".
+- **셸처럼 사용**: "find로 30일보다 오래된 파일을 찾아 줘", "mogrify로 모든 jpg를 원래 크기의 50%로 줄여 줘"처럼 자연어로 도구를 실행하게 할 수 있습니다.
 {%- comment %}
 In Dotbot repo, prompt agent with:
 
     Use the ag command to find all Python renaming imports
 {% endcomment %}
-- **Vibe coding.** Agents are powerful enough that you can implement some applications without writing a single line of code yourself.
-    > [Here is an example](https://github.com/cleanlab/office-presence-dashboard) of a real-world project that one of the instructors vibe-coded.
+- **바이브 코딩**: 직접 코드를 한 줄도 쓰지 않고 일부 애플리케이션을 만들 수 있을 만큼 강력합니다.
+
+  > 강사진 한 명이 실제로 바이브 코딩으로 만든 [프로젝트 예](https://github.com/cleanlab/office-presence-dashboard)입니다.
+
 {%- comment %}
 In missing-semester repo, prompt agent with:
 
     Make this site look retro.
 {% endcomment %}
+# 에이전트 고급 활용
+{: #advanced-agents}
 
-# Advanced agents
+더 발전된 기능과 사용 패턴을 간단히 살펴봅니다.
 
-Here, we give a brief overview of some more advanced usage patterns and capabilities of coding agents.
+- **재사용 프롬프트**: 특정 방식의 코드 리뷰처럼 상세한 지시를 템플릿으로 저장해 반복 사용합니다.
 
-- **Reusable prompts.** Create reusable prompts or templates. For example, you can write a detailed prompt to do code review in a particular way, and save that as a reusable prompt.
-    > Agent tooling evolves quickly. In some tools, reusable prompts as a standalone feature are deprecated. For example, in Codex and Claude Code, they are [subsumed](https://developers.openai.com/codex/custom-prompts) by [skills](https://code.claude.com/docs/en/skills).
-- **Parallel agents.** Coding agents can be slow: you can prompt the agent, and it can work at a problem for tens of minutes. You can run multiple copies of agents at the same time, either working on the same task (LLMs are stochastic, so it can be helpful to run the same thing multiple times and take the best solution) or different tasks (e.g., implement two non-overlapping features at the same time). To keep the different agents' changes from interfering with each other, you can use [git worktrees](https://git-scm.com/docs/git-worktree), which we cover in the lecture on [version control](/2026/version-control/).
-- **MCPs.** MCP, which stands for _Model Context Protocol_, is an open protocol that you can use to connect your coding agents with tools. For example, this [Notion MCP server](https://github.com/makenotion/notion-mcp-server) can let your agent read/write Notion docs, enabling use cases like "read the spec linked in {Notion doc}, draft an implementation plan as a new page in Notion, and then implement a prototype". For discovering MCPs, you can use directories like [Pulse](https://www.pulsemcp.com/servers) and [Glama](https://glama.ai/mcp/servers).
-- **Context management.** As we noted [above](#how-ai-models-and-agents-work), the LLMs that underlie coding agents have a limited _context window_. Effective use of coding agents necessitates making good use of context. You want to make sure the agent has access to the information it needs, but avoid unnecessary context to avoid overflowing the context window or degrading the performance of the model (which tends to happen as context size grows, even if it doesn't overflow the context window). Agent harnesses automatically supply, and to some degree, manage context, but a lot of control is left to the user.
-    - **Clearing the context window.** The most basic control, coding agents support clearing the context window (starting a new conversation), which you should do for unrelated queries.
-    - **Rewinding the conversation.** Some coding agents support undoing steps in the conversation history. Rather than give a follow-up message steering the agent in a different direction, in situations where an "undo" makes more sense, this more effectively manages context.
+  > 도구는 빠르게 변합니다. 독립적인 재사용 프롬프트 기능을 폐기한 도구도 있습니다. Codex와 Claude Code에서는 이 기능이 [스킬에](https://developers.openai.com/codex/custom-prompts) [통합](https://code.claude.com/docs/en/skills)되었습니다.
+
+- **병렬 에이전트**: 한 작업에 수십 분이 걸릴 수 있습니다. 여러 에이전트를 동시에 실행해 같은 작업을 시도하고 가장 좋은 결과를 고르거나(LLM은 확률적으로 동작합니다), 겹치지 않는 두 기능을 나눠 구현할 수 있습니다. 변경이 서로 방해하지 않도록 [버전 관리 강의](/2026/version-control/)의 [Git worktree](https://git-scm.com/docs/git-worktree)를 사용할 수 있습니다.
+- **MCP**: *Model Context Protocol*은 에이전트에 도구를 연결하는 공개 프로토콜입니다. [Notion MCP 서버](https://github.com/makenotion/notion-mcp-server)를 연결하면 "이 Notion 문서의 명세를 읽고, 새 페이지에 구현 계획을 쓴 뒤, 프로토타입을 구현해 줘" 같은 작업이 가능합니다. [Pulse](https://www.pulsemcp.com/servers), [Glama](https://glama.ai/mcp/servers)에서 서버를 찾을 수 있습니다.
+- **컨텍스트 관리**: [앞서](#how-ai-models-and-agents-work) 설명했듯 컨텍스트 창은 유한합니다. 필요한 정보는 주되 불필요한 정보로 채우지 않아야 합니다. 한도를 넘지 않아도 컨텍스트가 커지면 성능이 떨어지곤 합니다. 하네스가 일부를 자동 관리하지만 사용자에게 남은 제어도 많습니다.
+  - **컨텍스트 비우기**: 관련 없는 질문에는 새 대화를 시작하세요.
+  - **대화 되돌리기**: 일부 에이전트는 이전 단계를 취소할 수 있습니다. 후속 지시를 덧붙이는 것보다 되돌리는 편이 맞는 상황에서는 컨텍스트도 더 효율적으로 관리됩니다.
 {%- comment %}
 Make up a quick demo.
 {% endcomment %}
-    - **Compaction.** To enable conversations of unbounded length, coding agents support context _compaction_: if the conversation history grows too long, they will automatically call an LLM to summarize the prefix of the conversation, and replace the conversation history with the summary. Some agents give control to the user to invoke compaction when desired.
+  - **압축**: 대화가 너무 길어지면 LLM으로 앞부분을 요약하고 그 기록을 요약문으로 대체합니다. 일부 도구는 사용자가 원하는 때에 압축할 수 있습니다.
 {%- comment %}
 Show `/compact` in Claude Code, show full summary.
 {% endcomment %}
-    - **llms.txt.** The `/llms.txt` file is a proposed [standard](https://llmstxt.org/) location for a document meant for LLMs to use at inference time. Products (e.g., [cursor.com/llms.txt](https://cursor.com/llms.txt)), software libraries (e.g., [ai.pydantic.dev/llms.txt](https://ai.pydantic.dev/llms.txt)), and APIs (e.g., [apify.com/llms.txt](https://apify.com/llms.txt)) might have `llms.txt` files that are handy for development. Such documents are more information dense per token, and so they are more context-efficient than asking your coding agent to fetch and read an HTML page. External documentation is handy when a coding agent doesn't have built-in knowledge about a dependency you are trying to use (e.g., because it was published after the LLM's knowledge cutoff).
+  - **llms.txt**: `/llms.txt`는 추론 시 LLM이 읽을 문서의 위치로 제안된 [표준](https://llmstxt.org/)입니다. [Cursor](https://cursor.com/llms.txt) 같은 제품, [Pydantic AI](https://ai.pydantic.dev/llms.txt) 같은 라이브러리, [Apify](https://apify.com/llms.txt) 같은 API가 제공하기도 합니다. HTML보다 토큰당 정보 밀도가 높아 컨텍스트를 절약합니다. 모델의 지식 기준일 이후에 나온 라이브러리처럼 내장 지식이 없는 의존성을 다룰 때 외부 문서가 유용합니다.
 {%- comment %}
 Side-by-side comparison in an empty repo (on Desktop or some other self-contained place, with `git init` run in it):
 
@@ -152,7 +165,7 @@ Side-by-side comparison in an empty repo (on Desktop or some other self-containe
 
 Not sure why the agent doesn't do this by default. You'd probably put that last sentence in a CLAUDE.md file.
 {% endcomment %}
-    - **AGENTS.md.** Most coding agents support [AGENTS.md](https://agents.md/) or similar (e.g., Claude Code looks for `CLAUDE.md`) as a README for coding agents. When the agent starts, it pre-fills the context with the entire contents of `AGENTS.md`. You can use this to give the agent advice that is common across sessions (e.g., instruct it to always run the type-checker after making code changes, explain how to run unit tests, or provide links to third-party docs that the agent can browse). Some coding agents can auto-generate this file (e.g., the `/init` command in Claude Code). See [here](https://github.com/pydantic/pydantic-ai/blob/main/CLAUDE.md) for a real-world example of an `AGENTS.md`.
+  - **AGENTS.md**: 많은 에이전트가 [AGENTS.md](https://agents.md/)나 유사 파일을 에이전트용 README로 읽습니다. Claude Code는 `CLAUDE.md`를 사용합니다. 시작할 때 내용을 컨텍스트에 넣으므로, 코드 변경 후 타입 검사를 하라는 지시, 단위 테스트 실행법, 외부 문서 링크 등 여러 세션에 공통된 정보를 담을 수 있습니다. Claude Code의 `/init`처럼 자동 생성 기능도 있습니다. [실제 예](https://github.com/pydantic/pydantic-ai/blob/main/CLAUDE.md)를 참고하세요.
 {%- comment %}
 Dotbot example, CLAUDE.md that includes @DEVELOPMENT.md and says to always run the type checker and code formatter after making any changes to Python code.
 
@@ -162,30 +175,33 @@ Example prompt, off of master:
 
 This is something that'll be fast, for demonstration purposes.
 {% endcomment %}
-    - **Skills.** Content in the `AGENTS.md` is always loaded, in its entirety, into the context window of an agent. _Skills_ add one level of indirection to avoid context bloat: you can provide the agent with a list of skills along with descriptions, and the agent can "open" the skill (load it into its context window) as desired.
-    - **Subagents.** Some coding agents let you define subagents, which are agents for task-specific workflows. The top-level coding agent can invoke a sub-agent to complete a particular task, which enables both the top-level agent and subagent to more effectively manage context. The top-level agent's context isn't bloated with everything the subagent sees, and the subagent can get just the context it needs for its task. As one example, some coding agents implement web research as a subagent: the top-level agent will pose a query to the subagent, which will run web search, retrieve individual web pages, analyze them, and provide an answer to the query to the top-level agent. This way, the top-level agent doesn't have its context bloated by the full content of all retrieved web pages, and the subagent doesn't have in its context the rest of the conversation history of the top-level agent.
+  - **스킬**: `AGENTS.md` 전체는 항상 컨텍스트에 들어갑니다. 스킬은 이름과 설명만 먼저 제공하고, 필요할 때 본문을 열어 읽게 하여 컨텍스트가 불필요하게 커지는 것을 줄입니다.
+  - **하위 에이전트**: 특정 작업을 맡는 에이전트를 정의하고 상위 에이전트가 호출할 수 있는 도구도 있습니다. 상위 에이전트는 하위 에이전트가 본 모든 내용을 받아들일 필요가 없고, 하위 에이전트는 필요한 정보만 받으므로 각각 컨텍스트를 관리하기 쉽습니다. 웹 조사 하위 에이전트라면 질문을 받아 검색·페이지 수집·분석을 수행하고 답만 돌려줍니다. 상위 컨텍스트에 모든 웹페이지가 들어오지 않고, 하위 컨텍스트에도 상위 대화 전체가 들어오지 않습니다.
 
-For many of the advanced features that require writing prompts (e.g., skills or subagents), you can use LLMs to get you started. Some coding agents even have built-in support for doing this. For example, Claude Code can generate a subagent from a short prompt (invoke `/agents` and create a new agent). Try creating a subagent with this prompt:
+스킬이나 하위 에이전트처럼 프롬프트를 작성하는 기능은 LLM으로 초안을 만들 수 있습니다. 이를 내장한 도구도 있습니다. 예를 들어 Claude Code의 `/agents`에서 새 에이전트를 만들며 "마지막 Git 커밋 이후 바뀐 파일을 mypy와 ruff로 타입 검사·린트·서식 검사하는 Python 코드 검사 에이전트"라고 요청해 보세요.
 
 ```
 A Python code checking agent that uses `mypy` and `ruff` to type-check, lint, and format *check* any files that have been modified from the last git commit.
 ```
 
-Then, you can use the top-level agent to explicitly invoke the subagent with a message like "use the code checker subagent". You might also be able to get the top-level agent to automatically invoke the subagent when appropriate, for example, after modifying any Python files.
+이후 상위 에이전트에 "코드 검사 하위 에이전트를 사용해 줘"라고 요청할 수 있습니다. Python 파일 변경 후처럼 적절한 시점에 자동 호출하도록 설정할 수도 있습니다.
 
-# What to watch out for
+# 주의할 점
+{: #what-to-watch-out-for}
 
-AI tools can make mistakes. They are built on LLMs, which are just probabilistic next-token-prediction models. They are not "intelligent" in the same way as humans. Review AI output for correctness and security bugs. Sometimes verifying code can be harder than writing the code yourself; for critical code, consider writing it by hand. AI can go down rabbit holes and try to gaslight you; be aware of debugging spirals. Don't use AI as a crutch, and be wary of overreliance or having a shallow understanding. There's still a huge class of programming tasks that AI is still incapable of doing. Computational thinking is still valuable.
+AI 도구도 실수합니다. 바탕이 되는 LLM은 확률적인 다음 토큰 예측 모델이며 사람과 같은 방식으로 "지능적"이지 않습니다. 결과의 정확성과 보안 오류를 검토하세요. 코드를 검증하는 일이 직접 작성하는 것보다 어려울 때도 있으므로 중요한 코드는 직접 작성하는 방안을 고려하세요. AI가 잘못된 방향으로 계속 파고들거나 틀린 설명을 확신하며 반복할 수 있으니 디버깅이 끝없이 맴도는 상황에 주의하세요. AI에 의존해 이해를 얕게 유지하지 마세요. 아직 수행하지 못하는 프로그래밍 작업도 많으며, 컴퓨팅 사고력은 여전히 중요합니다.
 
-# Recommended software
+# 권장 소프트웨어
+{: #recommended-software}
 
-Many IDEs / AI coding extensions include coding agents (see recommendations from the [development environment lecture](/2026/development-environment/)). Other popular coding agents include Anthropic's [Claude Code](https://www.claude.com/product/claude-code), OpenAI's [Codex](https://openai.com/codex/), and open-source agents like [opencode](https://github.com/anomalyco/opencode).
+많은 IDE와 AI 코딩 확장에 에이전트가 포함되어 있습니다([개발 환경 강의](/2026/development-environment/) 참고). 다른 대표 도구로 Anthropic의 [Claude Code](https://www.claude.com/product/claude-code), OpenAI의 [Codex](https://openai.com/codex/), 오픈 소스 [opencode](https://github.com/anomalyco/opencode)가 있습니다.
 
-# Exercises
+# 연습문제
+{: #exercises}
 
-1. Compare the experience of coding by hand, using AI autocomplete, inline chat, and agents by doing the same programming task four times. The best candidate is a small-sized feature from a project you're already working on. If you're looking for other ideas, you could consider completing "good first issue" style tasks in open-source projects on GitHub, or [Advent of Code](https://adventofcode.com/) or [LeetCode](https://leetcode.com/) problems.
-1. Use an AI coding agent to navigate an unfamiliar codebase. This is best done in the context of wanting to debug or add a new feature to a project you actually care about. If you don't have any that come to mind, try using an AI agent to understand how security-related features work in the [opencode](https://github.com/anomalyco/opencode) agent.
-1. Vibe code a small app from scratch. Do not write a single line of code by hand.
-1. For your coding agent of choice, create and test an `AGENTS.md` (or analogous for your agent of choice, such as `CLAUDE.md`), a skill (e.g., [skill in Claude Code](https://code.claude.com/docs/en/skills) or [skill in Codex](https://developers.openai.com/codex/skills/)), and a subagent (e.g., [subagent in Claude Code](https://code.claude.com/docs/en/sub-agents)). Think about when you'd want to use one of these versus another. Note that your coding agent of choice might not support some of these functionalities; you can either skip them, or try a different coding agent that has support.
-1. Use a coding agent to accomplish the same goal as in the Markdown bullet points regex exercise from the [Code Quality lecture](/2026/code-quality/). Does it complete the tasks via direct file edits? What are the downsides and limitations of an agent editing the file directly to complete such a task? Figure out how to prompt the agent such that it doesn't complete the task via direct file edits. Hint: ask the agent to use one of the command-line tools mentioned in the [first lecture](/2026/course-shell/).
-1. Most coding agents support a form of "yolo mode" (e.g., in Claude Code, `--dangerously-skip-permissions`). It is not secure to use this mode directly, but it may be acceptable to run a coding agent in an isolated environment like a virtual machine or container and then enable autonomous operation. Get this setup running on your machine. Documentation such as [Claude Code devcontainers](https://code.claude.com/docs/en/devcontainer) or [Docker Sandboxes / Claude Code](https://docs.docker.com/ai/sandboxes/agents/claude-code/) may come in handy. There is more than one way to set this up.
+1. 같은 작업을 직접 작성, AI 자동 완성, 인라인 채팅, 에이전트로 각각 수행하고 경험을 비교하세요. 작업 중인 프로젝트의 작은 기능이 좋습니다. GitHub의 "good first issue", [Advent of Code](https://adventofcode.com/), [LeetCode](https://leetcode.com/) 문제도 가능합니다.
+1. 익숙하지 않은 코드베이스를 에이전트로 탐색하세요. 관심 있는 프로젝트의 디버깅이나 기능 추가를 목표로 하면 좋습니다. 떠오르는 프로젝트가 없다면 [opencode](https://github.com/anomalyco/opencode)의 보안 관련 기능을 이해해 보세요.
+1. 작은 앱을 처음부터 바이브 코딩으로 만드세요. 직접 코드는 한 줄도 쓰지 마세요.
+1. 선택한 에이전트용 `AGENTS.md` 또는 `CLAUDE.md`, 스킬([Claude Code](https://code.claude.com/docs/en/skills), [Codex](https://developers.openai.com/codex/skills/)), 하위 에이전트([Claude Code](https://code.claude.com/docs/en/sub-agents))를 만들고 시험하세요. 각각 언제 적합한지 생각해 보세요. 지원하지 않는 기능은 건너뛰거나 다른 도구에서 시도하세요.
+1. [코드 품질 강의](/2026/code-quality/)의 Markdown 목록 정규 표현식 문제를 에이전트로 해결하세요. 파일을 직접 편집하나요? 이 방법의 단점과 한계는 무엇인가요? 직접 편집하지 않고 해결하게 할 프롬프트를 찾아보세요. 힌트: [첫 강의](/2026/course-shell/)의 명령줄 도구를 사용하도록 요청하세요.
+1. 대부분의 에이전트는 Claude Code의 `--dangerously-skip-permissions` 같은 "yolo 모드"를 지원합니다. 그대로 쓰는 것은 안전하지 않지만, VM이나 컨테이너에 격리한 뒤 자율 실행하는 것은 허용할 만한 상황이 있을 수 있습니다. 이런 환경을 구성해 보세요. [Claude Code 개발 컨테이너](https://code.claude.com/docs/en/devcontainer), [Docker Sandboxes의 Claude Code](https://docs.docker.com/ai/sandboxes/agents/claude-code/) 문서를 참고할 수 있으며 방법은 여러 가지입니다.

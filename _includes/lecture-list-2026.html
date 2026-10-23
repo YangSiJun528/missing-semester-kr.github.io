@@ -7,9 +7,9 @@
         {% if lecture.ready %}
           <a href="{{ lecture.url }}">{{ lecture.title }}</a>
         {% elsif lecture.noclass %}
-          {{ lecture.title }} [no class]
+          {{ lecture.title }} [휴강]
         {% else %}
-          {{ lecture.title }} [coming soon]
+          {{ lecture.title }} [공개 예정]
         {% endif %}
         {% if lecture.details %}
           <br>

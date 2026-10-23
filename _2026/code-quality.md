@@ -1,12 +1,12 @@
 ---
 layout: lecture
-title: "Code Quality"
+title: "코드 품질"
 description: >
-  Learn about formatting, linting, testing, continuous integration, and more.
+  서식 지정, 린트, 테스트, 지속적 통합 등 코드 품질을 높이는 기법을 배웁니다.
 thumbnail: /static/assets/thumbnails/2026/lec9.png
 date: 2026-01-23
 ready: true
-translation_status: source
+translation_status: ai-draft
 human_review: pending
 translation_source: 1d695c94ccafdce3f06d6b9dfe3e6f106097693a
 video:
@@ -14,124 +14,133 @@ video:
   id: XBiLUNx84CQ
 ---
 
-There are a variety of tools and techniques that support developers in writing high-quality code. In this lecture, we'll cover:
+개발자가 좋은 코드를 쓰도록 돕는 도구와 기법은 다양합니다. 이번 강의에서는 다음을 다룹니다.
 
-- [Formatting](#formatting)
-- [Linting](#linting)
-- [Testing](#testing)
-- [Pre-commit hooks](#pre-commit-hooks)
-- [Continuous integration](#continuous-integration)
-- [Command runners](#command-runners)
+- [서식 지정](#formatting)
+- [린트](#linting)
+- [테스트](#testing)
+- [커밋 전 훅](#pre-commit-hooks)
+- [지속적 통합](#continuous-integration)
+- [명령 실행 도구](#command-runners)
 
-As a bonus topic, we'll also cover [regular expressions](#regular-expressions), a cross-cutting topic that has applications in code quality (e.g., for running a subset of tests that match a pattern) as well as other domains like IDEs (e.g., for search and replace).
+추가로 [정규 표현식](#regular-expressions)도 다룹니다. 패턴에 맞는 테스트만 실행하는 코드 품질 작업부터 IDE의 검색·치환까지 여러 분야에서 쓰이는 주제입니다.
 
-Many of these tools will be language-specific (e.g., the [Ruff](https://docs.astral.sh/ruff/) linter/formatter for Python). In some cases, tools will support multiple languages (e.g., the [Prettier](https://prettier.io/) code formatter). The concepts, however, are near universal --- you can find code formatters, linters, testing libraries, and so on for any programming language.
+많은 도구는 Python의 [Ruff](https://docs.astral.sh/ruff/)처럼 언어별로 제공되고, [Prettier](https://prettier.io/)처럼 여러 언어를 지원하기도 합니다. 하지만 개념은 거의 공통적입니다. 어떤 언어든 포매터, 린터, 테스트 라이브러리 등을 찾을 수 있습니다.
 
-# Formatting
+# 서식 지정
+{: #formatting}
 
-Code auto-formatters automatically prettify surface syntax. This way, you can focus on the more deep and challenging problems, while the auto-formatting tool handles mundane details such as consistency of `'` versus `"` syntax for strings, having spaces surrounding binary operators (`x + y` instead of `x+y`), having `import` statements in sorted order, and avoiding over-length lines. One major benefit of code formatters is that they standardize code style across all developers working on a codebase.
+자동 포매터는 코드의 표면적인 형태를 정리합니다. 문자열의 `'`와 `"` 통일, `x+y` 대신 `x + y`처럼 연산자 주변 공백, 임포트 정렬, 긴 줄 나누기 등을 맡겨 개발자는 더 어려운 문제에 집중할 수 있습니다. 같은 코드베이스에서 일하는 개발자들의 스타일을 통일한다는 것도 큰 장점입니다.
 
-Some tools such as Prettier are [highly configurable](https://prettier.io/docs/configuration); you should check in the configuration file into [version control](/2026/version-control/) for your project. Other tools, such as [Black](https://github.com/psf/black) and [gofmt](https://pkg.go.dev/cmd/gofmt) have limited or no configurability, to reduce [bikeshedding](https://en.wikipedia.org/wiki/Law_of_triviality).
+Prettier처럼 [다양한 설정](https://prettier.io/docs/configuration)을 제공하는 도구는 설정 파일을 프로젝트의 [버전 관리](/2026/version-control/)에 포함하세요. [Black](https://github.com/psf/black), [gofmt](https://pkg.go.dev/cmd/gofmt)는 사소한 형식 논쟁인 [바이크셰딩](https://en.wikipedia.org/wiki/Law_of_triviality)을 줄이려고 설정을 제한하거나 제공하지 않습니다.
 
-You can set up [IDE integration](/2026/development-environment/#code-intelligence-and-language-servers) with your code formatter, so that your code will be auto-formatted as you type or when you save a file. You can also add an [EditorConfig](https://editorconfig.org/) file to your project, which communicates to your IDE certain project-level settings like indent size for each file type.
+[IDE 통합](/2026/development-environment/#code-intelligence-and-language-servers)으로 입력 중이나 저장 시 자동 정리하게 할 수 있습니다. [EditorConfig](https://editorconfig.org/) 파일로 파일 종류별 들여쓰기 크기 등 프로젝트 설정을 편집기에 전달할 수도 있습니다.
 
-# Linting
+# 린트
+{: #linting}
 
-Linters run static analysis (analyze your code without running it) to find antipatterns and potential issues in your code. These tools go deeper than autoformatters, looking beyond surface syntax. The depth of analysis varies by tool.
+린터는 코드를 실행하지 않는 정적 분석으로 안티패턴과 잠재적 문제를 찾습니다. 표면적인 문법 형식보다 깊이 살펴보며 분석 범위는 도구마다 다릅니다.
 
-Linters come equipped with lists of _rules_, with presets that can be configured on a project-level basis. Some linter rules produce false positives, so you can disable them on a per-file or per-line basis.
+린터에는 *규칙* 목록과 사전 설정이 있고 프로젝트별로 조정할 수 있습니다. 오탐이 생기는 규칙은 파일이나 줄 단위로 끌 수도 있습니다.
 
-Good linters will have built-in help or documentation that explains each linter rule --- what the rule is looking for, why it's bad, and what's a better alternative for the code pattern. For example, see the documentation for the [SIM102](https://docs.astral.sh/ruff/rules/collapsible-if/) rule in [Ruff](https://docs.astral.sh/ruff/) which catches unnecessarily nested `if` statements in Python code.
+좋은 린터는 규칙이 찾는 패턴, 문제인 이유, 더 나은 대안을 설명합니다. Python의 불필요한 중첩 `if`를 찾는 [Ruff](https://docs.astral.sh/ruff/)의 [SIM102 규칙](https://docs.astral.sh/ruff/rules/collapsible-if/)이 한 예입니다. 일부 도구는 탐지뿐 아니라 자동 수정도 합니다.
 
-Some linters can not only flag issues but also automatically fix certain issues for you.
-
-Aside from language-specific linters, another tool that might come in handy is [semgrep](https://github.com/semgrep/semgrep), a "semantic grep" tool that works at the AST level (rather than character level, like grep) and supports many languages. You can use semgrep to easily write custom linter rules for your projects. For example, if you wanted to prevent the dangerous `subprocess.Popen(..., shell=True)` in Python, you could find that code pattern with:
+여러 언어를 지원하는 [semgrep](https://github.com/semgrep/semgrep)도 유용합니다. 문자 대신 추상 구문 트리(AST)를 검색하는 "의미 기반 grep"으로, 프로젝트 전용 규칙을 쉽게 만들 수 있습니다. 예를 들어 Python에서 위험한 `subprocess.Popen(..., shell=True)` 사용을 찾으려면 다음과 같이 합니다.
 
 ```bash
 semgrep -l python -e "subprocess.Popen(..., shell=True, ...)"
 ```
 
-# Testing
+# 테스트
+{: #testing}
 
-Software testing is a standard technique to increase your confidence in the correctness of your code. You write code, and then you write code that exercises the code you wrote and raises an error if the code doesn't work as expected.
+테스트는 코드가 올바르다는 확신을 높이는 표준 기법입니다. 작성한 코드를 실행해 보고 기대와 다르면 오류를 내는 코드를 추가합니다.
 
-You can write tests for chunks of code at different levels of granularity: _unit tests_ for individual functions, _integration tests_ for interaction between modules or services, and _functional tests_ for end-to-end scenarios. You can do _test-driven development_, where you write tests before you write any implementation code. When you find bugs in your code, you can write _regression tests_, so you'll catch if the functionality ever breaks in the future. You can write _property-based tests_, pioneered in [QuickCheck](https://hackage.haskell.org/package/QuickCheck) in Haskell, and implemented in many libraries, like [Hypothesis](https://hypothesis.readthedocs.io/) for Python. Which approach to testing is right depends on your project; likely, you will adopt some combination.
+함수별 *단위 테스트*, 모듈·서비스 상호작용의 *통합 테스트*, 전체 시나리오의 *기능 테스트*처럼 여러 수준을 검사할 수 있습니다. 구현 전에 테스트를 쓰는 *테스트 주도 개발*도 가능합니다. 버그를 찾았다면 같은 문제가 다시 생길 때 잡는 *회귀 테스트*를 추가하세요. Haskell의 [QuickCheck](https://hackage.haskell.org/package/QuickCheck)가 개척하고 Python의 [Hypothesis](https://hypothesis.readthedocs.io/) 등으로 확산된 *속성 기반 테스트*도 있습니다. 적합한 조합은 프로젝트에 따라 달라집니다.
 
-If your program has external dependencies like a database or web API, it may be helpful to _mock_ those dependencies in your tests, rather than have your code interact with third-party dependencies at test time.
+데이터베이스나 웹 API 같은 외부 의존성은 테스트 중 실제 서비스와 통신하는 대신 *모킹(mocking)*하는 것이 유용할 수 있습니다.
 
-## Code coverage
+## 코드 커버리지
+{: #code-coverage}
 
-Code coverage is a metric by which you can measure how good your tests are. Code coverage looks at which lines of your code are executed when your tests are run, so you can ensure you are covering all code paths. Code coverage tools can show you line-by-line coverage to guide you in writing tests. Services such as [Codecov](https://app.codecov.io) provide web interfaces for tracking and viewing code coverage over the history of a project.
+커버리지는 테스트가 코드를 얼마나 실행했는지 나타내는 지표입니다. 테스트 실행 시 어느 줄이 실행됐는지 확인하여 빠진 경로를 찾습니다. 줄별 보고서는 테스트 작성을 돕고, [Codecov](https://app.codecov.io) 같은 서비스는 프로젝트 이력에 따른 커버리지를 웹에서 추적하게 합니다.
 
-Like any metric, code coverage is not perfect; don't over-index on coverage, focus on writing high-quality tests.
+완벽한 지표는 아닙니다. 수치 자체에 매달리지 말고 좋은 테스트를 쓰는 데 집중하세요.
 
-# Pre-commit hooks
+# 커밋 전 훅
+{: #pre-commit-hooks}
 
-Git pre-commit [hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks), made easier by the [pre-commit](https://pre-commit.com/) framework, automatically run user-specified code prior to every Git commit. Projects commonly use pre-commit hooks to run formatters and linters, and sometimes tests, automatically before every commit, to ensure that committed code matches the project code style and is free of certain issues.
+Git의 pre-commit [훅](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks)은 커밋 전에 지정한 코드를 자동 실행합니다. [pre-commit](https://pre-commit.com/) 프레임워크로 쉽게 관리할 수 있습니다. 보통 포매터·린터, 때로는 테스트를 실행하여 커밋이 프로젝트 스타일을 지키고 특정 오류를 포함하지 않게 합니다.
 
-# Continuous integration
+# 지속적 통합
+{: #continuous-integration}
 
-Continuous integration (CI) services like [GitHub Actions](https://github.com/features/actions) can run scripts for you every time you push code (or on every pull request, or on a schedule). Developers commonly use CI services to run code quality tools including formatters, linters, and tests. For compiled languages, you can ensure code compiles; for statically typed languages, you can make sure it type checks. Running CI every push of new commits can catch errors introduced into the main version of the code; running on pull requests can catch issues with contributor submissions; running on a schedule can catch issues with external dependencies (e.g., a developer accidentally releases a breaking change as [semver-compatible](/2026/shipping-code/#releases--versioning)).
+[GitHub Actions](https://github.com/features/actions) 같은 지속적 통합(CI) 서비스는 푸시, PR, 일정에 맞춰 스크립트를 실행합니다. 포매터, 린터, 테스트 등 품질 검사를 자주 수행합니다. 컴파일 언어는 빌드 여부를, 정적 타입 언어는 타입 검사 통과 여부를 확인할 수 있습니다. 푸시마다 실행하면 주 코드의 새 오류를, PR마다 실행하면 기여의 문제를, 주기적으로 실행하면 의존성의 문제를 잡습니다. 예를 들어 의존성이 [SemVer상 호환되는 버전](/2026/shipping-code/#releases--versioning)에 실수로 호환성 파괴를 넣은 경우입니다.
 
-Because CI scripts run separately from developer machines, you can easily run long-running jobs there. This can be leveraged, for example, to run a _matrix_ of tests across different operating systems and programming language versions to ensure that the software works properly across all of them.
+개발자 컴퓨터와 별개로 실행되므로 오래 걸리는 작업도 맡길 수 있습니다. 운영체제와 언어 버전을 조합한 테스트 *행렬(matrix)*을 실행해 여러 환경을 확인하는 것이 한 예입니다.
 
-Generally, the script running in CI will not directly make changes to your code: it will run tools in "check-only" mode rather than "fix" mode, so for example, the auto-formatter will raise an error when the code is not compliant with the format.
+보통 CI는 코드를 직접 수정하지 않고 "검사 전용" 모드로 실행합니다. 따라서 포매터도 서식이 맞지 않으면 고치는 대신 오류를 냅니다.
 
-Repositories often include [status badges](https://docs.github.com/en/actions/how-tos/monitor-workflows/add-a-status-badge) in their README, showing CI status and other information such as code coverage. For example, below is Missing Semester's current build status.
+README에는 CI나 커버리지의 [상태 배지](https://docs.github.com/en/actions/how-tos/monitor-workflows/add-a-status-badge)를 넣기도 합니다. 다음은 영문 Missing Semester의 현재 빌드 상태입니다.
 
-[![Build Status](https://github.com/missing-semester/missing-semester/actions/workflows/build.yml/badge.svg)](https://github.com/missing-semester/missing-semester/actions/workflows/build.yml) [![Links Status](https://github.com/missing-semester/missing-semester/actions/workflows/links.yml/badge.svg)](https://github.com/missing-semester/missing-semester/actions/workflows/links.yml)
+[![빌드 상태](https://github.com/missing-semester/missing-semester/actions/workflows/build.yml/badge.svg)](https://github.com/missing-semester/missing-semester/actions/workflows/build.yml) [![링크 검사 상태](https://github.com/missing-semester/missing-semester/actions/workflows/links.yml/badge.svg)](https://github.com/missing-semester/missing-semester/actions/workflows/links.yml)
 
-> Our [links checker](https://github.com/missing-semester/missing-semester/blob/master/.github/workflows/links.yml), which uses the [proof-html](https://github.com/anishathalye/proof-html) GitHub Action is often failing, usually due to issues with third-party websites. Still, it has helped us catch and fix many broken links (sometimes due to typos, most of the time due to websites moving around content without adding redirects or websites disappearing).
+> [proof-html](https://github.com/anishathalye/proof-html)을 사용하는 [링크 검사](https://github.com/missing-semester/missing-semester/blob/master/.github/workflows/links.yml)는 외부 사이트 문제로 자주 실패합니다. 그래도 오타나, 리다이렉트 없이 옮겨지거나 사라진 페이지의 링크를 많이 찾고 고치는 데 도움이 됐습니다.
 
-A good way to learn the particulars of CI services, formatters, linters, and testing libraries is by example. Find high-quality open-source projects on GitHub---the more similar to your project in programming language, domain, size and scope, and so on, the better---and study their `pyproject.toml`, `.github/workflows/`, `DEVELOPMENT.md`, and other relevant files.
+CI·포매터·린터·테스트 라이브러리의 세부 사용법은 좋은 사례로 배우기 좋습니다. 언어, 분야, 규모, 범위가 비슷한 좋은 오픈 소스 프로젝트에서 `pyproject.toml`, `.github/workflows/`, `DEVELOPMENT.md` 등을 살펴보세요.
 
-## Continuous deployment
+## 지속적 배포
+{: #continuous-deployment}
 
-Continuous deployment makes use of CI infrastructure to actually _deploy_ changes. For example, the Missing Semester repository uses continuous deployment to GitHub pages so that whenever we `git push` updated lecture notes, the site is automatically built and deployed. You can build other types of [artifacts](/2026/shipping-code/) in CI, such as binaries for applications or Docker images for services.
+지속적 배포는 CI 인프라로 변경을 실제 *배포*합니다. 예를 들어 원본 Missing Semester 저장소는 강의 노트를 `git push`하면 GitHub Pages에 자동으로 빌드·배포됩니다. CI에서 앱 바이너리나 서비스용 Docker 이미지 같은 다른 [아티팩트](/2026/shipping-code/)도 만들 수 있습니다.
 
-# Command runners
+# 명령 실행 도구
+{: #command-runners}
 
-Command runners like [just](https://github.com/casey/just) simplify the task of running commands in the context of a project. As you build up code quality infrastructure for your project, you don't want to make your developers memorize commands like `uv run ruff check --fix`. With a command runner, this can turn into `just lint`, and you can have analogous invocations like `just format`, `just typecheck`, etc., for all the different tools a developer might want to run for your project.
+[just](https://github.com/casey/just) 같은 도구는 프로젝트 명령을 쉽게 실행하게 합니다. 개발자에게 `uv run ruff check --fix`를 외우게 하는 대신 `just lint`로 줄이고, `just format`, `just typecheck`처럼 일관된 이름을 제공할 수 있습니다.
 
-Some language-specific project or package managers have built-in support for such functionality, which means you don't need to use a language-agnostic tool like `just`. For example, the `scripts` section of a `package.json` for [npm](https://nodejs.org/en/learn/getting-started/an-introduction-to-the-npm-package-manager) (Node.js) and the `tool.hatch.envs.*.scripts` sections of a `pyproject.toml` for [Hatch](https://hatch.pypa.io/) (Python) support this functionality.
+언어별 프로젝트·패키지 관리 도구에 내장되기도 합니다. [npm](https://nodejs.org/en/learn/getting-started/an-introduction-to-the-npm-package-manager)의 `package.json`에 있는 `scripts`, Python [Hatch](https://hatch.pypa.io/)의 `pyproject.toml`에 있는 `tool.hatch.envs.*.scripts`가 예입니다. 이런 경우 범용 도구 `just`가 따로 필요하지 않습니다.
 
-# Regular expressions
+# 정규 표현식
+{: #regular-expressions}
 
-_Regular expressions_, commonly abbreviated as "regex", is a language used to represent sets of strings. Regex patterns are commonly used for pattern matching in various contexts such as command-line tools and IDEs. For example, [ag](https://github.com/ggreer/the_silver_searcher) supports regex patterns for codebase-wide search (e.g., `ag "import .* as .*"` will find all renamed imports in Python), and [go test](https://pkg.go.dev/cmd/go#hdr-Test_packages) supports a `-run [regexp]` option for selecting a subset of tests. Furthermore, programming languages have built-in support or third-party libraries for regular expression matching, so you can use regexes for functionality such as pattern matching, validation, and parsing.
+*정규 표현식*(regex)은 문자열 집합을 표현하는 언어입니다. CLI와 IDE 등에서 패턴 검색에 사용합니다. [ag](https://github.com/ggreer/the_silver_searcher)로 `ag "import .* as .*"`를 실행하면 Python에서 별칭을 지정한 임포트를 찾을 수 있습니다. [go test](https://pkg.go.dev/cmd/go#hdr-Test_packages)의 `-run [regexp]`는 테스트 일부를 선택합니다. 언어의 내장 기능이나 라이브러리로도 패턴 일치, 검증, 파싱 등에 활용합니다.
 
-To help build intuition, below are some examples of regex patterns. In this lecture, we use [Python regex syntax](https://docs.python.org/3/library/re.html). There are many flavors of regex, with slight variation between them, especially in the more sophisticated functionality. You can use an online regex tester like [regex101](https://regex101.com/) to develop and debug regular expressions.
+이번 강의는 [Python 정규 표현식 문법](https://docs.python.org/3/library/re.html)을 사용합니다. 정규 표현식에는 여러 변형이 있고 특히 고급 기능에 차이가 있습니다. [regex101](https://regex101.com/) 같은 온라인 도구로 만들고 디버깅할 수 있습니다.
 
-- `abc` --- matches the literal "abc".
-- `missing|semester` --- matches the string "missing" or the string "semester".
-- `\d{4}-\d{2}-\d{2}` --- matches dates in YYYY-MM-DD format, such as "2026-01-14". Beyond ensuring that the string consists of four digits, a dash, two digits, a dash, and two digits, this does not validate the date, so "2026-01-99" matches this regex pattern too.
-- `.+@.+` --- matches email addresses, strings that contain some text, then an "@", and then some more text. This does only the most basic validation and matches strings like "nonsense@@@email". A regex that matches email addresses with no false positives or negatives [exists](https://pdw.ex-parrot.com/Mail-RFC822-Address.html) but is impractical.
+- `abc`: 문자열 "abc"와 일치합니다.
+- `missing|semester`: "missing" 또는 "semester"와 일치합니다.
+- `\d{4}-\d{2}-\d{2}`: "2026-01-14" 같은 YYYY-MM-DD 형식과 일치합니다. 숫자 네 개·대시·두 개·대시·두 개만 검사하므로 "2026-01-99"도 통과합니다. 실제 날짜의 유효성 검사는 아닙니다.
+- `.+@.+`: 문자들, `@`, 다시 문자들로 된 이메일 같은 문자열을 찾습니다. 기본 형태만 검사하므로 "nonsense@@@email"도 통과합니다. 오탐·누락 없이 이메일 주소를 찾는 복잡한 표현식도 [있지만](https://pdw.ex-parrot.com/Mail-RFC822-Address.html) 실용적이지 않습니다.
 
-## Regex syntax
+## 정규 표현식 문법
+{: #regex-syntax}
 
-You can find a comprehensive guide to regex syntax in [this documentation](https://docs.python.org/3/library/re.html#regular-expression-syntax) (or one of many other resources available online). Here are some of the basic building blocks:
+전체 문법은 [문서](https://docs.python.org/3/library/re.html#regular-expression-syntax)를 참고하세요. 기본 요소는 다음과 같습니다.
 
-- `abc` matches the literal string, when the characters have no special meaning (in this example, "abc")
-- `.` matches any single character
-- `[abc]` matches a single character contained in the brackets (in this example, "a", "b", or "c")
-- `[^abc]` matches a single character except those contained in the brackets (e.g., "d")
-- `[a-f]` matches a single character contained in the range indicated in the brackets (e.g., "c", but not "q")
-- `a|b` matches either pattern (e.g., "a" or "b")
-- `\d` matches any digit character (e.g., "3")
-- `\w` matches any word character (e.g., "x")
-- `\b` matches any word _boundary_ (e.g., in the string "missing semester", matches just before the "m", just after the "g", just before the "s", and just after the "r")
-- `(...)` matches the group of a pattern
-- `...?` matches zero or one of a pattern, such as `words?` to match "word" or "words"
-- `...*` matches any number of a pattern, such as `.*` to match any number of any character
-- `...+` matches one or more of a pattern, such as `\d+` to match any non-zero number of digits
-- `...{N}` matches exactly N of a pattern, such as `\d{4}` for 4 digits
-- `\.` matches a literal "."
-- `\\` matches a literal "\\"
-- `^` matches the start of the line
-- `$` matches the end of the line
+- `abc`: 특별한 의미가 없는 문자는 그대로 일치합니다.
+- `.`: 문자 하나와 일치합니다.
+- `[abc]`: 대괄호 안의 문자 하나, 즉 `a`, `b`, `c`와 일치합니다.
+- `[^abc]`: 나열한 문자 이외의 문자 하나와 일치합니다. 예: `d`.
+- `[a-f]`: 범위 안의 문자 하나와 일치합니다. `c`는 포함되지만 `q`는 아닙니다.
+- `a|b`: 두 패턴 중 하나와 일치합니다.
+- `\d`: 숫자 한 문자와 일치합니다. 예: `3`.
+- `\w`: 단어를 구성하는 문자와 일치합니다. 예: `x`.
+- `\b`: 단어의 *경계*와 일치합니다. "missing semester"에서 `m` 앞, `g` 뒤, `s` 앞, `r` 뒤입니다.
+- `(...)`: 패턴을 그룹으로 묶습니다.
+- `...?`: 앞 패턴 0개 또는 1개. `words?`는 "word", "words"와 일치합니다.
+- `...*`: 앞 패턴 0개 이상. `.*`는 임의 개수의 문자와 일치합니다.
+- `...+`: 앞 패턴 1개 이상. `\d+`는 하나 이상의 숫자와 일치합니다.
+- `...{N}`: 앞 패턴 정확히 N개. `\d{4}`는 숫자 네 개입니다.
+- `\.`: 마침표 자체와 일치합니다.
+- `\\`: 백슬래시 자체와 일치합니다.
+- `^`: 줄의 시작과 일치합니다.
+- `$`: 줄의 끝과 일치합니다.
 
-## Capture groups and references
+## 캡처 그룹과 참조
+{: #capture-groups-and-references}
 
-If you use regex groups `(...)`, you can refer to sub-parts of the match for extraction or search-and-replace purposes. For example, to extract just the month from a YYYY-MM-DD style date, you can use the following Python code:
+`(...)`로 그룹을 만들면 일치한 부분을 추출하거나 치환에서 참조할 수 있습니다. YYYY-MM-DD 날짜에서 월만 추출하는 예입니다.
 
 ```python
 >>> import re
@@ -139,17 +148,19 @@ If you use regex groups `(...)`, you can refer to sub-parts of the match for ext
 '01'
 ```
 
-In your text editor, you can use reference capture groups in replace patterns. The syntax might vary between IDEs. For example, in VS Code, you can use variables like `$1`, `$2`, etc., and in Vim, you can use `\1`, `\2`, etc., to reference groups.
+편집기의 치환 패턴에서도 참조할 수 있지만 문법은 다릅니다. VS Code는 `$1`, `$2`, Vim은 `\1`, `\2` 등으로 그룹을 가리킵니다.
 
-## Limitations
+## 한계
+{: #limitations}
 
-[Regular languages](https://en.wikipedia.org/wiki/Regular_language) are powerful but limited; there are classes of strings that cannot be expressed as a standard regex (e.g., it is [not possible](https://en.wikipedia.org/wiki/Pumping_lemma_for_regular_languages) to write a regular expression that matches the set of strings {a^n b^n \| n &ge; 0}, the set of strings of a number of "a"s followed by the same number of "b"s; more practically, languages like HTML are not regular languages). In practice, modern regex engines support features like lookahead and backreferences that extend support beyond regular languages, and they are practically extremely useful, but it is important to know that they are still limited in their expressive power. For more sophisticated languages, you might need to reach for a more capable type of parser (for one example, see [pyparsing](https://github.com/pyparsing/pyparsing), a [PEG](https://en.wikipedia.org/wiki/Parsing_expression_grammar) parser).
+[정규 언어](https://en.wikipedia.org/wiki/Regular_language)는 강력하지만 한계가 있습니다. 같은 수의 a와 b가 순서대로 나오는 {a^n b^n \| n &ge; 0} 같은 집합은 표준 정규 표현식으로 나타낼 수 [없습니다](https://en.wikipedia.org/wiki/Pumping_lemma_for_regular_languages). 실제 사례로 HTML도 정규 언어가 아닙니다. 현대 엔진은 전방 탐색과 역참조 등으로 정규 언어보다 넓은 범위를 지원하지만 여전히 표현력에 한계가 있습니다. 복잡한 언어에는 [PEG](https://en.wikipedia.org/wiki/Parsing_expression_grammar) 파서인 [pyparsing](https://github.com/pyparsing/pyparsing) 같은 더 강력한 파서가 필요할 수 있습니다.
 
-## Learning regex
+## 정규 표현식 배우기
+{: #learning-regex}
 
-We recommend learning the fundamentals (what we have covered in this lecture), and then looking at regex references as you need them, rather than memorizing the entirety of the language.
+문법 전체를 외우기보다 이 강의의 기본을 익히고 필요할 때 참고 문서를 보세요.
 
-Conversational AI tools can be effective at helping you generating regex patterns. For example, try prompting your favorite LLM with the following query:
+대화형 AI도 패턴 작성에 도움이 됩니다. 예를 들어 다음 Nginx 로그에서 요청 경로를 추출하는 Python 정규 표현식을 요청해 보세요.
 
 ```
 Write a Python-style regex pattern that matches the requested path from log lines from Nginx. Here is an example log line:
@@ -157,13 +168,14 @@ Write a Python-style regex pattern that matches the requested path from log line
 169.254.1.1 - - [09/Jan/2026:21:28:51 +0000] "GET /feed.xml HTTP/2.0" 200 2995 "-" "python-requests/2.32.3"
 ```
 
-# Exercises
+# 연습문제
+{: #exercises}
 
-1. Configure a formatter, linter, and pre-commit hooks for a project you're working on. If you have lots of errors: autoformatting should take care of the format errors. For the linter errors, try using an [AI agent](/2026/agentic-coding/) to fix all the linter errors. Make sure the AI agent can run the linter and observe the results, so that it can run in an iterative loop to fix all the issues. Check the results carefully to ensure the AI doesn't break your code!
-1. Learn a testing library for a language you know and write a unit test for a project you're working on. Run a code coverage tool, generate an HTML-formatted coverage report, and observe the results. Can you find the lines that are covered? Your code coverage will likely be very low. Try manually writing some tests to improve it. Try using an [AI agent](/2026/agentic-coding/) to improve coverage; make sure the coding agent can run tests with coverage and produce a line-by-line coverage report, so it knows where to focus. Are the AI-generated tests actually good?
-1. Set up continuous integration to run on every push for a project you're working on. Have CI run formatting, linting, and tests. Break your code on purpose (e.g., introduce a linter violation), and ensure that CI catches it.
-1. Try writing a [regex pattern](#regular-expressions) and use the `grep` [command-line tool](/2026/course-shell/) to find occurrences of `subprocess.Popen(..., shell=True)` in your code. Now, try to "break" the regex pattern. Does [semgrep](#linting) still successfully match the dangerous code that trips up your grep invocation?
-1. Practice regex search-and-replace in your IDE or text editor by replacing the `-` [Markdown bullet markers](https://spec.commonmark.org/0.31.2/#bullet-list-marker) with `*` bullet markers in [these lecture notes](https://raw.githubusercontent.com/missing-semester/missing-semester/refs/heads/master/_2026/code-quality.md). Note that just replacing all the "-" characters in the file would be incorrect, as there are many uses of that character that are not bullet markers.
-1. Write a regex to capture from JSON structures of the form `{"name": "Alyssa P. Hacker", "college": "MIT"}` the name (e.g., `Alyssa P. Hacker`, in this example). Hint: in your first attempt, you might end up writing a regex that extracts `Alyssa P. Hacker", "college": "MIT`; read about greedy quantifiers in the [Python regex docs](https://docs.python.org/3/library/re.html) to figure out how to fix it.
-    1. Make the regex pattern work even in situations where the name has a `"` character in it (double quotes can be escaped in JSON with `\"`).
-    1. We do **not** recommend using regular expressions for sophisticated parsing problems in practice. Figure out how to use your programming language's JSON parser for this task. Write a command-line program that takes as input, on stdin, a JSON structure of the form described above, and output, on stdout, the name. You should only need a couple lines of code to do this. In Python, you can do it easily in one line of code beyond `import json`.
+1. 작업 중인 프로젝트에 포매터, 린터, pre-commit 훅을 설정하세요. 서식 오류는 자동 정리하고, 린트 오류는 [AI 에이전트](/2026/agentic-coding/)로 고쳐 보세요. 린터를 직접 실행하고 결과를 볼 수 있게 하여 반복 수정하게 하세요. 코드를 망가뜨리지 않았는지 결과를 주의 깊게 확인하세요.
+1. 아는 언어의 테스트 라이브러리를 배우고 단위 테스트를 작성하세요. 커버리지 도구로 HTML 보고서를 만들어 실행된 줄을 찾아보세요. 아마 수치가 낮을 것입니다. 직접 테스트를 추가한 뒤 [AI 에이전트](/2026/agentic-coding/)로도 개선해 보세요. 에이전트가 줄별 커버리지를 얻어 어디에 집중할지 알 수 있게 하세요. 생성된 테스트는 실제로 좋은가요?
+1. 푸시마다 서식·린트·테스트를 실행하는 CI를 설정하세요. 린트 위반 등 일부러 오류를 넣어 감지하는지 확인하세요.
+1. [정규 표현식](#regular-expressions)과 [`grep`](/2026/course-shell/)으로 `subprocess.Popen(..., shell=True)` 사용을 찾으세요. 이어서 패턴이 놓치는 사례를 만들어 보세요. [semgrep](#linting)은 그 위험한 코드도 찾나요?
+1. IDE나 편집기의 정규 표현식 치환으로 [강의 노트](https://raw.githubusercontent.com/missing-semester/missing-semester/refs/heads/master/_2026/code-quality.md)의 [Markdown 목록 기호](https://spec.commonmark.org/0.31.2/#bullet-list-marker) `-`를 `*`로 바꾸세요. 목록이 아닌 용도로도 쓰이므로 모든 `-`를 바꾸면 안 됩니다.
+1. `{"name": "Alyssa P. Hacker", "college": "MIT"}` 같은 JSON에서 이름(이 예에서는 `Alyssa P. Hacker`)을 캡처하는 정규 표현식을 쓰세요. 처음에는 `Alyssa P. Hacker", "college": "MIT`까지 잡을 수 있습니다. [Python 문서](https://docs.python.org/3/library/re.html)의 탐욕적 수량자를 읽고 고치세요.
+   1. 이름에 `"`가 들어 있어도 동작하게 하세요. JSON에서는 `\"`로 이스케이프할 수 있습니다.
+   1. 실제로 복잡한 파싱에 정규 표현식을 쓰는 것은 **권장하지 않습니다**. 언어의 JSON 파서로 해결하세요. stdin으로 위 형식의 JSON을 받고 stdout으로 이름을 출력하는 CLI를 만드세요. 몇 줄이면 되며 Python에서는 `import json` 외에 한 줄로도 가능합니다.

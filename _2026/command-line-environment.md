@@ -1,12 +1,12 @@
 ---
 layout: lecture
-title: "Command-line Environment"
+title: "명령줄 환경"
 description: >
-  Learn how command-line programs work, including input/output streams, environment variables, and remote machines with SSH.
+  입출력 스트림, 환경 변수, SSH 원격 접속을 통해 명령줄 프로그램의 동작을 배웁니다.
 thumbnail: /static/assets/thumbnails/2026/lec2.png
 date: 2026-01-13
 ready: true
-translation_status: source
+translation_status: ai-draft
 human_review: pending
 translation_source: 1d695c94ccafdce3f06d6b9dfe3e6f106097693a
 video:
@@ -14,24 +14,21 @@ video:
   id: ccBGsPedE9Q
 ---
 
-As we covered in the previous lecture, most shells are not a mere launcher to start up other programs,
-but in practice they provide an entire programming language full of common patterns and abstractions.
-However, unlike the majority of programming languages, in shell scripting everything is designed around running programs and getting them to communicate with each other simply and efficiently.
+앞 강의에서 보았듯이 대부분의 셸은 프로그램을 실행하는 도구에 그치지 않고, 공통적인 패턴과 추상화를 갖춘 완전한 프로그래밍 언어를 제공합니다. 다만 일반적인 언어와 달리 셸 스크립트의 모든 요소는 프로그램을 실행하고 서로 간단하고 효율적으로 통신하게 하는 데 맞춰져 있습니다.
 
-In particular, shell scripting is tightly bound by _conventions_. For a command line interface (CLI) program to play nicely within the broader shell environment there are some common patterns that it needs to follow.
-We will now cover many of the concepts required to understand how command line programs work as well as ubiquitous conventions on how to use and configure them.
+특히 셸 스크립트에서는 *관례*가 중요합니다. 명령줄 인터페이스(CLI) 프로그램이 셸 환경의 다른 요소와 잘 어울리려면 공통 패턴을 따라야 합니다. 이번 강의에서는 명령줄 프로그램의 동작을 이해하는 데 필요한 개념과, 사용·설정에 널리 쓰이는 관례를 살펴봅니다.
 
-# The Command Line Interface
+# 명령줄 인터페이스
+{: #the-command-line-interface}
 
-Writing a function in most programming languages looks something like:
+대부분의 언어에서 함수는 다음과 같이 작성합니다.
 
 ```
 def add(x: int, y: int) -> int:
     return x + y
 ```
 
-Here we can explicitly see the inputs and the outputs of the program.
-In contrast, shell scripts can look quite different at first glance.
+입력과 출력이 명확히 드러납니다. 반면 셸 스크립트는 첫눈에 상당히 달라 보입니다.
 
 ```shell
 #!/usr/bin/env bash
@@ -49,39 +46,28 @@ else
 fi
 ```
 
-To properly understand what is going in scripts like this one we first need to introduce a few concepts that appear often when shell programs communicate with each other or with the shell environment:
+이런 스크립트를 이해하려면 셸 프로그램끼리, 또는 셸 환경과 통신할 때 자주 등장하는 개념을 알아야 합니다.
 
-- Arguments
-- Streams
-- Environment variables
-- Return codes
-- Signals
+- 인자
+- 스트림
+- 환경 변수
+- 종료 코드
+- 시그널
 
-## Arguments
+## 인자
+{: #arguments}
 
-Shell programs receive a list of arguments when they are executed.
-Arguments are plain strings in shell, and it is up to the program how to interpret them.
-For instance when we do `ls -l folder/`, we are executing the program `/bin/ls` with arguments `['-l', 'folder/']`.
+셸 프로그램은 실행될 때 인자 목록을 받습니다. 인자는 단순한 문자열이며 해석 방법은 프로그램이 정합니다. 예를 들어 `ls -l folder/`는 `/bin/ls`를 `['-l', 'folder/']`라는 인자로 실행합니다.
 
-From within a shell script we access these via special shell syntax.
-To access the first argument we access the variable `$1`, second argument `$2` and so on and so forth until `$9`. To access all arguments as a list we use `$@` and to retrieve the number of arguments `$#`. Additionally we can also access the name of the program with `$0`.
+셸 스크립트에서는 특수 문법으로 인자에 접근합니다. 첫 인자는 `$1`, 둘째는 `$2`이며 `$9`까지 같은 방식입니다. 전체 인자 목록은 `$@`, 인자 수는 `$#`, 프로그램 이름은 `$0`으로 확인합니다.
 
-For most programs the arguments will consist of a mixture of _flags_ and regular strings.
-Flags can be identified because they are preceded by a dash (`-`) or double-dash (`--`).
-Flags are usually optional and their role is to modify the behavior of the program.
-For example `ls -l` changes how `ls` formats its output.
+대부분의 프로그램은 *플래그*와 일반 문자열을 섞어 인자로 받습니다. 플래그 앞에는 대시 하나(`-`) 또는 둘(`--`)이 붙습니다. 보통 선택 사항이며 프로그램의 동작을 바꿉니다. 예를 들어 `ls -l`은 `ls`의 출력 형식을 바꿉니다.
 
-You will see double dash flags with long names like `--all`, and single dash flags like `-a`, which are most often followed by a single letter.
-The same option might be specified in both formats, `ls -a` and `ls --all` are equivalent.
-Single dash flags are often grouped, so `ls -l -a` and `ls -la` are also equivalent.
-The order of flags usually doesn't matter either, `ls -la` and `ls -al` produce the same result.
-Some flags are quite prevalent and as you get more familiar with the shell environment you'll intuitively reach for them, for example (`--help`, `--verbose`, `--version`).
+`--all`처럼 긴 이름에는 대시 둘을, `-a`처럼 보통 한 글자인 이름에는 대시 하나를 사용합니다. 같은 옵션을 두 형태로 제공하기도 합니다. `ls -a`와 `ls --all`은 같습니다. 짧은 플래그는 묶을 수 있어 `ls -l -a`와 `ls -la`도 같습니다. 순서도 대개 중요하지 않아 `ls -la`와 `ls -al`은 같은 결과를 냅니다. 셸에 익숙해지면 `--help`, `--verbose`, `--version`처럼 흔한 플래그는 자연스럽게 사용하게 됩니다.
 
-> Flags are a first good example of shell conventions. The shell language does not require that our program uses `-` or `--` in this particular way.
-Nothing prevents us from writing a program with syntax `myprogram +myoption myfile`, but it would lead to confusion since the expectation is that we use dashes.
-> In practice, most programming languages provide CLI flag parsing libraries (e.g. `argparse` in python to parse arguments with the dash syntax).
+> 플래그는 셸의 관례를 보여 주는 첫 사례입니다. 셸 언어가 `-`나 `--`를 이렇게 쓰도록 강제하지는 않습니다. `myprogram +myoption myfile` 같은 문법을 만들 수도 있지만, 사용자는 대시를 예상하므로 혼란스러울 것입니다. 실제로 대부분의 언어에는 대시 문법의 인자를 파싱하는 라이브러리가 있습니다. Python의 `argparse`가 한 예입니다.
 
-Another common convention in CLI programs is for programs to accept a variable number of arguments of the same type. When given arguments in this way the command performs the same operation on each one of them.
+같은 종류의 인자를 여러 개 받아 각각에 같은 작업을 수행하는 것도 흔한 CLI 관례입니다.
 
 ```shell
 mkdir src
@@ -90,10 +76,9 @@ mkdir docs
 mkdir src docs
 ```
 
-This syntax sugar might seem unnecessary at first, but it becomes really powerful when combined with _globbing_.
-Globbing or globs are special patterns that the shell will expand before calling the program.
+처음에는 불필요한 문법적 편의처럼 보이지만, *글로빙(globbing)*과 결합하면 강력해집니다. 글로브는 프로그램 호출 전에 셸이 확장하는 특수 패턴입니다.
 
-Say we wanted to delete all .py files in the current folder nonrecursively. From what we learned in the previous lecture we could achieve this by running
+현재 폴더의 `.py` 파일을 하위 디렉터리까지 내려가지 않고 모두 지운다고 합시다. 앞 강의에서 배운 내용으로는 다음과 같이 할 수 있습니다.
 
 ```shell
 for file in $(ls | grep -P '\.py$'); do
@@ -101,16 +86,11 @@ for file in $(ls | grep -P '\.py$'); do
 done
 ```
 
-But we can replace that with just `rm *.py`!
+하지만 `rm *.py`만으로도 됩니다!
 
-When we type `rm *.py` into the terminal, the shell will not call the `/bin/rm` program with arguments `['*.py']`.
-Instead, the shell will search for files in the current folder matching the pattern `*.py` where `*` can match any string of zero or more characters of any type.
-So if our folder has `main.py` and `utils.py` then the `rm` program will receive arguments `['main.py', 'utils.py']`.
+`rm *.py`를 입력하면 셸은 `/bin/rm`에 `['*.py']`를 그대로 전달하지 않습니다. `*`가 0개 이상의 임의의 문자와 일치한다는 규칙에 따라 현재 폴더에서 `*.py`에 맞는 파일을 찾습니다. `main.py`와 `utils.py`가 있다면 `rm`은 `['main.py', 'utils.py']`를 받습니다.
 
-The most common globs you will find are wildcards `*` (zero or more of anything), `?` (exactly one of anything) and curly braces.
-Curly braces `{}` expand a comma-separated list of patterns into multiple arguments.
-
-In practice, globs are best understood with motivating examples.
+자주 쓰는 패턴은 `*`(0개 이상의 임의의 문자), `?`(정확히 한 문자), 중괄호입니다. 중괄호 `{}`는 쉼표로 구분된 패턴 목록을 여러 인자로 확장합니다. 예제로 보면 이해하기 쉽습니다.
 
 ```shell
 touch folder/{a,b,c}.py
@@ -130,25 +110,20 @@ mv *{.py,.sh} folder
 # Will move all *.py and *.sh files
 ```
 
-> Some shells (e.g. zsh) support even more advanced forms of globbing such as `**` that will expand to include recursive paths. So `rm **/*.py` will delete all .py files recursively.
+> zsh 등 일부 셸은 재귀 경로까지 확장하는 `**` 같은 고급 글로빙도 지원합니다. `rm **/*.py`는 하위 디렉터리까지 `.py` 파일을 삭제합니다.
 
+## 스트림
+{: #streams}
 
-## Streams
-
-Whenever we execute a program pipeline like
+다음과 같은 파이프라인을 실행하면 `grep`이 `cat`, `uniq`와 각각 통신합니다.
 
 ```shell
 cat myfile | grep -P '\d+' | uniq -c
 ```
 
-we see that the `grep` program is communicating with both the `cat` and `uniq` programs.
+중요한 점은 세 프로그램이 *동시에* 실행된다는 것입니다. 셸이 `cat`, `grep`, `uniq`를 차례로 실행하고 종료를 기다리는 것이 아닙니다. 셋을 모두 시작하고 `cat`의 출력을 `grep`의 입력에, `grep`의 출력을 `uniq`의 입력에 연결합니다. 파이프 연산자 `|`는 프로그램 사이를 흐르는 데이터 스트림을 연결합니다.
 
-An important observation here is that all three programs are executing at once.
-Namely, the shell is not first calling cat, then grep, and then uniq.
-Instead, all three programs are being spawned and the shell is connecting the output of cat to the input of grep and the output of grep to the input of uniq.
-When using the pipe operator `|`, the shell operates on streams of data that flow from one program to the next in the chain.
-
-We can demonstrate this concurrency, all commands in a pipeline start immediately:
+다음 예제로 파이프라인의 명령이 즉시 시작되는 것을 확인할 수 있습니다.
 
 ```console
 $ (sleep 15 && cat numbers.txt) | grep -P '^\d$' | sort | uniq  &
@@ -161,9 +136,9 @@ $ ps | grep -P '(sleep|cat|grep|sort|uniq)'
   32948 pts/1    00:00:00 grep
 ```
 
-We can see that all processes but `cat` are running right away. The shell spawns all processes and connects their streams before any of them finish. `cat` will only get started once sleep finishes, and the output of `cat` will be sent to grep and so on and so forth.
+`cat`을 제외한 프로세스가 바로 실행됩니다. 셸은 어느 프로세스도 끝나기 전에 모두 시작하고 스트림을 연결합니다. `cat`은 `sleep`이 끝나야 실행되며, 그 출력은 `grep`으로 이어집니다.
 
-Every program has an input stream, labeled stdin (for standard input). When piping, stdin is connected automatically. Within a script, many programs accept `-` as a filename to mean "read from stdin":
+모든 프로그램에는 stdin(표준 입력)이라는 입력 스트림이 있습니다. 파이프에서는 자동으로 연결됩니다. 많은 프로그램은 파일 이름으로 `-`를 받으면 "표준 입력에서 읽기"로 해석합니다.
 
 ```shell
 # These are equivalent when data comes from a pipe
@@ -171,9 +146,7 @@ echo "hello" | grep "hello"
 echo "hello" | grep "hello" -
 ```
 
-Similarly, every program has two output streams: stdout and stderr.
-The standard output is the one most commonly encountered and it is the one that is used for piping the output of the program to the next command in the pipeline.
-The standard error is an alternative stream that is intended for programs to report warnings and other types of issues, without that output getting parsed by the next command in the chain.
+출력 스트림은 stdout과 stderr 두 개입니다. 표준 출력(stdout)은 가장 흔히 보게 되는 출력이며, 파이프에서 다음 명령으로 전달됩니다. 표준 오류(stderr)는 경고나 문제를 알리는 별도 스트림으로, 이 내용이 다음 명령의 데이터로 파싱되지 않게 합니다.
 
 ```console
 $ ls /nonexistent
@@ -185,7 +158,7 @@ $ ls /nonexistent 2>/dev/null
 # No output - stderr was redirected to /dev/null
 ```
 
-The shell provides syntax for redirecting these streams. Here are some illustrative examples.
+셸에는 스트림을 리다이렉트하는 문법이 있습니다. 다음 예제를 보세요.
 
 ```shell
 # Redirect stdout to a file (overwrite)
@@ -207,26 +180,21 @@ grep "pattern" < input.txt
 cmd > /dev/null 2>&1
 ```
 
-Another powerful tool that exemplifies the Unix philosophy is [`fzf`](https://github.com/junegunn/fzf), a fuzzy finder. It reads lines from stdin and provides an interactive interface to filter and select:
+퍼지 검색 도구 [`fzf`](https://github.com/junegunn/fzf)도 Unix 철학을 잘 보여 줍니다. 표준 입력에서 줄을 읽고, 대화형 인터페이스로 필터링하고 선택하게 합니다.
 
 ```console
 $ ls | fzf
 $ cat ~/.bash_history | fzf
 ```
 
-`fzf` can be integrated with many shell operations. We'll see more uses of it when we discuss shell customization.
+`fzf`는 여러 셸 작업과 통합할 수 있습니다. 셸 설정을 다룰 때 다른 활용법도 보겠습니다.
 
+## 환경 변수
+{: #environment-variables}
 
-## Environment variables
+bash에서 변수에 값을 넣는 문법은 `foo=bar`이며, 값은 `$foo`로 읽습니다. `foo = bar`는 변수 대입이 아닙니다. 셸은 `foo` 프로그램에 `['=', 'bar']`를 전달하는 명령으로 해석합니다. 셸 스크립트에서 공백은 인자를 나누므로 이 동작을 기억하세요.
 
-To assign variables in bash we use the syntax `foo=bar`, and then access the value of the variable with the `$foo` syntax.
-Note that `foo = bar` is invalid syntax as the shell will parse it as calling the program `foo` with arguments `['=', 'bar']`.
-In shell scripting the role of the space character is to perform argument splitting.
-This behavior can be confusing and tricky to get used to, so keep it in mind.
-
-Shell variables do not have types, they are all strings.
-Note that when writing string expressions in the shell single and double quotes are not interchangeable.
-Strings delimited with `'` are literal strings and will not expand variables, perform command substitution, or process escape sequences, whereas `"` delimited strings will.
+셸 변수에는 타입이 없으며 모두 문자열입니다. 문자열을 쓸 때 작은따옴표와 큰따옴표는 서로 바꿔 쓸 수 없습니다. `'` 안의 문자열은 그대로 유지되어 변수 확장, 명령 치환, 이스케이프 처리가 일어나지 않지만, `"` 안에서는 변수 확장과 명령 치환 등이 일어납니다.
 
 ```shell
 foo=bar
@@ -236,32 +204,28 @@ echo '$foo'
 # prints $foo
 ```
 
-To capture the output of a command into a variable we use _command substitution_.
-When we execute
+명령의 출력을 변수에 저장하려면 *명령 치환*을 사용합니다.
+
 ```shell
 files=$(ls)
 echo "$files" | grep README
 echo "$files" | grep ".py"
 ```
-the output (concretely the stdout) of ls is placed into the variable `$files` which we can access later.
-The content of the `$files` variable does include the newlines from the ls output, which is how programs like `grep` know to operate on each item independently.
 
-A lesser known similar feature is _process substitution_, `<( CMD )` will execute `CMD` and place the output in a temporary file and substitute the `<()` with that file's name.
-This is useful when commands expect values to be passed by file instead of by STDIN.
-For example, `diff <(ls src) <(ls docs)` will show differences between files in dirs `src` and `docs`.
+`ls`의 표준 출력이 `files` 변수에 담깁니다. 줄바꿈도 포함되므로 `grep` 같은 프로그램은 각 항목을 별도로 처리할 수 있습니다.
 
-Whenever a shell program calls another program it passes along a set of variables that are often referred to as _environment variables_.
-From within a shell we can find the current environment variables by running `printenv`.
-To pass an environment variable explicitly we can prepend a command with a variable assignment
+비슷하지만 덜 알려진 기능은 *프로세스 치환*입니다. `<( CMD )`는 `CMD`를 실행하고 출력을 임시 파일에 저장한 뒤 `<()`를 그 파일 이름으로 바꿉니다. 표준 입력 대신 파일을 받는 명령에 유용합니다. 예를 들어 `diff <(ls src) <(ls docs)`는 `src`와 `docs`의 파일 목록 차이를 보여 줍니다.
 
-> Environment variables are conventionally written in ALL_CAPS (e.g., `HOME`, `PATH`, `DEBUG`). This is a convention, not a technical requirement, but following it helps distinguish environment variables from local shell variables which are typically lowercase.
+셸 프로그램이 다른 프로그램을 호출하면 *환경 변수*라고 부르는 변수 집합을 전달합니다. 현재 환경 변수는 `printenv`로 확인합니다. 명령 앞에 변수 대입을 붙이면 해당 명령에 환경 변수를 명시적으로 전달할 수 있습니다.
+
+> 환경 변수에는 보통 `HOME`, `PATH`, `DEBUG`처럼 대문자를 사용합니다. 기술적 요구 사항은 아니지만, 보통 소문자로 쓰는 지역 셸 변수와 구분하기 쉽습니다.
 
 ```shell
 TZ=Asia/Tokyo date  # prints the current time in Tokyo
 echo $TZ  # this will be empty, since TZ was only set for the child command
 ```
 
-Alternatively, we can use the `export` built-in function that will modify our current environment and thus all child processes will inherit the variable:
+내장 명령 `export`로 현재 환경을 바꾸면 이후의 모든 자식 프로세스가 변수를 상속합니다.
 
 ```shell
 export DEBUG=1
@@ -270,23 +234,18 @@ bash -c 'echo $DEBUG'
 # prints 1
 ```
 
-To delete a variable use the `unset` built-in command, e.g. `unset DEBUG`.
+변수를 삭제하려면 `unset DEBUG`처럼 내장 명령 `unset`을 사용합니다.
 
-> Environment variables are another shell convention. They can be used to modify the behavior of many programs implicitly rather than explicitly. For example, the shell sets the `$HOME` environment variable with the path of the home folder of the current user. Then programs can access this variable to get this information instead of requiring an explicit `--home /home/alice`. Another common example is `$TZ`, which many programs use to format dates and times according to the specified timezone.
+> 환경 변수도 관례입니다. 프로그램에 매번 옵션을 명시하지 않고 동작을 바꿀 수 있습니다. 예를 들어 셸은 `$HOME`에 현재 사용자의 홈 경로를 설정합니다. 프로그램은 `--home /home/alice` 같은 인자를 요구하는 대신 이 값을 읽습니다. `$TZ`도 흔한 예로, 많은 프로그램이 지정한 시간대에 맞춰 날짜와 시각을 표시할 때 사용합니다.
 
-## Return codes
+## 종료 코드
+{: #return-codes}
 
-As we saw earlier, the main output of a shell program is conveyed through the stdout/stderr streams and filesystem side effects.
+앞에서 보았듯 셸 프로그램의 주요 결과는 stdout·stderr와 파일 시스템의 변경으로 전달됩니다.
 
-By default a shell script will return exit code zero.
-The convention is that zero means everything went well whereas nonzero means some issues were encountered.
-To return a nonzero exit code we have to use the `exit NUM` shell built-in.
-We can access the return code of the last command that was run by accessing the special variable `$?`.
+기본적으로 셸 스크립트는 종료 코드 0을 반환합니다. 0은 성공을, 0이 아닌 값은 문제가 생겼음을 나타내는 것이 관례입니다. 0이 아닌 종료 코드를 반환하려면 셸 내장 명령 `exit NUM`을 사용합니다. 마지막 명령의 종료 코드는 특수 변수 `$?`로 읽습니다.
 
-The shell has boolean operators `&&` and `||` for performing AND and OR operations respectively.
-Unlike those encountered in regular programming languages, the ones in the shell operate on the return code of programs.
-Both of these are [short-circuiting](https://en.wikipedia.org/wiki/Short-circuit_evaluation) operators.
-This means that they can be used to conditionally run commands based on the success or failure of previous commands, where success is determined based on whether the return code is zero or not. Some examples:
+셸의 `&&`와 `||`는 각각 AND와 OR 연산을 하지만, 일반적인 언어와 달리 프로그램의 종료 코드를 대상으로 합니다. 둘 다 [단락 평가](https://en.wikipedia.org/wiki/Short-circuit_evaluation)를 하므로, 앞 명령의 성공이나 실패에 따라 다음 명령을 실행할 수 있습니다. 성공 여부는 종료 코드가 0인지로 판단합니다.
 
 ```shell
 # echo will only run if grep succeeds (finds a match)
@@ -302,7 +261,7 @@ true && echo "This will always print"
 false || echo "This will always print"
 ```
 
-The same principle applies to `if` and `while` statements, they both use return codes to make decisions:
+`if`와 `while`도 종료 코드로 판단합니다.
 
 ```shell
 # if uses the return code of the condition command (0 = true, nonzero = false)
@@ -316,11 +275,10 @@ while read line; do
 done < file.txt
 ```
 
-## Signals
+## 시그널
+{: #signals}
 
-In some cases you will need to interrupt a program while it is executing, for instance if a command is taking too long to complete.
-The simplest way to interrupt a program is to press `Ctrl-C` and the command will probably stop.
-But how does this actually work and why does it sometimes fail to stop the process?
+명령이 너무 오래 걸리는 등 실행 중인 프로그램을 중단해야 할 때가 있습니다. 가장 간단한 방법은 `Ctrl-C`이며, 대개 명령이 멈춥니다. 어떻게 작동하며, 어떤 때는 왜 멈추지 않을까요?
 
 ```console
 $ sleep 100
@@ -328,21 +286,18 @@ $ sleep 100
 $
 ```
 
-> Note, here `^C` is how `Ctrl-C` is displayed when typed in the terminal.
+> `^C`는 터미널에서 `Ctrl-C`를 표시하는 방식입니다.
 
-Under the hood, what happened here is the following:
+여기서 일어난 과정은 다음과 같습니다.
 
-1. We pressed `Ctrl-C`
-2. The shell identified the special combination of characters
-3. The shell process sent a SIGINT signal to the `sleep` process
-4. The signal interrupted the execution of the `sleep` process
+1. `Ctrl-C`를 눌렀습니다.
+2. 셸이 특수 키 조합을 인식했습니다.
+3. 셸 프로세스가 `sleep` 프로세스에 SIGINT 시그널을 보냈습니다.
+4. 시그널이 `sleep`의 실행을 중단했습니다.
 
-Signals are a special communication mechanism.
-When a process receives a signal it stops its execution, deals with the signal and potentially changes the flow of execution based on the information that the signal delivered. For this reason, signals are _software interrupts_.
+시그널은 특수한 통신 수단입니다. 프로세스는 시그널을 받으면 하던 일을 잠시 멈추고 시그널을 처리하며, 전달된 정보에 따라 실행 흐름이 바뀔 수 있습니다. 그래서 시그널을 *소프트웨어 인터럽트*라고도 합니다.
 
-
-In our case, when typing `Ctrl-C` this prompts the shell to deliver a `SIGINT` signal to the process.
-Here's a minimal example of a Python program that captures `SIGINT` and ignores it, no longer stopping. To kill this program we can now use the `SIGQUIT` signal instead, by typing `Ctrl-\`.
+`Ctrl-C`를 누르면 셸이 프로세스에 `SIGINT`를 전달합니다. 다음 Python 예제는 `SIGINT`를 잡아 무시하므로 더 이상 멈추지 않습니다. 이 프로그램은 `Ctrl-\`로 `SIGQUIT`를 보내 종료할 수 있습니다.
 
 ```python
 #!/usr/bin/env python
@@ -359,7 +314,7 @@ while True:
     i += 1
 ```
 
-Here's what happens if we send `SIGINT` twice to this program, followed by `SIGQUIT`. Note that `^` is how `Ctrl` is displayed when typed in the terminal.
+`SIGINT`를 두 번 보낸 뒤 `SIGQUIT`를 보내면 다음과 같습니다. `^`는 터미널에서 `Ctrl`을 표시합니다.
 
 ```console
 $ python sigint.py
@@ -370,25 +325,19 @@ I got a SIGINT, but I am not stopping
 30^\[1]    39913 quit       python sigint.py
 ```
 
-While `SIGINT` and `SIGQUIT` are both usually associated with terminal related requests, a more generic signal for asking a process to exit gracefully is the `SIGTERM` signal.
-To send this signal we can use the [`kill`](https://www.man7.org/linux/man-pages/man1/kill.1.html) command, with the syntax `kill -TERM <PID>`.
+`SIGINT`와 `SIGQUIT`는 대개 터미널 요청과 관련이 있습니다. 프로세스에 정상 종료를 요청할 때 더 일반적으로 쓰는 시그널은 `SIGTERM`입니다. [`kill`](https://www.man7.org/linux/man-pages/man1/kill.1.html)을 `kill -TERM <PID>` 형식으로 실행하면 됩니다.
 
-Signals can do other things beyond killing a process. For instance, `SIGSTOP` pauses a process. In the terminal, typing `Ctrl-Z` will prompt the shell to send a `SIGTSTP` signal, short for Terminal Stop (i.e. the terminal's version of `SIGSTOP`).
+시그널은 종료 이외의 일도 합니다. `SIGSTOP`은 프로세스를 일시 정지합니다. 터미널에서 `Ctrl-Z`를 누르면 셸이 Terminal Stop의 약자인 `SIGTSTP`를 보냅니다. 터미널에서 사용하는 정지 시그널입니다.
 
-We can then continue the paused job in the foreground or in the background using [`fg`](https://www.man7.org/linux/man-pages/man1/fg.1p.html) or [`bg`](https://man7.org/linux/man-pages/man1/bg.1p.html), respectively.
+정지한 작업은 [`fg`](https://www.man7.org/linux/man-pages/man1/fg.1p.html)로 포그라운드에서, [`bg`](https://man7.org/linux/man-pages/man1/bg.1p.html)로 백그라운드에서 다시 실행할 수 있습니다.
 
-The [`jobs`](https://www.man7.org/linux/man-pages/man1/jobs.1p.html) command lists the unfinished jobs associated with the current terminal session.
-You can refer to those jobs using their pid (you can use [`pgrep`](https://www.man7.org/linux/man-pages/man1/pgrep.1.html) to find that out).
-More intuitively, you can also refer to a process using the percent symbol followed by its job number (displayed by `jobs`). To refer to the last backgrounded job you can use the `$!` special parameter.
+[`jobs`](https://www.man7.org/linux/man-pages/man1/jobs.1p.html)는 현재 터미널 세션에서 아직 끝나지 않은 작업을 나열합니다. 작업은 PID로 참조할 수 있으며, PID는 [`pgrep`](https://www.man7.org/linux/man-pages/man1/pgrep.1.html)으로 찾을 수 있습니다. 더 직관적으로는 `%` 뒤에 `jobs`가 보여 주는 작업 번호를 붙여 참조할 수 있습니다. 마지막으로 백그라운드에서 실행한 작업은 `$!`로 참조합니다.
 
-One more thing to know is that the `&` suffix in a command will run the command in the background, giving you the prompt back, although it will still use the shell's STDOUT which can be annoying (use shell redirections in that case). Equivalently, to background an already running program you can do `Ctrl-Z` followed by `bg`.
+명령 끝에 `&`를 붙이면 백그라운드에서 실행하며 프롬프트를 돌려줍니다. 여전히 셸의 표준 출력에 내용을 표시하므로 불편하면 리다이렉션을 쓰세요. 실행 중인 프로그램은 `Ctrl-Z` 다음 `bg`를 입력해 백그라운드로 보낼 수 있습니다.
 
+백그라운드 프로세스도 터미널의 자식 프로세스이므로, 터미널을 닫을 때 `SIGHUP`이 전달되어 종료될 수 있습니다. 이를 막으려면 `SIGHUP`을 무시하는 래퍼인 [`nohup`](https://www.man7.org/linux/man-pages/man1/nohup.1.html)으로 실행하거나, 이미 실행 중이라면 `disown`을 사용하세요. 뒤에서 볼 터미널 멀티플렉서도 방법입니다.
 
-Note that backgrounded processes are still children processes of your terminal and will die if you close the terminal (this will send yet another signal, `SIGHUP`).
-To prevent that from happening you can run the program with [`nohup`](https://www.man7.org/linux/man-pages/man1/nohup.1.html) (a wrapper to ignore `SIGHUP`), or use `disown` if the process has already been started.
-Alternatively, you can use a terminal multiplexer as we will see in the next section.
-
-Below is a sample session to showcase some of these concepts.
+다음 세션에서 몇 가지 개념을 확인할 수 있습니다.
 
 ```
 $ sleep 1000
@@ -415,11 +364,11 @@ $ kill %2
 [2]  + 18745 terminated  nohup sleep 2000
 ```
 
-A special signal is `SIGKILL` since it cannot be captured by the process and it will always terminate it immediately. However, it can have bad side effects such as leaving orphaned children processes.
+`SIGKILL`은 프로세스가 잡아서 처리할 수 없으며 즉시 종료시키는 특별한 시그널입니다. 다만 자식 프로세스를 고아 프로세스로 남기는 등의 부작용이 있을 수 있습니다.
 
-You can learn more about these and other signals [here](https://en.wikipedia.org/wiki/Signal_(IPC)) or typing [`man signal`](https://www.man7.org/linux/man-pages/man7/signal.7.html) or `kill -l`.
+다른 시그널까지 자세히 알아보려면 [시그널 설명](https://en.wikipedia.org/wiki/Signal_(IPC)), [`man signal`](https://www.man7.org/linux/man-pages/man7/signal.7.html), `kill -l`을 참고하세요.
 
-Within shell scripts, you can use the `trap` built-in to execute commands when signals are received. This is useful for cleanup operations:
+셸 스크립트에서는 내장 명령 `trap`으로 시그널을 받았을 때 실행할 명령을 지정합니다. 정리 작업에 유용합니다.
 
 ```shell
 #!/usr/bin/env bash
@@ -430,6 +379,7 @@ cleanup() {
 trap cleanup EXIT  # Run cleanup when script exits
 trap cleanup SIGINT SIGTERM  # Also on Ctrl-C or kill
 ```
+
 {% comment %}
 ### Users, Files and Permissions
 
@@ -493,17 +443,18 @@ So far we've focused on your local machine, but many of these skills become even
 
 {% endcomment %}
 
-# Remote Machines
+# 원격 컴퓨터
+{: #remote-machines}
 
-It has become more and more common for programmers to work with remote servers in their everyday work. The most common tool for the job here is SSH (Secure Shell) which will help us connect to a remote server and provide the now familiar shell interface. We connect to a server with a command like:
+프로그래머가 일상적으로 원격 서버에서 작업하는 일이 점점 흔해집니다. 가장 일반적인 도구는 SSH(Secure Shell)입니다. 원격 서버에 접속해 익숙한 셸 인터페이스를 사용할 수 있습니다.
 
 ```bash
 ssh alice@server.mit.edu
 ```
 
-Here we are trying to ssh as user `alice` in server `server.mit.edu`.
+`server.mit.edu` 서버에 사용자 `alice`로 접속합니다.
 
-An often overlooked feature of `ssh` is the ability to run commands non-interactively. `ssh` correctly handles sending the stdin and receiving the stdout of the command, so we can combine it with other commands
+자주 놓치는 `ssh` 기능은 비대화형 명령 실행입니다. 명령의 stdin 전송과 stdout 수신을 처리하므로 다른 명령과 조합할 수 있습니다.
 
 ```shell
 # here ls runs in the remote, and wc runs locally
@@ -514,22 +465,19 @@ ssh alice@server 'ls | wc -l'
 
 ```
 
-> Try installing [Mosh](https://mosh.org/) as a SSH replacement that can handle disconnections, entering/exiting sleep, changing networks and dealing with high latency links.
+> 연결 끊김, 절전 진입·해제, 네트워크 전환, 높은 지연에 대응하는 SSH 대안 [Mosh](https://mosh.org/)도 사용해 보세요.
 
-For `ssh` to let us run commands in the remote server we need to prove that we are authorized to do so.
-We can do this via passwords or ssh keys.
-Key-based authentication utilizes public-key cryptography to prove to the server that the client owns the secret private key without revealing the key.
-Key based authentication is both more convenient and more secure, so you should prefer it.
-Note that the private key (often `~/.ssh/id_rsa` and more recently `~/.ssh/id_ed25519`) is effectively your password, so treat it like so and never share its contents.
+원격 서버에서 명령을 실행하려면 권한을 증명해야 합니다. 비밀번호나 SSH 키를 사용할 수 있습니다. 키 인증은 공개 키 암호로 비밀인 개인 키를 공개하지 않고도 소유 사실을 증명합니다. 더 편리하고 안전하므로 키 인증을 권장합니다. 개인 키(흔히 `~/.ssh/id_rsa`, 최근에는 `~/.ssh/id_ed25519`)는 사실상 비밀번호이므로 내용을 공유하지 마세요.
 
-To generate a pair you can run [`ssh-keygen`](https://www.man7.org/linux/man-pages/man1/ssh-keygen.1.html).
+키 쌍은 [`ssh-keygen`](https://www.man7.org/linux/man-pages/man1/ssh-keygen.1.html)으로 생성합니다.
+
 ```bash
 ssh-keygen -a 100 -t ed25519 -f ~/.ssh/id_ed25519
 ```
 
-If you have ever configured pushing to GitHub using SSH keys, then you have probably done the steps outlined [here](https://help.github.com/articles/connecting-to-github-with-ssh/) and have a valid key pair already. To check if you have a passphrase and validate it you can run `ssh-keygen -y -f /path/to/key`.
+GitHub 푸시를 위해 SSH 키를 설정했다면 [이 절차](https://help.github.com/articles/connecting-to-github-with-ssh/)를 이미 따라 했을 수 있습니다. `ssh-keygen -y -f /path/to/key`로 암호문구 설정 여부와 유효성을 확인할 수 있습니다.
 
-At the server side `ssh` will look into `.ssh/authorized_keys` to determine which clients it should let in. To copy a public key over you can use:
+서버는 `.ssh/authorized_keys`를 보고 접속을 허용할 클라이언트를 결정합니다. 공개 키를 복사하려면 다음 명령을 사용합니다.
 
 ```bash
 cat .ssh/id_ed25519.pub | ssh alice@remote 'cat >> ~/.ssh/authorized_keys'
@@ -539,9 +487,9 @@ cat .ssh/id_ed25519.pub | ssh alice@remote 'cat >> ~/.ssh/authorized_keys'
 ssh-copy-id -i .ssh/id_ed25519 alice@remote
 ```
 
-Beyond running commands, the connection that ssh establishes can be used to transfer files from and to the server securely. [`scp`](https://www.man7.org/linux/man-pages/man1/scp.1.html) is the most traditional tool and the syntax is `scp path/to/local_file remote_host:path/to/remote_file`. [`rsync`](https://www.man7.org/linux/man-pages/man1/rsync.1.html) improves upon `scp` by detecting identical files in local and remote, and preventing copying them again. It also provides more fine grained control over symlinks, permissions and has extra features like the `--partial` flag that can resume from a previously interrupted copy. `rsync` has a similar syntax to `scp`.
+SSH 연결로 파일도 안전하게 주고받을 수 있습니다. 전통적인 도구는 [`scp`](https://www.man7.org/linux/man-pages/man1/scp.1.html)이며, 문법은 `scp path/to/local_file remote_host:path/to/remote_file`입니다. [`rsync`](https://www.man7.org/linux/man-pages/man1/rsync.1.html)는 로컬과 원격에서 같은 파일을 감지해 다시 복사하지 않습니다. 심볼릭 링크와 권한을 더 세밀하게 다루고, 중단된 복사를 이어갈 수 있게 하는 `--partial` 등의 기능도 제공합니다. 문법은 `scp`와 비슷합니다.
 
-SSH client configuration is located at `~/.ssh/config` and it lets us declare hosts and set default settings for them. This configuration file is not just read by `ssh` but also other programs like `scp`, `rsync`, `mosh`, &c.
+SSH 클라이언트 설정 파일 `~/.ssh/config`에는 호스트와 기본 설정을 선언할 수 있습니다. `ssh`뿐 아니라 `scp`, `rsync`, `mosh` 등도 이 파일을 읽습니다.
 
 ```bash
 Host vm
@@ -555,83 +503,69 @@ Host *.mit.edu
     User alice
 ```
 
+# 터미널 멀티플렉서
+{: #terminal-multiplexers}
 
+명령줄에서 편집기와 프로그램을 나란히 실행하는 등 여러 작업을 동시에 하고 싶을 때가 많습니다. 터미널 창을 새로 열 수도 있지만, 터미널 멀티플렉서는 더 유연한 해결책입니다.
 
+[`tmux`](https://www.man7.org/linux/man-pages/man1/tmux.1.html) 같은 도구는 탭과 분할 창으로 여러 셸 세션을 효율적으로 다룹니다. 현재 터미널 세션에서 분리했다가 나중에 다시 연결할 수도 있습니다. 원격 컴퓨터에서 특히 편리하며, `nohup` 같은 방법을 따로 쓸 필요가 없습니다.
 
-# Terminal Multiplexers
+널리 쓰이는 [`tmux`](https://www.man7.org/linux/man-pages/man1/tmux.1.html)는 설정이 다양하며, 단축키로 탭과 분할 창을 만들고 빠르게 이동합니다.
 
-When using the command line interface you will often want to run more than one thing at once.
-For instance, you might want to run your editor and your program side by side.
-Although this can be achieved by opening new terminal windows, using a terminal multiplexer is a more versatile solution.
+단축키의 `<C-b> x`는 (1) `Ctrl+b`를 누르고, (2) 손을 뗀 뒤, (3) `x`를 누르라는 뜻입니다. `tmux`의 구조는 다음과 같습니다.
 
-Terminal multiplexers like [`tmux`](https://www.man7.org/linux/man-pages/man1/tmux.1.html) allow you to multiplex terminal windows using panes and tabs so you can interact with multiple shell sessions in an efficient manner.
-Moreover, terminal multiplexers let you detach a current terminal session and reattach at some point later in time.
-Because of this, terminal multiplexers are really convenient when working with remote machines, as it avoids the need to use `nohup` and similar tricks.
+- **세션**: 창을 하나 이상 가진 독립된 작업 공간입니다.
+  - `tmux`: 새 세션을 시작합니다.
+  - `tmux new -s NAME`: 이름을 지정해 시작합니다.
+  - `tmux ls`: 현재 세션을 나열합니다.
+  - `<C-b> d`: 현재 세션에서 분리합니다.
+  - `tmux a`: 마지막 세션에 다시 연결합니다. `-t`로 세션을 지정할 수 있습니다.
+- **창**: 편집기나 브라우저의 탭처럼 같은 세션 안에서 시각적으로 구분됩니다.
+  - `<C-b> c`: 새 창을 만듭니다. `<C-d>`로 셸을 종료하면 닫을 수 있습니다.
+  - `<C-b> N`: 번호가 *N*인 창으로 이동합니다.
+  - `<C-b> p`, `<C-b> n`: 이전·다음 창으로 이동합니다.
+  - `<C-b> ,`: 현재 창의 이름을 바꿉니다.
+  - `<C-b> w`: 창 목록을 봅니다.
+- **분할 창(pane)**: Vim의 분할 화면처럼 한 화면에 여러 셸을 보여 줍니다.
+  - `<C-b> "`: 현재 영역을 가로 경계로 나눕니다.
+  - `<C-b> %`: 현재 영역을 세로 경계로 나눕니다.
+  - `<C-b> <direction>`: 해당 방향의 영역으로 이동합니다.
+  - `<C-b> z`: 현재 영역의 확대를 켜거나 끕니다.
+  - `<C-b> [`: 스크롤 모드로 들어갑니다. `<space>`로 선택을 시작하고 `<enter>`로 복사합니다.
+  - `<C-b> <space>`: 분할 배치를 순환합니다.
 
-The most popular terminal multiplexer these days is [`tmux`](https://www.man7.org/linux/man-pages/man1/tmux.1.html). `tmux` is highly configurable and by using the associated keybindings you can create multiple tabs and panes and quickly navigate through them.
+> [간단한 튜토리얼](https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/)과 [더 자세한 설명](https://linuxcommand.org/lc3_adv_termmux.php)도 참고하세요.
 
-`tmux` expects you to know its keybindings, and they all have the form `<C-b> x` where that means (1) press `Ctrl+b`, (2) release `Ctrl+b`, and then (3) press `x`. `tmux` has the following hierarchy of objects:
-- **Sessions** - a session is an independent workspace with one or more windows
-    + `tmux` starts a new session.
-    + `tmux new -s NAME` starts it with that name.
-    + `tmux ls` lists the current sessions
-    + Within `tmux` typing `<C-b> d`  detaches the current session
-    + `tmux a` attaches the last session. You can use `-t` flag to specify which
+tmux와 SSH를 갖췄다면 어느 컴퓨터에서든 익숙한 환경으로 작업하고 싶을 것입니다. 이를 위해 셸을 설정해 봅시다.
 
-- **Windows** - Equivalent to tabs in editors or browsers, they are visually separate parts of the same session
-    + `<C-b> c` Creates a new window. To close it you can just terminate the shells doing `<C-d>`
-    + `<C-b> N` Go to the _N_ th window. Note they are numbered
-    + `<C-b> p` Goes to the previous window
-    + `<C-b> n` Goes to the next window
-    + `<C-b> ,` Rename the current window
-    + `<C-b> w` List current windows
+# 셸 설정하기
+{: #customizing-the-shell}
 
-- **Panes** - Like vim splits, panes let you have multiple shells in the same visual display.
-    + `<C-b> "` Split the current pane horizontally
-    + `<C-b> %` Split the current pane vertically
-    + `<C-b> <direction>` Move to the pane in the specified _direction_. Direction here means arrow keys.
-    + `<C-b> z` Toggle zoom for the current pane
-    + `<C-b> [` Start scrollback. You can then press `<space>` to start a selection and `<enter>` to copy that selection.
-    + `<C-b> <space>` Cycle through pane arrangements.
+많은 명령줄 프로그램은 *닷파일(dotfile)*이라는 일반 텍스트 파일로 설정합니다. `~/.vimrc`처럼 이름이 `.`으로 시작해 기본 `ls` 목록에서 숨겨지기 때문에 붙은 이름입니다.
 
-> To learn more about tmux, consider reading [this](https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/) quick tutorial and [this](https://linuxcommand.org/lc3_adv_termmux.php) more detailed explanation.
+> 이름 앞의 점으로 목록에서 숨기는 것도 셸 환경의 관례입니다.
 
-With tmux and SSH in your toolkit, you'll want to make your environment feel like home on any machine. That's where shell customization comes in.
+셸도 이런 파일을 사용합니다. 시작할 때 여러 파일을 읽어 설정을 불러옵니다. 셸 종류와 로그인·대화형 세션 여부에 따라 과정이 복잡해질 수 있습니다. [이 자료](https://web.archive.org/web/20260329133158/https://blog.flowblok.id.au/2013-02/shell-startup-scripts.html)가 잘 설명합니다.
 
-# Customizing the Shell
+bash는 대부분의 시스템에서 `.bashrc`나 `.bash_profile`을 수정하면 됩니다. 다른 예는 다음과 같습니다.
 
-A wide array of command line programs are configured using plain-text files known as _dotfiles_
-(because the file names begin with a `.`, e.g. `~/.vimrc`, so that they are
-hidden in the directory listing `ls` by default).
+- `bash`: `~/.bashrc`, `~/.bash_profile`
+- `git`: `~/.gitconfig`
+- `vim`: `~/.vimrc`, `~/.vim` 폴더
+- `ssh`: `~/.ssh/config`
+- `tmux`: `~/.tmux.conf`
 
-> Dotfiles are yet another shell convention. The dot in the front is to "hide" them when listing (yes, another convention).
-
-Shells are one example of programs configured with such files. On startup, your shell will read many files to load its configuration.
-Depending on the shell and whether you are starting a login and/or interactive session, the entire process can be quite complex.
-[Here](https://web.archive.org/web/20260329133158/https://blog.flowblok.id.au/2013-02/shell-startup-scripts.html) is an excellent resource on the topic.
-
-For `bash`, editing your `.bashrc` or `.bash_profile` will work in most systems.
-Some other examples of tools that can be configured through dotfiles are:
-
-- `bash` - `~/.bashrc`, `~/.bash_profile`
-- `git` - `~/.gitconfig`
-- `vim` - `~/.vimrc` and the `~/.vim` folder
-- `ssh` - `~/.ssh/config`
-- `tmux` - `~/.tmux.conf`
-
-A common configuration change is adding new locations for the shell to find programs. You will encounter this pattern when installing software:
+프로그램 검색 경로를 추가하는 것은 흔한 설정입니다. 소프트웨어를 설치할 때 자주 보게 됩니다.
 
 ```shell
 export PATH="$PATH:path/to/append"
 ```
 
-Here, we are telling the shell to set the value of the $PATH variable to its current value plus a new path, and have all children processes inherit this new value for PATH.
-This will allow children processes to find programs located under `path/to/append`.
+기존 `$PATH`에 새 경로를 붙이고 모든 자식 프로세스가 그 값을 상속하게 합니다. 이제 자식 프로세스도 `path/to/append`의 프로그램을 찾을 수 있습니다.
 
+셸을 꾸미다 보면 새 명령줄 도구도 설치하게 됩니다. 패키지 관리자는 다운로드·설치·업데이트를 처리합니다. macOS는 [Homebrew](https://brew.sh/), Ubuntu/Debian은 `apt`, Fedora는 `dnf`, Arch는 `pacman`을 사용합니다. 코드 배포 강의에서 더 자세히 다룹니다.
 
-Customizing your shell often means installing new command-line tools. Package managers make this easy. They handle downloading, installing, and updating software. Different operating systems have different package managers: macOS uses [Homebrew](https://brew.sh/), Ubuntu/Debian use `apt`, Fedora uses `dnf`, and Arch uses `pacman`. We'll cover package managers in more depth in the shipping code lecture.
-
-Here's how to install two useful tools using Homebrew on macOS:
+macOS의 Homebrew로 유용한 도구 두 개를 설치하는 예입니다.
 
 ```shell
 # ripgrep: a faster grep with better defaults
@@ -641,19 +575,19 @@ brew install ripgrep
 brew install fd
 ```
 
-With these installed, you can use `rg` instead of `grep` and `fd` instead of `find`.
+설치하면 `grep` 대신 `rg`, `find` 대신 `fd`를 사용할 수 있습니다.
 
-> **Warning about `curl | bash`**: You'll often see installation instructions like `curl -fsSL https://example.com/install.sh | bash`. This pattern downloads a script and immediately executes it, which is convenient but risky; you're running code you haven't inspected. A safer approach is to download first, review, then execute:
+> **`curl | bash` 주의**: 설치 안내에서 `curl -fsSL https://example.com/install.sh | bash`를 자주 봅니다. 다운로드한 스크립트를 즉시 실행하므로 편리하지만, 내용을 확인하지 않은 코드를 실행한다는 위험이 있습니다. 먼저 다운로드하고 검토한 뒤 실행하는 편이 안전합니다.
 > ```shell
 > curl -fsSL https://example.com/install.sh -o install.sh
 > less install.sh  # review the script
 > bash install.sh
 > ```
-> Some installers use a slightly safer variant: `/bin/bash -c "$(curl -fsSL https://url)"` which at least ensures bash interprets the script rather than your current shell.
+> 일부 설치 도구는 `/bin/bash -c "$(curl -fsSL https://url)"`을 사용합니다. 적어도 현재 셸 대신 bash가 스크립트를 해석하도록 보장하는 변형입니다.
 
-When you try to run a command that isn't installed, your shell will show `command not found`. The website [command-not-found.com](https://command-not-found.com) is a helpful resource you can use to search for any command to find out how to install it across different package managers and distributions.
+설치하지 않은 명령을 실행하면 `command not found`가 나옵니다. [command-not-found.com](https://command-not-found.com)에서 배포판과 패키지 관리자별 설치법을 찾을 수 있습니다.
 
-Another useful tool is [`tldr`](https://tldr.sh/), which provides simplified, example-focused man pages. Instead of reading through lengthy documentation, you can quickly see common usage patterns:
+[`tldr`](https://tldr.sh/)는 예제 중심으로 간소화한 매뉴얼을 제공합니다. 긴 문서를 읽지 않고도 흔한 사용법을 빠르게 볼 수 있습니다.
 
 ```console
 $ tldr fd
@@ -670,19 +604,15 @@ $ tldr fd
       fd --extension txt
 ```
 
-Sometimes you don't need a whole new program, but rather just a shortcut for an existing command with specific flags. That's where aliases come in.
-
-We can also create our own command aliases using the `alias` shell built-in.
-A shell alias is a short form for another command that your shell will replace automatically before evaluating the expression.
-For instance, an alias in bash has the following structure:
+새 프로그램 대신 특정 플래그가 붙은 명령의 단축형만 필요할 때는 별칭을 사용합니다. 내장 명령 `alias`로 만들 수 있습니다. 셸은 명령을 해석하기 전에 별칭을 원래 명령으로 바꿉니다. bash에서는 다음 형식입니다.
 
 ```bash
 alias alias_name="command_to_alias arg1 arg2"
 ```
 
-> Note that there is no space around the equal sign `=`, because [`alias`](https://www.man7.org/linux/man-pages/man1/alias.1p.html) is a shell command that takes a single argument.
+> [`alias`](https://www.man7.org/linux/man-pages/man1/alias.1p.html)는 이 정의를 하나의 인자로 받는 셸 명령이므로 `=` 양옆에 공백을 넣지 않습니다.
 
-Aliases have many convenient features:
+별칭은 여러 상황에서 편리합니다.
 
 ```bash
 # Make shorthands for common flags
@@ -714,65 +644,46 @@ alias ll
 # Will print ll='ls -lh'
 ```
 
-Aliases have limitations: they cannot take arguments in the middle of a command. For more complex behavior, you should use shell functions instead.
+다만 별칭은 명령 중간에 인자를 받지 못합니다. 더 복잡한 동작에는 셸 함수를 사용하세요.
 
-Most shells support `Ctrl-R` for reverse history search. Type `Ctrl-R` and start typing to search through previous commands. Earlier we introduced `fzf` as a fuzzy finder; with fzf's shell integration configured, `Ctrl-R` becomes an interactive fuzzy search through your entire history, far more powerful than the default.
+대부분의 셸은 `Ctrl-R`로 명령 기록을 역방향 검색합니다. 키를 누르고 입력을 시작하면 됩니다. 앞서 본 `fzf`의 셸 통합을 설정하면 `Ctrl-R`이 전체 기록을 대화형으로 퍼지 검색하는 더 강력한 기능이 됩니다.
 
-How should you organize your dotfiles? They should be in their own folder,
-under version control, and **symlinked** into place using a script. This has
-the benefits of:
+닷파일은 별도 폴더에서 버전 관리하고, 스크립트로 필요한 위치에 **심볼릭 링크**를 만드는 것이 좋습니다. 장점은 다음과 같습니다.
 
-- **Easy installation**: if you log in to a new machine, applying your
-customizations will only take a minute.
-- **Portability**: your tools will work the same way everywhere.
-- **Synchronization**: you can update your dotfiles anywhere and keep them all
-in sync.
-- **Change tracking**: you're probably going to be maintaining your dotfiles
-for your entire programming career, and version history is nice to have for
-long-lived projects.
+- **간편한 설치**: 새 컴퓨터에 로그인해도 잠깐이면 설정을 적용할 수 있습니다.
+- **이식성**: 어디서든 도구를 같은 방식으로 사용합니다.
+- **동기화**: 어느 컴퓨터에서든 설정을 바꾸고 동기화할 수 있습니다.
+- **변경 추적**: 프로그래머로 일하는 내내 관리할 수 있으므로, 오랫동안 유지하는 프로젝트처럼 버전 기록이 유용합니다.
 
-What should you put in your dotfiles?
-You can learn about your tool's settings by reading online documentation or
-[man pages](https://en.wikipedia.org/wiki/Man_page). Another great way is to
-search the internet for blog posts about specific programs, where authors will
-tell you about their preferred customizations. Yet another way to learn about
-customizations is to look through other people's dotfiles: you can find tons of
-[dotfiles
-repositories](https://github.com/search?o=desc&q=dotfiles&s=stars&type=Repositories)
-on GitHub --- see the most popular one
-[here](https://github.com/mathiasbynens/dotfiles) (we advise you not to blindly
-copy configurations though).
-[Here](https://dotfiles.github.io/) is another good resource on the topic.
+어떤 설정을 넣으면 좋을까요? 온라인 문서나 [매뉴얼 페이지](https://en.wikipedia.org/wiki/Man_page)를 읽고, 프로그램별 설정을 소개하는 블로그를 찾아보세요. 다른 사람의 닷파일도 배울 거리가 많습니다. GitHub에는 [닷파일 저장소](https://github.com/search?o=desc&q=dotfiles&s=stars&type=Repositories)가 많으며 [이 저장소](https://github.com/mathiasbynens/dotfiles)가 특히 인기가 있습니다. 다만 설정을 무작정 복사하지는 마세요. [이 사이트](https://dotfiles.github.io/)도 참고할 만합니다.
 
-All of the class instructors have their dotfiles publicly accessible on GitHub: [Anish](https://github.com/anishathalye/dotfiles),
-[Jon](https://github.com/jonhoo/configs),
-[Jose](https://github.com/jjgo/dotfiles).
+강사진의 닷파일도 공개되어 있습니다: [Anish](https://github.com/anishathalye/dotfiles), [Jon](https://github.com/jonhoo/configs), [Jose](https://github.com/jjgo/dotfiles).
 
-**Frameworks and plugins** can improve your shell as well. Some popular general frameworks are [prezto](https://github.com/sorin-ionescu/prezto) or [oh-my-zsh](https://ohmyz.sh/), and smaller plugins that focus on specific features:
+**프레임워크와 플러그인**으로 셸을 개선할 수도 있습니다. 종합 프레임워크로 [prezto](https://github.com/sorin-ionescu/prezto), [oh-my-zsh](https://ohmyz.sh/)가 있으며, 특정 기능을 제공하는 플러그인도 있습니다.
 
-- [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) - colors valid/invalid commands as you type
-- [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) - suggests commands from history as you type
-- [zsh-completions](https://github.com/zsh-users/zsh-completions) - additional completion definitions
-- [zsh-history-substring-search](https://github.com/zsh-users/zsh-history-substring-search) - fish-like history search
-- [powerlevel10k](https://github.com/romkatv/powerlevel10k) - fast, customizable prompt theme
+- [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting): 입력 중 명령의 유효 여부를 색으로 표시합니다.
+- [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions): 입력에 맞춰 기록의 명령을 제안합니다.
+- [zsh-completions](https://github.com/zsh-users/zsh-completions): 자동 완성 정의를 추가합니다.
+- [zsh-history-substring-search](https://github.com/zsh-users/zsh-history-substring-search): fish 방식의 기록 검색을 제공합니다.
+- [powerlevel10k](https://github.com/romkatv/powerlevel10k): 빠르고 설정 가능한 프롬프트 테마입니다.
 
-Shells like [fish](https://fishshell.com/) include many of these features by default.
+[fish](https://fishshell.com/) 같은 셸에는 많은 기능이 기본으로 포함됩니다.
 
-> You don't need a massive framework like oh-my-zsh to get these features. Installing individual plugins is often faster and gives you more control. Large frameworks can significantly slow down shell startup time, so consider installing only what you actually use.
+> 이런 기능에 반드시 oh-my-zsh 같은 큰 프레임워크가 필요한 것은 아닙니다. 플러그인을 따로 설치하는 편이 더 빠르고 세밀하게 제어하기 쉽습니다. 큰 프레임워크는 셸 시작을 느리게 할 수 있으므로 실제로 쓰는 것만 설치하는 방법도 고려하세요.
 
+# 셸에서 AI 활용하기
+{: #ai-in-the-shell}
 
-# AI in the Shell
+셸에 AI 도구를 통합하는 방법은 다양합니다. 통합 수준별로 몇 가지 예를 살펴보겠습니다.
 
-There are many ways to incorporate AI tooling in the shell. Here are a few examples at different levels of integration:
-
-**Command generation**: Tools like [`simonw/llm`](https://github.com/simonw/llm) can help generate shell commands from natural language descriptions:
+**명령 생성**: [`simonw/llm`](https://github.com/simonw/llm) 같은 도구는 자연어 설명에서 셸 명령을 만들 수 있습니다.
 
 ```console
 $ llm cmd "find all python files modified in the last week"
 find . -name "*.py" -mtime -7
 ```
 
-**Pipeline integration**: LLMs can be integrated into shell pipelines to process and transform data. They're particularly useful when you need to extract information from inconsistent formats where regex would be painful:
+**파이프라인 통합**: LLM을 파이프라인에 넣어 데이터를 처리하고 변환할 수 있습니다. 특히 형식이 제각각이어서 정규 표현식으로 추출하기 번거로운 데이터에 유용합니다.
 
 ```console
 $ cat users.txt
@@ -792,40 +703,33 @@ mike_wilson
 sarah.connor
 ```
 
-Note how we use `"$INSTRUCTIONS"` (quoted) because the variable contains spaces, and `< users.txt` to redirect the file's content to stdin.
+변수에 공백이 있으므로 `"$INSTRUCTIONS"`에 따옴표를 썼고, `< users.txt`로 파일 내용을 표준 입력에 전달했다는 점을 보세요.
 
-**AI shells**: Tools like [Claude Code](https://docs.anthropic.com/en/docs/claude-code) act as a meta-shell that accepts English commands and translates them into shell operations, file edits, and more complex multi-step tasks.
+**AI 셸**: [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 같은 도구는 자연어 명령을 셸 작업, 파일 편집, 여러 단계의 복잡한 작업으로 바꾸는 메타 셸처럼 동작합니다.
 
-# Terminal Emulators
+# 터미널 에뮬레이터
+{: #terminal-emulators}
 
-Along with customizing your shell, it is worth spending some time figuring out your choice of **terminal emulator** and its settings.
-A terminal emulator is a GUI program that provides the text-based interface where your shell runs.
-There are many terminal emulators out there.
+셸 설정뿐 아니라 **터미널 에뮬레이터**의 선택과 설정에도 시간을 들일 가치가 있습니다. 터미널 에뮬레이터는 셸이 실행되는 텍스트 인터페이스를 제공하는 GUI 프로그램이며, 종류가 다양합니다.
 
-Since you might be spending hundreds to thousands of hours in your terminal it pays off to look into its settings. Some of the aspects that you may want to modify in your terminal include:
+터미널에서 수백~수천 시간을 보낼 수 있으므로 다음과 같은 설정을 살펴보세요.
 
-- Font choice
-- Color Scheme
-- Keyboard shortcuts
-- Tab/Pane support
-- Scrollback configuration
-- Performance (some newer terminals like [Alacritty](https://github.com/alacritty/alacritty) or [Ghostty](https://ghostty.org/) offer GPU acceleration).
+- 글꼴
+- 색 구성
+- 키보드 단축키
+- 탭·분할 창 지원
+- 이전 출력 스크롤 설정
+- 성능: [Alacritty](https://github.com/alacritty/alacritty), [Ghostty](https://ghostty.org/) 같은 최신 터미널은 GPU 가속을 제공합니다.
 
+# 연습문제
+{: #exercises}
 
+## 인자와 글로브
+{: #arguments-and-globs}
 
-# Exercises
+1. `cmd --flag -- --notaflag`에서 `--`는 플래그 해석을 끝내라는 특수 인자입니다. 그 뒤는 모두 위치 인자로 처리합니다. 왜 유용할까요? `touch -- -myfile`을 실행한 뒤 `--` 없이 지워 보세요.
 
-## Arguments and Globs
-
-1. You might see commands like `cmd --flag -- --notaflag`. The `--` is a special argument that tells the program to stop parsing flags. Everything after `--` is treated as a positional argument. Why might this be useful? Try running `touch -- -myfile` and then removing it without `--`.
-
-1. Read [`man ls`](https://www.man7.org/linux/man-pages/man1/ls.1.html) and write an `ls` command that lists files in the following manner:
-    - Includes all files, including hidden files
-    - Sizes are listed in human readable format (e.g. 454M instead of 454279954)
-    - Files are ordered by recency
-    - Output is colorized
-
-    A sample output would look like this:
+1. [`man ls`](https://www.man7.org/linux/man-pages/man1/ls.1.html)를 읽고 숨김 파일을 포함한 모든 파일을, 읽기 쉬운 크기(예: 454279954 대신 454M)로, 최근 수정 순서로, 색을 사용해 출력하는 `ls` 명령을 작성하세요. 예시는 다음과 같습니다.
 
     ```
     -rw-r--r--   1 user group 1.1M Jan 14 09:53 baz
@@ -839,11 +743,12 @@ Since you might be spending hundreds to thousands of hours in your terminal it p
 ls -lath --color=auto
 {% endcomment %}
 
-1. Process substitution `<(command)` lets you use a command's output as if it were a file. Use `diff` with process substitution to compare the output of `printenv` and `export`. Why are they different? (Hint: try `diff <(printenv | sort) <(export | sort)`).
+1. 프로세스 치환 `<(command)`으로 명령 출력을 파일처럼 사용할 수 있습니다. `diff`와 프로세스 치환으로 `printenv`와 `export`의 출력을 비교하세요. 왜 다를까요? 힌트: `diff <(printenv | sort) <(export | sort)`.
 
-## Environment Variables
+## 환경 변수
+{: #environment-variables-1}
 
-1. Write bash functions `marco` and `polo` that do the following: whenever you execute `marco` the current working directory should be saved in some manner, then when you execute `polo`, no matter what directory you are in, `polo` should `cd` you back to the directory where you executed `marco`. For ease of debugging you can write the code in a file `marco.sh` and (re)load the definitions to your shell by executing `source marco.sh`.
+1. bash 함수 `marco`와 `polo`를 작성하세요. `marco`는 현재 작업 디렉터리를 저장하고, `polo`는 어디에서 실행하든 그 디렉터리로 `cd`해야 합니다. `marco.sh`에 작성하고 `source marco.sh`로 정의를 다시 불러오면 디버깅하기 편합니다.
 
 {% comment %}
 marco() {
@@ -855,9 +760,10 @@ polo() {
 }
 {% endcomment %}
 
-## Return Codes
+## 종료 코드
+{: #return-codes-1}
 
-1. Say you have a command that fails rarely. In order to debug it you need to capture its output but it can be time consuming to get a failure run. Write a bash script that runs the following script until it fails and captures its standard output and error streams to files and prints everything at the end. Bonus points if you can also report how many runs it took for the script to fail.
+1. 드물게 실패하는 명령을 디버깅하려면 출력을 확보해야 하지만 실패를 기다리는 데 시간이 걸립니다. 다음 스크립트가 실패할 때까지 실행하고, 표준 출력과 표준 오류를 파일에 저장한 뒤 마지막에 모두 출력하는 bash 스크립트를 작성하세요. 실패까지 실행한 횟수도 출력하면 좋습니다.
 
     ```bash
     #!/usr/bin/env bash
@@ -887,47 +793,44 @@ echo "found error after $count runs"
 cat out.txt
 {% endcomment %}
 
-## Signals and Job Control
+## 시그널과 작업 제어
+{: #signals-and-job-control}
 
-1. Start a `sleep 10000` job in a terminal, background it with `Ctrl-Z` and continue its execution with `bg`. Now use [`pgrep`](https://www.man7.org/linux/man-pages/man1/pgrep.1.html) to find its pid and [`pkill`](https://man7.org/linux/man-pages/man1/pgrep.1.html) to kill it without ever typing the pid itself. (Hint: use the `-lf` flags).
+1. 터미널에서 `sleep 10000`을 실행하고 `Ctrl-Z`로 정지한 뒤 `bg`로 백그라운드에서 재개하세요. [`pgrep`](https://www.man7.org/linux/man-pages/man1/pgrep.1.html)으로 PID를 찾고, PID를 직접 입력하지 않고 [`pkill`](https://man7.org/linux/man-pages/man1/pgrep.1.html)로 종료하세요. 힌트: `-lf` 플래그.
 
-1. Say you don't want to start a process until another completes. How would you go about it? In this exercise, our limiting process will always be `sleep 60 &`. One way to achieve this is to use the [`wait`](https://www.man7.org/linux/man-pages/man1/wait.1p.html) command. Try launching the sleep command and having an `ls` wait until the background process finishes.
+1. 다른 프로세스가 끝난 뒤에만 새 프로세스를 시작하려면 어떻게 할까요? 기다릴 프로세스로 `sleep 60 &`를 사용합니다. [`wait`](https://www.man7.org/linux/man-pages/man1/wait.1p.html)를 사용해 `ls`가 백그라운드 프로세스 종료를 기다리도록 해 보세요.
 
-    However, this strategy will fail if we start in a different bash session, since `wait` only works for child processes. One feature we did not discuss in the notes is that the `kill` command's exit status will be zero on success and nonzero otherwise. `kill -0` does not send a signal but will give a nonzero exit status if the process does not exist. Write a bash function called `pidwait` that takes a pid and waits until the given process completes. You should use `sleep` to avoid wasting CPU unnecessarily.
+   `wait`는 자식 프로세스에만 적용되므로 다른 bash 세션에서는 이 방법이 통하지 않습니다. `kill`은 성공하면 0, 실패하면 0이 아닌 종료 코드를 반환합니다. `kill -0`은 시그널을 보내지 않지만 프로세스가 없으면 실패합니다. PID를 받아 해당 프로세스가 끝날 때까지 기다리는 `pidwait` 함수를 작성하세요. CPU를 낭비하지 않도록 `sleep`을 사용하세요.
 
-## Files and Permissions
+## 파일과 권한
+{: #files-and-permissions}
 
-1. (Advanced) Write a command or script to recursively find the most recently modified file in a directory. More generally, can you list all files by recency?
+1. (심화) 디렉터리에서 가장 최근에 수정된 파일을 재귀적으로 찾는 명령이나 스크립트를 작성하세요. 더 일반적으로 모든 파일을 최근 수정 순서로 나열할 수 있나요?
 
-## Terminal Multiplexers
+## 터미널 멀티플렉서
+{: #terminal-multiplexers-1}
 
-1. Follow this `tmux` [tutorial](https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/) and then learn how to do some basic customizations following [these steps](https://www.hamvocke.com/blog/a-guide-to-customizing-your-tmux-conf/).
+1. [tmux 튜토리얼](https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/)을 따라 한 뒤, [설정 안내](https://www.hamvocke.com/blog/a-guide-to-customizing-your-tmux-conf/)로 기본적인 사용자 설정을 배워 보세요.
 
-## Aliases and Dotfiles
+## 별칭과 닷파일
+{: #aliases-and-dotfiles}
 
-1. Create an alias `dc` that resolves to `cd` for when you type it wrong.
+1. 오타에 대비해 `dc`를 `cd`로 바꾸는 별칭을 만드세요.
+1. `history | awk '{$1="";print substr($0,2)}' | sort | uniq -c | sort -n | tail -n 10`으로 자주 쓴 명령 10개를 찾고 짧은 별칭을 만들어 보세요. Bash용 명령이므로 ZSH에서는 `history` 대신 `history 1`을 사용하세요.
+1. 닷파일 폴더를 만들고 버전 관리를 시작하세요.
+1. 셸 등 최소 한 프로그램의 설정을 추가하세요. 처음에는 `$PS1`로 프롬프트를 바꾸는 정도도 좋습니다.
+1. 새 컴퓨터에 수작업 없이 빠르게 설정을 설치할 방법을 마련하세요. 각 파일에 `ln -s`를 실행하는 스크립트나 [전용 도구](https://dotfiles.github.io/utilities/)를 사용할 수 있습니다.
+1. 새 가상 머신에서 설치 스크립트를 시험하세요.
+1. 현재 사용하는 도구 설정을 모두 닷파일 저장소로 옮기세요.
+1. 닷파일을 GitHub에 공개하세요.
 
-1. Run `history | awk '{$1="";print substr($0,2)}' | sort | uniq -c | sort -n | tail -n 10` to get your top 10 most used commands and consider writing shorter aliases for them. Note: this works for Bash; if you're using ZSH, use `history 1` instead of just `history`.
+## 원격 컴퓨터: SSH
+{: #remote-machines-ssh}
 
-1. Create a folder for your dotfiles and set up version control.
+Linux 가상 머신을 설치하거나 기존 머신을 사용하세요. 익숙하지 않다면 [이 설치 튜토리얼](https://hibbard.eu/install-ubuntu-virtual-box/)을 참고하세요.
 
-1. Add a configuration for at least one program, e.g. your shell, with some customization (to start off, it can be something as simple as customizing your shell prompt by setting `$PS1`).
-
-1. Set up a method to install your dotfiles quickly (and without manual effort) on a new machine. This can be as simple as a shell script that calls `ln -s` for each file, or you could use a [specialized utility](https://dotfiles.github.io/utilities/).
-
-1. Test your installation script on a fresh virtual machine.
-
-1. Migrate all of your current tool configurations to your dotfiles repository.
-
-1. Publish your dotfiles on GitHub.
-
-## Remote Machines (SSH)
-
-Install a Linux virtual machine (or use an already existing one) for these exercises. If you are not familiar with virtual machines check out [this](https://hibbard.eu/install-ubuntu-virtual-box/) tutorial for installing one.
-
-1. Go to `~/.ssh/` and check if you have a pair of SSH keys there. If not, generate them with `ssh-keygen -a 100 -t ed25519`. It is recommended that you use a password and use `ssh-agent`, more info [here](https://www.ssh.com/ssh/agent).
-
-1. Edit `.ssh/config` to have an entry as follows:
+1. `~/.ssh/`에 SSH 키 쌍이 있는지 확인하세요. 없다면 `ssh-keygen -a 100 -t ed25519`로 생성하세요. 암호문구와 `ssh-agent` 사용을 권장합니다. [자세한 설명](https://www.ssh.com/ssh/agent)을 참고하세요.
+1. `.ssh/config`에 다음 항목을 추가하세요.
 
     ```bash
     Host vm
@@ -937,12 +840,8 @@ Install a Linux virtual machine (or use an already existing one) for these exerc
         LocalForward 9999 localhost:8888
     ```
 
-1. Use `ssh-copy-id vm` to copy your ssh key to the server.
-
-1. Start a webserver in your VM by executing `python -m http.server 8888`. Access the VM webserver by navigating to `http://localhost:9999` in your machine.
-
-1. Edit your SSH server config by doing `sudo vim /etc/ssh/sshd_config` and disable password authentication by editing the value of `PasswordAuthentication`. Disable root login by editing the value of `PermitRootLogin`. Restart the `ssh` service with `sudo service sshd restart`. Try sshing in again.
-
-1. (Challenge) Install [`mosh`](https://mosh.org/) in the VM and establish a connection. Then disconnect the network adapter of the server/VM. Can mosh properly recover from it?
-
-1. (Challenge) Look into what the `-N` and `-f` flags do in `ssh` and figure out a command to achieve background port forwarding.
+1. `ssh-copy-id vm`으로 공개 키를 서버에 복사하세요.
+1. VM에서 `python -m http.server 8888`로 웹 서버를 시작하고, 로컬 컴퓨터의 `http://localhost:9999`로 접속하세요.
+1. `sudo vim /etc/ssh/sshd_config`로 서버 설정을 열고 `PasswordAuthentication`을 바꿔 비밀번호 인증을 끄세요. `PermitRootLogin`으로 루트 로그인을 끄세요. `sudo service sshd restart`로 서비스를 재시작한 뒤 다시 SSH 접속을 해 보세요.
+1. (도전) VM에 [`mosh`](https://mosh.org/)를 설치해 접속하고, 서버나 VM의 네트워크 어댑터 연결을 끊으세요. mosh가 연결을 복구하나요?
+1. (도전) `ssh`의 `-N`, `-f` 플래그를 알아보고 백그라운드 포트 포워딩 명령을 작성하세요.
