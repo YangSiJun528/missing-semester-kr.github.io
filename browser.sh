@@ -75,7 +75,7 @@ case "$1" in
 
     SESSION=$(curl -s -X POST "http://localhost:$PORT/session" \
       -H "Content-Type: application/json" \
-      -d "{\"capabilities\": {\"alwaysMatch\": {\"goog:chromeOptions\": {\"binary\": \"$CHROME\", \"args\": [\"--headless\", \"--window-size=1400,900\"]}}}}" \
+      -d "$(jq -n --arg binary "$CHROME" '{capabilities: {alwaysMatch: {"goog:chromeOptions": {binary: $binary, args: ["--headless", "--window-size=1400,900"]}}}}')" \
       | jq -r '.value.sessionId')
 
     if [ -z "$SESSION" ] || [ "$SESSION" = "null" ]; then
@@ -86,7 +86,7 @@ case "$1" in
 
     curl -s -X POST "http://localhost:$PORT/session/$SESSION/url" \
       -H "Content-Type: application/json" \
-      -d "{\"url\": \"$URL\"}" > /dev/null
+      -d "$(jq -n --arg url "$URL" '{url: $url}')" > /dev/null
 
     echo "Session started: $SESSION"
     echo "Navigated to: $URL"
@@ -102,7 +102,7 @@ case "$1" in
     SCRIPT="$2"
     curl -s -X POST "http://localhost:$PORT/session/$SESSION/execute/sync" \
       -H "Content-Type: application/json" \
-      -d "{\"script\": \"return $SCRIPT\", \"args\": []}" \
+      -d "$(jq -n --arg script "return $SCRIPT" '{script: $script, args: []}')" \
       | jq -r '.value'
     ;;
 
@@ -189,7 +189,7 @@ case "$1" in
     URL="$2"
     curl -s -X POST "http://localhost:$PORT/session/$SESSION/url" \
       -H "Content-Type: application/json" \
-      -d "{\"url\": \"$URL\"}" > /dev/null
+      -d "$(jq -n --arg url "$URL" '{url: $url}')" > /dev/null
     echo "Navigated to: $URL"
     ;;
 
