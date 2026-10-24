@@ -28,9 +28,12 @@
   <meta property="og:title" content="{{ title }}">
 
   {% if page.thumbnail %}
-    <meta name="twitter:image:src" content="{{ page.thumbnail | prepend: site.url }}">
-    <meta property="og:image" content="{{ page.thumbnail | prepend: site.url }}">
+    {% assign thumbnail = page.thumbnail %}
+  {% else %}
+    {% assign thumbnail = site.thumbnail %}
   {% endif %}
+  <meta name="twitter:image" content="{{ thumbnail | prepend: site.url }}">
+  <meta property="og:image" content="{{ thumbnail | prepend: site.url }}">
 
   <title>
     {% if page.title %}
@@ -45,6 +48,7 @@
   <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900,200italic,300italic,400italic,600italic,700italic,900italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:200,300,400,500,600,700,900&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
 
+  {% if site.analytics.tracking_id and site.analytics.tracking_id != empty %}
   <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.analytics.tracking_id }}"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -53,5 +57,6 @@
 
     gtag('config', '{{ site.analytics.tracking_id }}');
   </script>
+  {% endif %}
 
 </head>

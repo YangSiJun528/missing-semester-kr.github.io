@@ -14,7 +14,8 @@ future: true
 # safe: true # breaks local rendering if enabled
 timezone: America/New_York
 analytics:
-  tracking_id: G-P7WVHD84D1
+  # Set only a measurement ID owned by the Korean site. Empty disables Analytics.
+  tracking_id: ""
 
 collections:
   '2019':
