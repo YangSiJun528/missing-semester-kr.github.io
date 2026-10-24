@@ -2,6 +2,7 @@ name: Build
 on:
   push:
   pull_request:
+  workflow_dispatch:
   schedule:
     - cron: '0 8 * * 6'
 jobs:
@@ -14,3 +15,11 @@ jobs:
           ruby-version: "3.4"
           bundler-cache: true
       - run: bundle exec jekyll build
+      - name: Check HTML and internal links
+        uses: anishathalye/proof-html@v2
+        with:
+          directory: ./_site
+          enforce_https: false
+          disable_external: true
+          swap_urls: |
+            {"^https:\\/\\/missing-semester-kr\\.github\\.io/": "/"}

@@ -163,7 +163,7 @@ Keybase에는 [사회적 증명](https://keybase.io/blog/chat-apps-softer-than-t
 ## 전체 디스크 암호화
 
 노트북의 전체 디스크를 암호화된 상태로 유지하면 노트북을 도난당한 경우 데이터를 쉽게 보관할 수 있습니다. 
-Linux에서 [cryptsetup + LUKS](https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_a_non-root_file_system)을 사용하거나 Windows에서 [BitLocker](https://fossbytes.com/enable-full-disk-encryption-windows-10/)을 사용할 수 있고, masOS에서는 [FileVault](https://support.apple.com/en-us/HT204837)를 사용할 수 있습니다.
+Linux에서 [cryptsetup + LUKS](https://wiki.archlinux.org/title/Dm-crypt/Encrypting_a_non-root_file_system)을 사용하거나 Windows에서 [BitLocker](https://fossbytes.com/enable-full-disk-encryption-windows-10/)을 사용할 수 있고, masOS에서는 [FileVault](https://support.apple.com/en-us/HT204837)를 사용할 수 있습니다.
 이는 보호되는 키를 사용하여 전체 디스크를 대칭 암호화를 사용하여 암호화 합니다.
 
 ## 개인 메시지
@@ -217,7 +217,7 @@ security concepts, tips
    
 1. **비대칭키 암호**
     1. [SSH keys](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys--2)를 접근해야 하는 컴퓨터에 설정합니다(Kerberos가 SSH keys와 이상하게 동작하기 때문에, Athena가 아닌 것으로 합니다).
-       연결된 튜토리얼처럼 RSA키를 사용하는 것이 아닌 더 안전한 [ED25519키](https://wiki.archlinux.org/index.php/SSH_keys#Ed25519)를 사용합니다.
+       연결된 튜토리얼처럼 RSA키를 사용하는 것이 아닌 더 안전한 [ED25519키](https://wiki.archlinux.org/title/SSH_keys#Ed25519)를 사용합니다.
        개인 키가 비밀번호로 암호화 되었는지 확인하여 저장시 보호되도록 합니다.
     1. [GPG설정](https://www.digitalocean.com/community/tutorials/how-to-use-gpg-to-encrypt-and-sign-messages)
     1. Anish에게 암호화된 전자 메일([공개키](https://keybase.io/anish))을 보냅니다.

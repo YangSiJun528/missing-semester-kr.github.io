@@ -47,7 +47,7 @@ video:
 
 키보드 매핑을 시작하는 데 도움이 될 참고 자료:
 - macOS - [karabiner-elements](https://karabiner-elements.pqrs.org/), [skhd](https://github.com/koekeishiya/skhd) 또는 [BetterTouchTool](https://folivora.ai/)
-- Linux - [xmodmap](https://wiki.archlinux.org/index.php/Xmodmap) 또는 [Autokey](https://github.com/autokey/autokey)
+- Linux - [xmodmap](https://wiki.archlinux.org/title/Xmodmap) 또는 [Autokey](https://github.com/autokey/autokey)
 - Windows - 제어판, [AutoHotkey](https://www.autohotkey.com/) 또는 [SharpKeys](https://www.randyrants.com/category/sharpkeys/)
 - QMK - 키보드가 커스텀 펌웨어를 지원하는 경우 [QMK](https://docs.qmk.fm/)를 사용해 키보드를 사용하는 모든 기기에서 매핑이 작동하도록 할 수 있습니다.
 

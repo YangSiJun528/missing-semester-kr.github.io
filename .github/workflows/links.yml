@@ -1,7 +1,6 @@
 name: Links
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
   schedule:
     - cron: '0 8 * * 6'
 jobs:
@@ -55,6 +54,9 @@ jobs:
             ^https:\/\/medium\.com\/
             ^https:\/\/www\.gnu\.org\/
             ^https:\/\/openai\.com\/
+          # Naver #/entry routes are rendered by JavaScript, not HTML anchor IDs.
+          # Check the HTTP document here; verify dictionary entries in a browser.
           swap_urls: |
             {"^https:\\/\\/missing-semester-kr\\.github\\.io/": "/",
-             "^(https:\\/\\/github\\.com/.*)#.*$": "\\1"}
+             "^(https:\\/\\/github\\.com/.*)#.*$": "\\1",
+             "^(https:\\/\\/en\\.dict\\.naver\\.com/)#/entry/.*$": "\\1"}

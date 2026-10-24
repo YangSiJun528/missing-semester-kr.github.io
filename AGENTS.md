@@ -66,8 +66,8 @@ After taking a screenshot, read the file to view it.
 ## CI/CD
 
 GitHub Actions workflows:
-- `build.yml` - Builds Jekyll site on push/PR and weekly
-- `links.yml` - Validates external links using proof-html
+- `build.yml` - Builds Jekyll and validates HTML, CSS, and internal links on push/PR, weekly, or manual runs
+- `links.yml` - Validates external links using proof-html weekly or manually; inspect recurring failures in Actions logs before editing URLs
 
 ## License
 
