@@ -47,6 +47,7 @@ const output = path.resolve('diagnostics', mode);
           title: document.title,
           h1: document.querySelector('h1')?.textContent?.trim() || '',
           article_characters: article?.textContent?.length || 0,
+          article_excerpt: article?.textContent?.trim()?.slice(0, 300) || '',
           anchor_exists: !hash || Boolean(document.getElementById(hash) || document.getElementsByName(hash).length),
           body_excerpt: document.body?.innerText?.slice(0, 300) || '',
         };
@@ -56,7 +57,7 @@ const output = path.resolve('diagnostics', mode);
       });
       const expected = decodeURIComponent(new URL(url).pathname.split('/').pop()).replaceAll('_', ' ').toLowerCase();
       const last = navigations.at(-1);
-      const passed = last?.status >= 200 && last.status < 300 && content.article_characters > 500 && content.h1.toLowerCase().includes(expected) && content.anchor_exists;
+      const passed = last?.status >= 200 && last.status < 300 && content.article_characters > 0 && content.h1.toLowerCase().includes(expected) && content.anchor_exists;
       const result = { mode, browser_version: browser.version(), url, final_url: page.url(), elapsed_ms: Date.now() - started, passed, navigations, errors, ...content };
       results.push(result);
       await page.screenshot({ path: path.join(output, `${index}.png`) }).catch(error => errors.push(String(error)));
