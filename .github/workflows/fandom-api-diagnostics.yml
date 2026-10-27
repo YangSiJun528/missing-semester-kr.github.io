@@ -1,0 +1,28 @@
+name: Fandom API diagnostics
+on:
+  push:
+    branches: [diagnose-fandom-links-20261028]
+    paths: [.github/scripts/fandom_api_check.py, .github/workflows/fandom-api-diagnostics.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - run: bundle exec jekyll build
+      - name: Verify all five article identities and anchors through the API
+        run: python3 .github/scripts/fandom_api_check.py --site _site --output diagnostics/api/results.json
+      - name: Save API evidence and negative controls
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fandom-api-responses
+          path: diagnostics/
+          retention-days: 7
