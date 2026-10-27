@@ -2,6 +2,7 @@ name: Fandom diagnostics
 on:
   push:
     branches: [diagnose-fandom-links-20261028]
+    paths: [.github/scripts/fandom_probe.rb, .github/workflows/fandom-diagnostics.yml]
   workflow_dispatch:
 permissions:
   contents: read

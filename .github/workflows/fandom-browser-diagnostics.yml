@@ -1,0 +1,44 @@
+name: Fandom browser diagnostics
+on:
+  push:
+    branches: [diagnose-fandom-links-20261028]
+    paths: [.github/scripts/fandom_browser.cjs, .github/workflows/fandom-browser-diagnostics.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install a standard Chromium browser
+        run: |
+          npm install --prefix "$RUNNER_TEMP/fandom-browser" --ignore-scripts --no-audit --no-fund --save-exact playwright@1.64.1
+          "$RUNNER_TEMP/fandom-browser/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Check articles in headless Chromium
+        id: headless
+        continue-on-error: true
+        env:
+          BROWSER_MODE: headless
+        run: PLAYWRIGHT_MODULE="$RUNNER_TEMP/fandom-browser/node_modules/playwright" node .github/scripts/fandom_browser.cjs
+      - name: Check articles in headed Chromium
+        id: headed
+        if: always()
+        continue-on-error: true
+        env:
+          BROWSER_MODE: headed
+        run: PLAYWRIGHT_MODULE="$RUNNER_TEMP/fandom-browser/node_modules/playwright" xvfb-run -a node .github/scripts/fandom_browser.cjs
+      - name: Save browser observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fandom-browser-responses
+          path: diagnostics/
+          retention-days: 7
+      - name: Require verified article contents and anchors
+        if: always()
+        env:
+          HEADLESS_OUTCOME: ${{ steps.headless.outcome }}
+          HEADED_OUTCOME: ${{ steps.headed.outcome }}
+        run: test "$HEADLESS_OUTCOME" = success && test "$HEADED_OUTCOME" = success
