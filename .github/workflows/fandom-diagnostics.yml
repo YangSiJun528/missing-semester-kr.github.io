@@ -1,0 +1,45 @@
+name: Fandom diagnostics
+on:
+  push:
+    branches: [diagnose-fandom-links-20261028]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  requests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+      - name: Probe from the runner
+        id: host
+        continue-on-error: true
+        env:
+          PROBE_ENV: host
+        run: ruby .github/scripts/fandom_probe.rb
+      - name: Probe from the proof-html container
+        id: container
+        if: always()
+        continue-on-error: true
+        run: |
+          docker run --rm --entrypoint ruby \
+            -v "$GITHUB_WORKSPACE:/work" -w /work \
+            -e PROBE_ENV=container -e GITHUB_SHA \
+            anishathalye/proof-html@sha256:4659086c07e94aaa9e93d7793fed323ffb575839db37b5bff3e8a59b2ec83c97 \
+            .github/scripts/fandom_probe.rb
+      - name: Save diagnostic responses
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fandom-responses
+          path: diagnostics/
+          retention-days: 7
+      - name: Require successful responses
+        if: always()
+        env:
+          HOST_OUTCOME: ${{ steps.host.outcome }}
+          CONTAINER_OUTCOME: ${{ steps.container.outcome }}
+        run: test "$HOST_OUTCOME" = success && test "$CONTAINER_OUTCOME" = success
