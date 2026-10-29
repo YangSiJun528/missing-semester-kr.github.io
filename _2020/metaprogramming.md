@@ -74,7 +74,7 @@ make: *** No rule to make target 'plot-data.png', needed by 'paper.pdf'.  Stop.
 ```
 
 흠, 흥미롭네요, `plot-data.png`를 만드는 규칙은 *존재*합니다. 하지만 그 규칙은 패턴 규칙(pattern rule)입니다.(구체적으로 어떻게 타겟 파일을 만들어내야 하는지 명시되어 있지 않음)  
-소스 파일([foo](https://ko.wikipedia.org/wiki/%ED%91%B8%EB%B0%94).dat)이 존재하지 않기 때문에, `make`는 단지 파일을 만들 수 없다고만 이야기하고 있습니다.  
+소스 파일(`data.dat`)이 존재하지 않기 때문에, `make`는 단지 파일을 만들 수 없다고만 이야기하고 있습니다.  
 한 번 모든 파일을 다 만들어 보죠:
 
 ```console
