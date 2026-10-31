@@ -140,7 +140,7 @@ $ jobs
 특수신호는 프로세스를 캡처할 수 없고 항상 즉시 종료되기 때문에 `SIGKILL`입니다. 
 하지만 고아가 된 하위 프로세스를 방치하는 등의 부작용을 낳을 수 있습니다.
 
-이것과 다른 신호에 대해 자세히 알아보려면 [`여기`](https://en.wikipedia.org/wiki/Signal_(IPC)) 또는 [`man signal`](https://www.man7.org/linux/man-pages/man7/signal.7.html)을 입력 또는 `kill -l`를 입력하세요.
+이것과 다른 신호에 대해 자세히 알아보려면 [`여기`](https://en.wikipedia.org/wiki/Signal_(IPC)) 또는 [`man signal`](https://www.man7.org/linux/man-pages/man7/signal.7.html)을 입력 또는 `kill -l`을 입력하세요.
 
 
 # 터미널 멀티플렉서
