@@ -1,0 +1,42 @@
+name: External link diagnostics
+on:
+  push:
+    branches: [verify-external-links-20261104]
+permissions:
+  contents: read
+jobs:
+  diagnostics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - name: Compare HEAD and GET requests
+        run: python3 .github/link-diagnostics/probe.py /tmp/issue40-curl
+      - name: Compare proof-html settings without exclusions
+        run: |
+          python3 - <<'PYTHON'
+          import json, pathlib, subprocess, time
+          fixture=pathlib.Path('.github/link-diagnostics/fixture').resolve()
+          for label,extra in [('baseline',[]),('sequential',['-e','INPUT_MAX_CONCURRENCY=1','-e','INPUT_TIMEOUT=180'])]:
+              work=pathlib.Path('/tmp/issue40-proof-'+label);work.mkdir()
+              cmd=['docker','run','--rm','-w','/work','-v',str(work)+':/work','-v',str(fixture)+':/site:ro','-e','INPUT_DIRECTORY=/site','-e','INPUT_ENFORCE_HTTPS=false','-e','INPUT_CHECK_FAVICON=false','-e','INPUT_CHECK_OPENGRAPH=false',*extra,'anishathalye/proof-html:2.2.5']
+              start=time.monotonic()
+              result=subprocess.run(cmd,timeout=600)
+              print('PROOF_RESULT '+json.dumps({'label':label,'exit':result.returncode,'seconds':round(time.monotonic()-start,1)}),flush=True)
+          PYTHON
+      - name: Install official lychee binary
+        run: |
+          curl -fsSL https://github.com/lycheeverse/lychee/releases/download/lychee-v0.24.2/lychee-x86_64-unknown-linux-gnu.tar.gz -o /tmp/lychee.tar.gz
+          echo '1f4e0ef7f6554a6ed33dd7ac144fb2e1bbed98598e7af973042fc5cd43951c9a  /tmp/lychee.tar.gz' | sha256sum -c -
+          mkdir /tmp/issue40-lychee
+          tar -xzf /tmp/lychee.tar.gz -C /tmp/issue40-lychee --strip-components=1
+          /tmp/issue40-lychee/lychee --version
+      - name: Compare lychee GET requests with retries
+        run: |
+          python3 - <<'PYTHON'
+          import json, subprocess, time
+          urls=json.load(open('.github/link-diagnostics/targets.json'))
+          cmd=['/tmp/issue40-lychee/lychee','--no-progress','--max-concurrency','1','--timeout','120','--max-retries','2','--retry-wait-time','10','--user-agent','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36','--header','Accept: text/html',*urls]
+          start=time.monotonic(); result=subprocess.run(cmd,timeout=600)
+          print('LYCHEE_RESULT '+json.dumps({'exit':result.returncode,'seconds':round(time.monotonic()-start,1)}))
+          PYTHON
