@@ -1,0 +1,17 @@
+name: Browser-like HTTP diagnostics
+on:
+  push:
+    branches: [verify-external-links-20261104]
+    paths: [".github/link-diagnostics/cffi_probe.py", ".github/workflows/verify-browser-http.yml"]
+permissions:
+  contents: read
+jobs:
+  diagnostics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install pinned HTTP client
+        run: python3 -m pip install curl_cffi==0.17.0
+      - name: Check actual page and fragment with Chrome TLS profile
+        run: python3 .github/link-diagnostics/cffi_probe.py

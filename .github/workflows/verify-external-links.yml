@@ -2,6 +2,7 @@ name: External link diagnostics
 on:
   push:
     branches: [verify-external-links-20261104]
+    paths: [".github/link-diagnostics/probe.py", ".github/link-diagnostics/fixture/**"]
 permissions:
   contents: read
 jobs:
