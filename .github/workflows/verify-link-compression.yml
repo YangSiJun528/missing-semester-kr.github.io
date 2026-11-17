@@ -1,0 +1,29 @@
+name: Issue 40 compression verification
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/issue-40-link-check]
+    paths:
+      - .github/link-diagnostics/check_compression.py
+      - .github/workflows/verify-link-compression.yml
+permissions:
+  contents: read
+jobs:
+  compression:
+    if: github.repository == 'YangSiJun528/missing-semester-kr.github.io'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Fetch the production checker image
+        run: docker pull anishathalye/proof-html:2.2.5
+      - name: Verify timeout, compressed success, and invalid anchor rejection
+        run: python3 .github/link-diagnostics/check_compression.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compression-verification
+          path: compression-results.json
+          retention-days: 14
