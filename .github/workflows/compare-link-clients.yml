@@ -1,0 +1,35 @@
+name: Issue 40 HTTP client comparison
+on:
+  push:
+    branches: [codex/issue-40-link-check]
+    paths:
+      - .github/link-diagnostics/compare_clients.py
+      - .github/workflows/compare-link-clients.yml
+permissions:
+  contents: read
+jobs:
+  compare:
+    if: github.repository == 'YangSiJun528/missing-semester-kr.github.io'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        sample: [a, b]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install the pinned candidate and check the compressed control
+        uses: lycheeverse/lychee-action@v2
+        with:
+          lycheeVersion: v0.24.2
+          args: --config .lychee.toml .github/link-diagnostics/fixtures/openuserjs.html
+          output: control.md
+      - name: Compare curl and candidate clients on the same runner
+        run: python3 .github/link-diagnostics/compare_clients.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: client-comparison-${{ matrix.sample }}
+          path: client-comparison.json
