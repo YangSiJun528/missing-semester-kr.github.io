@@ -23,6 +23,9 @@ ignore_urls:
 - https://crates.io
 - https://www.vagrantup.com/
 - https://www.nongnu.org/atool/
+# Confirmed post content on 2026-11-18. Masto.host limits logged-out requests by
+# network/browser; header changes and retries are not reliable (issue #40).
+- https://fosstodon.org/@jonhoo/116098318361854057
 ignore_url_patterns:
 - "^https://www.brendangregg.com/"
 - "^https:\\/\\/help\\.github\\.com\\/"
