@@ -1,0 +1,34 @@
+name: Issue 40 candidate verification
+on:
+  push:
+    branches: [codex/issue-40-link-check]
+    paths:
+      - .github/link-diagnostics/check_lychee.py
+      - .github/link-diagnostics/fixtures/openuserjs.html
+      - .github/workflows/verify-link-candidate.yml
+permissions:
+  contents: read
+jobs:
+  candidate:
+    if: github.repository == 'YangSiJun528/missing-semester-kr.github.io'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Verify the real compressed page and anchor
+        uses: lycheeverse/lychee-action@v2
+        with:
+          lycheeVersion: v0.24.2
+          args: --config .lychee.toml .github/link-diagnostics/fixtures/openuserjs.html
+          output: candidate-results.md
+      - name: Verify real 404 and missing anchors remain failures
+        run: python3 .github/link-diagnostics/check_lychee.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: candidate-verification
+          path: |
+            candidate-results.md
+            lychee-controls.json
