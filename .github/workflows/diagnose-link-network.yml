@@ -1,0 +1,61 @@
+name: Issue 40 network diagnosis
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/issue-40-link-check]
+    paths:
+      - .github/link-diagnostics/**
+      - .github/workflows/diagnose-link-network.yml
+permissions:
+  contents: read
+jobs:
+  network:
+    if: github.repository == 'YangSiJun528/missing-semester-kr.github.io'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            label: linux-a
+          - runner: ubuntu-latest
+            label: linux-b
+          - runner: macos-15-intel
+            label: macos
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install identical diagnostic HTTP client
+        run: python -m pip install curl_cffi==0.17.0
+      - name: Collect network evidence (not a passing link check)
+        run: >-
+          python .github/link-diagnostics/network_probe.py
+          --output network-results --label ${{ matrix.label }}
+          --resolve-ip 15.197.148.33
+      - name: Compare the production container on the same Linux runner
+        if: runner.os == 'Linux'
+        run: |
+          docker run --rm --entrypoint ruby anishathalye/proof-html:2.2.5 -e '
+            require "typhoeus"; require "json"
+            puts "LIBCURL #{Ethon::Curl.version}"
+            ["https://warpspeed.dev/", "https://sipb.mit.edu/", "https://openlearning.mit.edu/"].each do |url|
+              r = Typhoeus.get(url, followlocation: true, connecttimeout: 10, timeout: 30)
+              puts JSON.generate(url: url, status: r.code, curl_code: r.return_code, error: r.return_message, effective: r.effective_url, total: r.total_time, tls: r.appconnect_time)
+            end
+          ' | tee network-results/container.txt
+      - name: Retain sanitized evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: network-${{ matrix.label }}
+          path: network-results/
+          retention-days: 14
+      - name: Fail when baseline links fail or lead to unrelated content
+        run: >-
+          python .github/link-diagnostics/network_probe.py
+          --check-baseline network-results/summary.json
