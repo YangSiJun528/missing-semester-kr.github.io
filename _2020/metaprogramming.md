@@ -21,8 +21,8 @@ translation_status: complete
 
 # [빌드 시스템(Build systems)](https://web.archive.org/web/20240913174421/http://developinghappiness.com/?p=26)
 
-문서를 [Latex(레이텍 또는 라텍)](https://namu.wiki/w/LaTeX)으로 작성할 때, 문서를 작성하기 위해 실행해야 하는 명령어는 무엇입니까?  
-[벤치마크](https://namu.wiki/w/%EB%B2%A4%EC%B9%98%EB%A7%88%ED%81%AC)를 실행하고, 그 결과를 그래프로 그리고, 그 그래프를 문서에 삽입할 때는요?  
+문서를 [Latex(레이텍 또는 라텍)](https://ko.wikipedia.org/wiki/LaTeX)으로 작성할 때, 문서를 작성하기 위해 실행해야 하는 명령어는 무엇입니까?  
+[벤치마크](https://ko.wikipedia.org/wiki/%EB%B2%A4%EC%B9%98%EB%A7%88%ED%81%AC_%28%EC%BB%B4%ED%93%A8%ED%8C%85%29)를 실행하고, 그 결과를 그래프로 그리고, 그 그래프를 문서에 삽입할 때는요?  
 또는 사용하고 있는 클래스 안에 제공되어 있는 코드를 컴파일하고 테스트를 실행할 때는 어떤 명령어를 사용합니까?
 
 대부분의 프로젝트들에는, 그것들이 코드를 포함하든 포함하지 않든, "**빌드 프로세스**"라고 하는 것이 있습니다. 이는 인풋(Input)에서 아웃풋(Output)으로 가기 위해서 수행할 필요가 있는 몇몇 순차적인 작업들을 뜻합니다.  
@@ -37,7 +37,7 @@ translation_status: complete
 여러분이 빌드 시스템에게 여러분이 특정 타겟을 원한다는 것을 전하면, 빌드 시스템이 하는 일은 그 타겟의 [이행성을 띠는(transitive)](https://terms.naver.com/entry.nhn?docId=856345&cid=50376&categoryId=50376) 모든 의존성들을 찾아내고서는, 최종 타겟이 만들어지는 때까지 계속해서 중간의 타겟들을 만들어내는 규칙들을 적용하는 것입니다.
 이상적으로는, 빌드 시스템은 의존성이 바뀌지 않은 타겟들과, 이전의 빌드에 의한 결과가 이미 사용가능한 경우에 대해서는, 불필요하게 규칙들을 실행하지 않는 방식으로 이를 수행합니다.
 
-`make`는 가장 흔한 빌드 시스템 중 하나이고, 거의 모든 [UNIX](https://namu.wiki/w/%EC%9C%A0%EB%8B%89%EC%8A%A4)-기반 컴퓨터에 설치되어 있습니다. `make`는 결점이 있기는 하지만, 간단한 ~ 중간 정도의 복잡성을 지닌 프로젝트들에는 꽤 잘 작동합니다.  
+`make`는 가장 흔한 빌드 시스템 중 하나이고, 거의 모든 [UNIX](https://ko.wikipedia.org/wiki/%EC%9C%A0%EB%8B%89%EC%8A%A4)-기반 컴퓨터에 설치되어 있습니다. `make`는 결점이 있기는 하지만, 간단한 ~ 중간 정도의 복잡성을 지닌 프로젝트들에는 꽤 잘 작동합니다.  
 여러분이 `make`를 실행하면 이것은 현재 디렉토리에 있는 `Makefile`이라고 하는 파일을 참조합니다.  
 모든 타겟들과 의존성들, 그리고 규칙들은 그 파일 안에 정의되어 있습니다. 함께 하나 살펴보죠:
 
@@ -159,7 +159,7 @@ pdflatex paper.tex
 그렇긴 하지만 완벽하진 않죠!  
 만약 제가 보안 업데이트를 하는데, 그 새로운 버전이 제 라이브러리의 퍼블릭 인터페이스(public interface, "[API](https://ko.wikipedia.org/wiki/API)")를 바꾸지 _않고_, 오래된 버전에 의존했던 어떤 프로젝트도 즉시 사용할 수 있는 것이라면 어떨까요?
 여기서 서로 다른 숫자들을 가진 버전이 나오는 것입니다.
-각각의 정확한 의미는 프로젝트들마다 다르지만, 상대적으로 공통적인 기준은 [시멘틱 버저닝(Semantic Versioning)](https://velog.io/@slaslaya/Semantic-Versioning-2.0.0-MAJOR-MINOR-PATCH와-명세에-관하여)입니다.  
+각각의 정확한 의미는 프로젝트들마다 다르지만, 상대적으로 공통적인 기준은 [시멘틱 버저닝(Semantic Versioning)](https://semver.org/lang/ko/)입니다.  
 시맨틱 버저닝에서 모든 버전 넘버는 다음의 형식을 따릅니다: **major.minor.patch**  
 규칙은 다음과 같습니다:
 

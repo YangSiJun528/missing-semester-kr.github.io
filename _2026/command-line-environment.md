@@ -477,7 +477,7 @@ If you, like me, prefer to learn by example, this is a good usecase of the `tldr
 
 Run `tldr chmod` to see more examples, including recursive operations and group permissions.
 
-> Your shell might show you something like `command not found: tldr`. That is because it is a more modern tool and it is not pre-installed in most systems. A good reference for how to install tools is the [https://command-not-found.com](https://command-not-found.com) website. It contains instructions for a huge collection of CLI tools for popular OS distributions.
+> Your shell might show you something like `command not found: tldr`. That is because it is a more modern tool and it is not pre-installed in most systems. Follow the [official tldr installation instructions](https://github.com/tldr-pages/tldr#how-do-i-use-it) to install a client for your system.
 
 Each program is run as a specific user in the system. We can use the `whoami` command to find our user name and `id -u` to find our UID (user id) which is the integer value that the OS associates with the user.
 
@@ -649,7 +649,7 @@ With these installed, you can use `rg` instead of `grep` and `fd` instead of `fi
 > ```
 > Some installers use a slightly safer variant: `/bin/bash -c "$(curl -fsSL https://url)"` which at least ensures bash interprets the script rather than your current shell.
 
-When you try to run a command that isn't installed, your shell will show `command not found`. The website [command-not-found.com](https://command-not-found.com) is a helpful resource you can use to search for any command to find out how to install it across different package managers and distributions.
+When you try to run a command that isn't installed, your shell will show `command not found`. Check the tool's official installation instructions or use your operating system's package manager to find the package that provides the command.
 
 Another useful tool is [`tldr`](https://tldr.sh/), which provides simplified, example-focused man pages. Instead of reading through lengthy documentation, you can quickly see common usage patterns:
 
