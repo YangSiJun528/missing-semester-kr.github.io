@@ -1,0 +1,82 @@
+name: Fosstodon request comparison
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/issue-40-link-check]
+    paths: [.github/workflows/diagnose-fosstodon.yml]
+permissions:
+  contents: read
+jobs:
+  compare:
+    if: github.repository == 'YangSiJun528/missing-semester-kr.github.io'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        sample: [1, 2]
+    steps:
+      - name: Compare requests in the production checker image
+        run: |
+          set -o pipefail
+          docker run --rm -i --entrypoint ruby anishathalye/proof-html:2.2.5 - <<'RUBY' | tee fosstodon.log
+          require "typhoeus"
+          require "nokogiri"
+          require "json"
+          old_ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.0.0 Safari/537.36"
+          modern_ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+          post = "https://fosstodon.org/@jonhoo/116098318361854057"
+          naver = "https://terms.naver.com/entry.nhn?docId=856345&cid=50376&categoryId=50376"
+          variants = [
+            ["baseline", post, old_ua, {}, {}],
+            ["accept-html", post, old_ua, { "Accept" => "text/html" }, {}],
+            ["modern-ua", post, modern_ua, {}, {}],
+            ["transparent-ua", post, "lychee/0.24.2", {}, {}],
+            ["http1.1", post, old_ua, {}, { http_version: :httpv1_1 }],
+            ["baseline-repeat", post, old_ua, {}, {}],
+            ["naver-modern-control", naver, modern_ua, {}, {}],
+          ]
+          selected_headers = %w[server via x-cache x-cache-hits retry-after content-type content-encoding cf-mitigated]
+          phases = %i[namelookup_time connect_time appconnect_time starttransfer_time total_time]
+          puts JSON.generate(kind: "versions", ruby: RUBY_VERSION, typhoeus: Typhoeus::VERSION)
+          variants.each_with_index do |(label, url, ua, headers, extra), index|
+            sleep 2 if index.positive?
+            options = { method: :get, followlocation: true, timeout: 20, connecttimeout: 10,
+                        accept_encoding: "", headers: { "User-Agent" => ua }.merge(headers) }.merge(extra)
+            begin
+              response = Typhoeus::Request.new(url, options).run
+              body = response.body.to_s
+              document = Nokogiri::HTML(body)
+              title = document.at_css("title")&.text.to_s.strip
+              description = document.at_css('meta[property="og:description"]')&.[]("content")
+              document.css("script, style, noscript").remove
+              text = document.at_css("body")&.text.to_s.gsub(/\s+/, " ").strip
+              row = {
+                label: label, url: url, status: response.code, return_code: response.return_code,
+                return_message: response.return_message, effective_url: response.effective_url,
+                remote_ip: response.primary_ip, bytes: body.bytesize,
+                timings: phases.to_h { |phase| [phase, response.public_send(phase)] },
+                headers: (response.headers || {}).each_with_object({}) { |(key, value), out|
+                  out[key.downcase] = value if selected_headers.include?(key.downcase)
+                },
+                http_statuses: response.response_headers.to_s.lines.grep(/^HTTP\//).map(&:strip),
+                title: title[0, 200], description: description&.slice(0, 250),
+                post_markers: { author: body.downcase.include?("jonhoo"),
+                                status_id: body.include?("116098318361854057"),
+                                og_description: !description.to_s.empty? },
+                forbidden_text: response.code == 403 ? text[0, 300] : nil,
+              }
+              puts JSON.generate(row)
+            rescue StandardError => error
+              puts JSON.generate(label: label, error: error.class.name, message: error.message[0, 300])
+            end
+            STDOUT.flush
+          end
+          RUBY
+      - name: Save comparison log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fosstodon-comparison-${{ matrix.sample }}
+          path: fosstodon.log
+          if-no-files-found: ignore
