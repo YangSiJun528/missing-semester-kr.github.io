@@ -6,6 +6,7 @@ import tempfile
 import time
 
 RUNNER = '''require "html-proofer"
+require "json"
 options = {
   checks: ["Links"], check_external_hash: true, enforce_https: false,
   hydra: {max_concurrency: 1},
@@ -13,7 +14,15 @@ options = {
     headers: {"User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.0.0 Safari/537.36"}}
 }
 options[:typhoeus][:accept_encoding] = "" if ENV["COMPRESSED"] == "true"
-HTMLProofer.check_file("/fixture/index.html", options).run
+proofer = HTMLProofer.check_file("/fixture/index.html", options)
+proofer.before_request do |request|
+  request.on_complete do |response|
+    puts "NETWORK_RESULT " + JSON.generate(status: response.code,
+      curl_code: response.return_code, timed_out: response.timed_out?,
+      bytes: response.body.bytesize)
+  end
+end
+proofer.run
 '''
 
 results = []
@@ -41,5 +50,9 @@ for name, compressed, fragment, expected in [
 
 Path("compression-results.json").write_text(json.dumps(results, indent=2) + "\n")
 assert all(r["exit"] == r["expected"] for r in results), "Compression comparison failed"
-assert "time out" in results[0]["output"], "Baseline failed for another reason"
+responses = [[json.loads(line.removeprefix("NETWORK_RESULT "))
+              for line in r["output"].splitlines() if line.startswith("NETWORK_RESULT ")]
+             for r in results]
+assert any(r["timed_out"] for r in responses[0]), "Baseline failed for another reason"
+assert responses[1] and all(not r["timed_out"] for r in responses[1])
 assert "issue40-missing-fragment" in results[2]["output"], "Negative control did not check the anchor"

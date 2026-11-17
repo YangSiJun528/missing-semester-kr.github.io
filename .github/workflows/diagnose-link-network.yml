@@ -1,11 +1,6 @@
 name: Issue 40 network diagnosis
 on:
   workflow_dispatch:
-  push:
-    branches: [codex/issue-40-link-check]
-    paths:
-      - .github/link-diagnostics/**
-      - .github/workflows/diagnose-link-network.yml
 permissions:
   contents: read
 jobs:
