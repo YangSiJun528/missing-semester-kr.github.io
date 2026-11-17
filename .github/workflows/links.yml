@@ -6,6 +6,7 @@ on:
 jobs:
   links:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
@@ -15,17 +16,29 @@ jobs:
           ruby-version: "3.4"
           bundler-cache: true
       - run: bundle exec jekyll build
-      - name: Check external links
-        uses: lycheeverse/lychee-action@v2
-        with:
-          lycheeVersion: v0.24.2
-          args: --config .lychee.toml --root-dir "${{ github.workspace }}/_site" '_site/**/*.html'
-          token: ${{ secrets.GITHUB_TOKEN }}
-          output: lychee/results.md
+      - name: Check links
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -o pipefail
+          for attempt in 1 2 3; do
+            if docker run --rm --entrypoint ruby \
+              --volume "$PWD:/site" --workdir /site --env GITHUB_TOKEN \
+              anishathalye/proof-html:2.2.5 .github/scripts/check-links.rb \
+              2>&1 | tee -a link-check.log; then
+              exit 0
+            else
+              status=$?
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              sleep "$((attempt * 15))"
+            fi
+          done
+          exit "$status"
       - name: Save link report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: external-link-report
-          path: lychee/results.md
+          path: link-check.log
           if-no-files-found: ignore
