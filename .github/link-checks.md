@@ -2,6 +2,8 @@
 
 2026-11-18 KST에 이슈 #40을 로컬 macOS와 사용자 fork의 GitHub Actions에서 비교했다. 실패 원인은 하나가 아니었다. 브라우저에서 열리거나 HTTP 200을 받는 것만으로 링크가 정상이라고 판단할 수 없고, CI의 모든 실패를 IP 차단으로 설명할 수도 없다.
 
+최종 검사 구성 커밋 `e8364fb`는 [Build](https://github.com/YangSiJun528/missing-semester-kr.github.io/actions/runs/44119851165)와 독립적인 [Links 실행 1](https://github.com/YangSiJun528/missing-semester-kr.github.io/actions/runs/44119851518), [Links 실행 2](https://github.com/YangSiJun528/missing-semester-kr.github.io/actions/runs/44119857763)를 모두 통과했다. 두 Links 실행은 각각 외부 링크 724개를 첫 시도에 검사해 성공했다. 이후 변경은 이 검증 결과를 기록한 문서뿐이다.
+
 ## 확인한 원인
 
 | 대상 | 재현 결과 | 처리 |
